@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Manage Listings ? Dewera Admin</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="admin-layout">
+    <aside class="sidebar">
+      <div class="sidebar-header" style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px;">
+        <img src="images/dewera-logo.png" alt="DEWERA" style="height: 15px; width: auto; display: block; background: transparent;">
+        <div class="sidebar-sub" style="font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.15em;">Admin Terminal</div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="sidebar-link">
+          <span>Overview</span>
+        </a>
+        <a href="gems.html" class="sidebar-link active">
+          <span>Gem Listings</span>
+        </a>
+        <a href="new.html" class="sidebar-link" id="sidebarAddNewGem">
+          <span>+ Add New Gem</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button onclick="logout()" class="btn-logout">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
+          </svg>
+          Exit Terminal
+        </button>
+      </div>
+    </aside>
+
+    <div class="admin-main">
+      <header class="top-header">
+        <span style="font-size: 0.75rem; color: var(--muted); font-weight: 500; text-transform: uppercase;">Catalog Master</span>
+        <div style="display: flex; gap: 0.8rem;">
+          <button onclick="exportJSON()" class="btn-apple-outline" style="padding: 0.4rem 1rem; font-size: 0.75rem;">Export Data</button>
+          <a href="new.html" class="btn-apple" style="padding: 0.4rem 1rem; font-size: 0.75rem;">+ Add Gem</a>
+        </div>
+      </header>
+
+      <main class="admin-content">
+        <div style="margin-bottom: 1.5rem;">
+          <p style="font-size: 0.75rem; color: var(--muted); font-weight: 500;">Inventory Controller</p>
+          <h1 style="font-size: 2.2rem; font-weight: 700; letter-spacing: -0.02em; margin-top: 0.2rem;">Gemstone Listings</h1>
+        </div>
+
+        <!-- STORE CONCIERGE & WHATSAPP CONFIGURATION -->
+        <div style="background: #FFFFFF; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1.25rem 1.5rem; margin-bottom: 1.8rem; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+            <div>
+              <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--apple-blue); font-weight: 600;">Storefront Inquiries & Concierge Channels</div>
+              <div style="font-size: 1.05rem; font-weight: 700; margin-top: 2px;">
+                Email: <span id="currentEmailDisplay" style="color: #0071E3; font-family: monospace;">deweragems@gmail.com</span> &bull; 
+                WhatsApp: <span id="currentWaDisplay" style="color: #107C41; font-family: monospace;">+94770000000</span>
+              </div>
+              <div style="font-size: 0.76rem; color: var(--muted); margin-top: 3px;">
+                Changes apply instantly across every page of Dewera (Contact page, navigation bar, mailto links, and WhatsApp concierge).
+              </div>
+            </div>
+            <div style="font-size: 0.72rem; color: var(--muted); background: #F5F5F7; padding: 4px 10px; border-radius: 6px;">
+              Config synced with <code style="background: transparent;">store/config.json</code>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div style="display: flex; gap: 0.6rem; align-items: center;">
+              <input type="email" id="adminEmailInput" class="form-control" placeholder="deweragems@gmail.com" style="flex: 1; padding: 0.45rem 0.8rem; font-size: 0.85rem;" value="deweragems@gmail.com">
+              <button type="button" class="btn-apple" onclick="saveBusinessEmail()" style="padding: 0.45rem 1rem; font-size: 0.8rem; white-space: nowrap;">Update Email</button>
+            </div>
+            <div style="display: flex; gap: 0.6rem; align-items: center;">
+              <input type="text" id="adminWaInput" class="form-control" placeholder="+94770000000" style="flex: 1; padding: 0.45rem 0.8rem; font-size: 0.85rem;" value="+94770000000">
+              <button type="button" class="btn-apple" onclick="saveWaNumber()" style="padding: 0.45rem 1rem; font-size: 0.8rem; white-space: nowrap;">Update WhatsApp</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- VAULT SEPARATION TABS -->
+        <div style="display: flex; gap: 0.5rem; margin-bottom: 1.2rem; flex-wrap: wrap;" id="vaultFilters">
+          <button class="btn-apple-outline active" data-vault="all" onclick="filterVault('all', this)" style="padding: 0.45rem 1.2rem; font-size: 0.8rem; font-weight: 600;">All Inventories</button>
+          <button class="btn-apple-outline" data-vault="dewera" onclick="filterVault('dewera', this)" style="padding: 0.45rem 1.2rem; font-size: 0.8rem; font-weight: 600; color: #B45309; border-color: rgba(201,169,110,0.6);">House of Dewera &bull; Sovereign Vault</button>
+          <button class="btn-apple-outline" data-vault="marketplace" onclick="filterVault('marketplace', this)" style="padding: 0.45rem 1.2rem; font-size: 0.8rem; font-weight: 600;">Marketplace &bull; Seller Ateliers</button>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;" id="statusFilters">
+            <button class="btn-apple-outline active" data-status="all" onclick="filterStatus('all', this)" style="padding: 0.4rem 1rem; font-size: 0.8rem;">All Stones</button>
+            <button class="btn-apple-outline" data-status="available" onclick="filterStatus('available', this)" style="padding: 0.4rem 1rem; font-size: 0.8rem;">Available</button>
+            <button class="btn-apple-outline" data-status="out-of-stock" onclick="filterStatus('out-of-stock', this)" style="padding: 0.4rem 1rem; font-size: 0.8rem;">Out of Stock</button>
+            <button class="btn-apple-outline" data-status="sold" onclick="filterStatus('sold', this)" style="padding: 0.4rem 1rem; font-size: 0.8rem;">Sold</button>
+            <button class="btn-apple-outline" data-status="hidden" onclick="filterStatus('hidden', this)" style="padding: 0.4rem 1rem; font-size: 0.8rem;">Hidden</button>
+          </div>
+
+          <div style="display: flex; gap: 0.5rem;">
+            <input type="text" id="searchInput" oninput="handleSearch(this.value)" placeholder="Search gemstones..." class="form-control" style="width: 280px; padding: 0.55rem 1rem; font-size: 0.85rem;">
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Photo</th>
+                <th>Name & Origin</th>
+                <th>Type</th>
+                <th>Carats</th>
+                <th>Pricing</th>
+                <th>Discount</th>
+                <th>Status</th>
+                <th style="text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="gemsTbody">
+            </tbody>
+          </table>
+        </div>
+
+        <div style="margin-top: 1rem; font-size: 0.8rem; color: var(--muted);" id="tableSummary"></div>
+      </main>
+    </div>
+  </div>
+
+  <!-- EDIT MODAL -->
+  <div class="modal-overlay" id="editModal" style="display: none;">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2 style="font-size: 1.4rem; font-weight: 700;" id="modalTitle">Edit Gemstone Record</h2>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <form id="editForm" onsubmit="saveEditForm(event)">
+        <input type="hidden" id="editId">
+        
+        <!-- EDIT PHOTOS (DROP & REMOVE) -->
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label class="form-label" style="font-weight: 600; color: var(--text);">Attached Photos</label>
+          <div class="dropzone" id="editDropzone" onclick="document.getElementById('editFileInput').click()" style="padding: 1.4rem;">
+            <div class="dropzone-title" style="font-size: 0.85rem;">Drop new photos to append or click to browse</div>
+            <input type="file" id="editFileInput" multiple accept="image/*" style="display: none;" onchange="handleEditFileSelect(event)">
+          </div>
+          <div class="photo-strip" id="editPhotoStrip"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Gemstone Name *</label>
+          <input type="text" id="editName" class="form-control" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Variety / Type *</label>
+            <input type="text" id="editType" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Treatment *</label>
+            <select id="editTreatment" class="form-control">
+              <option value="Heated">Heated</option>
+              <option value="Unheated">Unheated</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Geographic Origin *</label>
+            <input type="text" id="editOrigin" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Carat Weight (ct) *</label>
+            <input type="number" step="0.01" id="editWeight" class="form-control" required>
+          </div>
+        </div>
+
+        <div class="form-row-3">
+          <div class="form-group">
+            <label class="form-label">Price Valuation Model</label>
+            <select id="editPriceType" class="form-control" onchange="togglePriceFields()">
+              <option value="range">Indicative Market Range (Min - Max)</option>
+              <option value="starting_from">Starting From (From $X)</option>
+              <option value="fixed">Fixed Valuation</option>
+              <option value="consultation">Valuation on Request / Consultation</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Base / Min Price (USD) *</label>
+            <input type="number" id="editPrice" class="form-control" required oninput="recalcSalePrice()">
+          </div>
+          <div class="form-group" id="editPriceMaxGroup">
+            <label class="form-label">Max Guide Price (USD)</label>
+            <input type="number" id="editPriceMax" class="form-control" placeholder="e.g. 8500">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Discount % (0-90)</label>
+            <input type="number" min="0" max="90" id="editDiscount" class="form-control" placeholder="Optional" oninput="recalcSalePrice()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Effective Sale Price</label>
+            <input type="number" id="editSalePrice" class="form-control" readonly style="background:#F2F2F7; font-weight: 600; color: var(--apple-blue);">
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.2rem;">
+          <label class="form-label">Market Valuation Notice / Gemmological Note</label>
+          <input type="text" id="editMarketNote" class="form-control" placeholder="e.g. Corundum prices fluctuate based on color tone saturation and international market index.">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Color Hue</label>
+            <input type="text" id="editColor" class="form-control">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Clarity Grade</label>
+            <input type="text" id="editClarity" class="form-control">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select id="editStatus" class="form-control">
+              <option value="available">Available</option>
+              <option value="out-of-stock">Out of Stock</option>
+              <option value="sold">Sold</option>
+              <option value="hidden">Hidden</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Lab Certificate Seal</label>
+            <input type="text" id="editCertificate" class="form-control">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Color Gradient Start</label>
+            <input type="color" id="editGradFrom" class="form-control" style="height: 40px; padding: 2px;">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Color Gradient End</label>
+            <input type="color" id="editGradTo" class="form-control" style="height: 40px; padding: 2px;">
+          </div>
+        </div>
+
+        <!-- COLOR VARIATIONS & INDIVIDUAL PRICES (Gem Specialist Repeater) -->
+        <div style="background: #F9FAFB; border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin: 1.2rem 0;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div>
+              <div style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text);">
+                Color Variations &amp; Individual Color Codes &amp; Prices
+              </div>
+              <div style="font-size: 0.75rem; color: var(--muted); margin-top: 2px;">
+                Configure multiple saturation types (e.g. Cornflower, Royal Blue) with individual hex codes, prices, and stock status.
+              </div>
+            </div>
+            <button type="button" class="btn btn-outline btn-sm" onclick="addEditVariationRow()" style="font-size: 0.75rem; padding: 4px 10px;">
+              + Add Color Variation
+            </button>
+          </div>
+
+          <div id="editVariationsList">
+            <!-- Populated via JavaScript -->
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Gemstone Description</label>
+          <textarea id="editDesc" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Editorial Tagline (Storefront Card 1-Liner)</label>
+          <input type="text" id="editTagline" class="form-control" placeholder="e.g. The Sovereign Imperial Corundum of Ratnapura.">
+        </div>
+
+        <!-- SPECIAL HIGHLIGHTS (Image 3 Feature Cards) -->
+        <div style="border-top: 1px solid var(--border); margin: 1.5rem 0 1rem; padding-top: 1.2rem;">
+          <div style="font-size: 0.85rem; font-weight: 700; color: var(--text); margin-bottom: 0.3rem; text-transform: uppercase; letter-spacing: 0.1em;">
+            Why This Gemstone Is Extraordinary (Feature Cards)
+          </div>
+          <p style="font-size: 0.74rem; color: var(--muted); margin-bottom: 1rem; line-height: 1.4;">
+            Configure the 3 feature cards displayed on the gemstone's inside dossier page.
+          </p>
+
+          <!-- Feature 1 -->
+          <div style="background: #FAF8F5; border: 1px solid var(--border); padding: 12px; margin-bottom: 10px;">
+            <div style="font-size: 0.72rem; font-weight: 700; color: var(--gold-dark); text-transform: uppercase; margin-bottom: 6px;">Feature 1</div>
+            <div class="form-row" style="margin-bottom: 6px;">
+              <input type="text" id="editH1Cat" class="form-control" placeholder="Category (e.g. Alluvial Provenance)" style="font-size: 0.8rem;">
+              <input type="text" id="editH1Title" class="form-control" placeholder="Headline (e.g. Ratnapura Riverbed Extraction)" style="font-size: 0.8rem;">
+            </div>
+            <textarea id="editH1Desc" class="form-control" rows="2" placeholder="Description of this feature..." style="font-size: 0.8rem;"></textarea>
+          </div>
+
+          <!-- Feature 2 -->
+          <div style="background: #FAF8F5; border: 1px solid var(--border); padding: 12px; margin-bottom: 10px;">
+            <div style="font-size: 0.72rem; font-weight: 700; color: var(--gold-dark); text-transform: uppercase; margin-bottom: 6px;">Feature 2</div>
+            <div class="form-row" style="margin-bottom: 6px;">
+              <input type="text" id="editH2Cat" class="form-control" placeholder="Category (e.g. Optical Purity)" style="font-size: 0.8rem;">
+              <input type="text" id="editH2Title" class="form-control" placeholder="Headline (e.g. Velvety Royal Saturation)" style="font-size: 0.8rem;">
+            </div>
+            <textarea id="editH2Desc" class="form-control" rows="2" placeholder="Description of this feature..." style="font-size: 0.8rem;"></textarea>
+          </div>
+
+          <!-- Feature 3 -->
+          <div style="background: #FAF8F5; border: 1px solid var(--border); padding: 12px; margin-bottom: 10px;">
+            <div style="font-size: 0.72rem; font-weight: 700; color: var(--gold-dark); text-transform: uppercase; margin-bottom: 6px;">Feature 3</div>
+            <div class="form-row" style="margin-bottom: 6px;">
+              <input type="text" id="editH3Cat" class="form-control" placeholder="Category (e.g. Swisslab Passport)" style="font-size: 0.8rem;">
+              <input type="text" id="editH3Title" class="form-control" placeholder="Headline (e.g. GRS Swiss Certified Rarity)" style="font-size: 0.8rem;">
+            </div>
+            <textarea id="editH3Desc" class="form-control" rows="2" placeholder="Description of this feature..." style="font-size: 0.8rem;"></textarea>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.8rem; margin-top: 1.5rem;">
+          <button type="button" onclick="closeModal()" class="btn-apple-outline">Cancel</button>
+          <button type="submit" class="btn-apple">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- DISCOUNT QUICK MODAL -->
+  <div class="modal-overlay" id="discountModal" style="display: none;">
+    <div class="modal-box" style="max-width: 380px;">
+      <div class="modal-header">
+        <h2 style="font-size: 1.2rem; font-weight: 700;">Apply Discount</h2>
+        <button class="modal-close" onclick="closeDiscountModal()">&times;</button>
+      </div>
+      <form onsubmit="saveQuickDiscount(event)">
+        <input type="hidden" id="discGemId">
+        <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 1.2rem;" id="discGemName"></p>
+        
+        <div class="form-group">
+          <label class="form-label">Discount Percentage (0 to remove)</label>
+          <input type="number" min="0" max="90" id="discPercent" class="form-control" required placeholder="e.g. 15 for 15%">
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.8rem; margin-top: 1.5rem;">
+          <button type="button" onclick="closeDiscountModal()" class="btn-apple-outline">Cancel</button>
+          <button type="submit" class="btn-apple">Set Discount</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+  <script>
+    checkAuth();
+
+    let currentStatus = 'all';
+    let currentKeyword = '';
+    let editUploadedImages = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const role = getStaffRole();
+
+      // Strict RBAC: Non-super admins (Admins and Moderators) CANNOT view or access Dewera Sovereign listings
+      if (role !== 'super_admin') {
+        const deweraVaultBtn = document.querySelector('button[data-vault="dewera"]');
+        if (deweraVaultBtn) deweraVaultBtn.remove();
+        const allVaultBtn = document.querySelector('button[data-vault="all"]');
+        if (allVaultBtn) allVaultBtn.remove();
+        const mktVaultBtn = document.querySelector('button[data-vault="marketplace"]');
+        if (mktVaultBtn) {
+          mktVaultBtn.className = 'btn-apple-outline active';
+          mktVaultBtn.style.background = 'rgba(0, 113, 227, 0.08)';
+          mktVaultBtn.textContent = 'Marketplace Seller Listings (Active)';
+        }
+        currentVault = 'marketplace';
+
+        // Add prominent sovereign confidentiality banner
+        const vaultContainer = document.getElementById('vaultFilters');
+        if (vaultContainer) {
+          const banner = document.createElement('div');
+          banner.style.cssText = 'width: 100%; padding: 10px 14px; background: #FEF3C7; border: 1px solid #FDE68A; border-radius: 6px; font-size: 0.75rem; color: #92400E; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;';
+          banner.innerHTML = '<span>Confidentiality Protocol: House of Dewera Sovereign inventory is strictly isolated to Head Administrator clearance. Staff terminals manage verified marketplace seller ateliers.</span><span style="font-size:0.65rem; background:#B45309; color:#FFFFFF; padding:2px 8px; border-radius:4px; text-transform:uppercase;">RBAC Protected</span>';
+          vaultContainer.parentNode.insertBefore(banner, vaultContainer);
+        }
+
+        // Hide Add Gem buttons from non-super admins
+        document.querySelectorAll('a[href="new.html"]').forEach(btn => btn.style.display = 'none');
+        const sidebarAddNew = document.getElementById('sidebarAddNewGem');
+        if (sidebarAddNew) sidebarAddNew.style.display = 'none';
+      }
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const searchParam = urlParams.get('search');
+      if (searchParam) {
+        document.getElementById('searchInput').value = searchParam;
+        currentKeyword = searchParam.toLowerCase();
+      }
+      initWaConfig();
+      renderTable();
+      initEditDropzone();
+      syncGemsFromServer(() => renderTable());
+    });
+
+    function initEditDropzone() {
+      const dz = document.getElementById('editDropzone');
+      ['dragenter', 'dragover'].forEach(n => dz.addEventListener(n, (e) => { e.preventDefault(); dz.classList.add('dragover'); }));
+      ['dragleave', 'drop'].forEach(n => dz.addEventListener(n, (e) => { e.preventDefault(); dz.classList.remove('dragover'); }));
+      dz.addEventListener('drop', (e) => {
+        if (e.dataTransfer.files) processEditFiles(Array.from(e.dataTransfer.files));
+      });
+    }
+
+    function handleEditFileSelect(e) {
+      if (e.target.files) processEditFiles(Array.from(e.target.files));
+    }
+
+    async function processEditFiles(files) {
+      showToast('Auto-cleaning background & centering ' + files.length + ' image(s)...');
+      for (const file of files) {
+        if (!file.type.startsWith('image/')) continue;
+        const dataUrl = await processImageFile(file);
+        editUploadedImages.push(dataUrl);
+      }
+      renderEditPhotoStrip();
+      showToast('Gemstone isolated and studio-centered.');
+    }
+
+    function removeEditPhoto(index) {
+      editUploadedImages.splice(index, 1);
+      renderEditPhotoStrip();
+    }
+
+    function renderEditPhotoStrip() {
+      const strip = document.getElementById('editPhotoStrip');
+      strip.innerHTML = editUploadedImages.map((src, i) => {
+        return '<div class="photo-thumb-card">' +
+          '<img src="' + src + '">' +
+          (i === 0 ? '<span class="badge-primary-img">Cover</span>' : '') +
+          '<button type="button" class="remove-btn" onclick="removeEditPhoto(' + i + ')">&times;</button>' +
+        '</div>';
+      }).join('');
+    }
+
+    let currentVault = 'all';
+
+    function filterVault(vault, btn) {
+      currentVault = vault;
+      document.querySelectorAll('#vaultFilters button').forEach(b => {
+        b.className = 'btn-apple-outline';
+        b.style.background = '';
+      });
+      btn.className = 'btn-apple-outline active';
+      btn.style.background = 'rgba(0, 113, 227, 0.08)';
+      renderTable();
+    }
+
+    function filterStatus(status, btn) {
+      currentStatus = status;
+      document.querySelectorAll('#statusFilters button').forEach(b => {
+        b.className = 'btn-apple-outline';
+      });
+      btn.className = 'btn-apple-outline active';
+      btn.style.background = 'rgba(0, 113, 227, 0.08)';
+      renderTable();
+    }
+
+    function handleSearch(val) {
+      currentKeyword = val.trim().toLowerCase();
+      renderTable();
+    }
+
+    function renderTable() {
+      const allGems = getGems();
+      const tbody = document.getElementById('gemsTbody');
+      const summary = document.getElementById('tableSummary');
+      const role = getStaffRole();
+
+      const filtered = allGems.filter(g => {
+        const isDewera = !g.sellerId || g.sellerId === 'dewera' || g.isDewera;
+        if (role !== 'super_admin' && isDewera) return false;
+
+        let matchVault = true;
+        if (currentVault === 'dewera') matchVault = isDewera;
+        else if (currentVault === 'marketplace') matchVault = !isDewera;
+
+        const isOutOfStock = g.status === 'out-of-stock' || g.status === 'out_of_stock';
+        const matchStatus = currentStatus === 'all' 
+          ? true 
+          : (currentStatus === 'out-of-stock' ? isOutOfStock : g.status === currentStatus);
+        const matchSearch = !currentKeyword || 
+          g.name.toLowerCase().includes(currentKeyword) ||
+          g.type.toLowerCase().includes(currentKeyword) ||
+          g.origin.toLowerCase().includes(currentKeyword) ||
+          (g.sellerName && g.sellerName.toLowerCase().includes(currentKeyword));
+        return matchVault && matchStatus && matchSearch;
+      });
+
+      summary.textContent = 'Showing ' + filtered.length + ' of ' + allGems.length + ' gemstones.';
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 3rem; color: var(--muted);">No gemstones matched your criteria.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(gem => {
+        const grad = 'linear-gradient(135deg, ' + gem.gradientFrom + ', ' + gem.gradientTo + ')';
+        const isOos = gem.status === 'out-of-stock' || gem.status === 'out_of_stock';
+        const badgeClass = gem.status === 'available' ? 'badge-available' : (gem.status === 'sold' ? 'badge-sold' : (isOos ? 'badge-out-of-stock' : 'badge-hidden'));
+        const statusLabel = isOos ? 'Out of Stock' : gem.status;
+        
+        let priceMarkup = '';
+        if (gem.priceType === 'range' && gem.priceMax) {
+          priceMarkup = '<div><strong>$' + Number(gem.price).toLocaleString() + ' &ndash; $' + Number(gem.priceMax).toLocaleString() + '</strong><div style="font-size:0.68rem; color:var(--gold-dark); font-weight:600;">Market Range</div></div>';
+        } else if (gem.priceType === 'starting_from') {
+          priceMarkup = '<div><strong>From $' + Number(gem.price).toLocaleString() + '</strong><div style="font-size:0.68rem; color:var(--muted);">Starting Guide</div></div>';
+        } else if (gem.priceType === 'consultation') {
+          priceMarkup = '<span style="font-size:0.75rem; color:var(--gold-dark); font-weight:600;">On Request</span>';
+        } else if (gem.salePrice) {
+          priceMarkup = '<div><strong>$' + Number(gem.salePrice).toLocaleString() + '</strong> <span style="text-decoration:line-through;color:var(--muted);font-size:0.75rem;">$' + Number(gem.price).toLocaleString() + '</span></div>';
+        } else {
+          priceMarkup = '<strong>$' + Number(gem.price).toLocaleString() + '</strong>';
+        }
+
+        const discountBadge = gem.discount 
+          ? '<span style="background:var(--apple-blue);color:white;padding:2px 8px;font-size:0.7rem;border-radius:980px;font-weight:600;">-' + gem.discount + '%</span>' 
+          : '<span style="color:var(--muted);font-size:0.8rem;">—</span>';
+
+        const soldBtnLabel = gem.status === 'sold' ? 'Mark Available' : 'Mark Sold';
+        const soldBtnStyle = gem.status === 'sold' ? 'color: var(--success);' : 'color: var(--danger);';
+        const hideBtnLabel = gem.status === 'hidden' ? 'Unhide' : 'Hide';
+        const oosBtnLabel = isOos ? 'Mark Available' : 'Mark OOS';
+        const oosBtnStyle = isOos ? 'color: var(--success);' : 'color: #D97706;';
+
+        const swatchSrc = (gem.images && gem.images[0])
+          ? (gem.images[0].endsWith('.jpg') ? gem.images[0].replace(/\.jpg$/, '.png') : gem.images[0])
+          : '';
+        const swatchContent = swatchSrc
+          ? '<img src="' + swatchSrc + '" alt="gem">'
+          : '';
+
+        const statusSelect = 
+          '<select onchange="quickChangeStatus(\'' + gem.id + '\', this.value)" style="padding: 4px 8px; font-size: 0.72rem; border-radius: 6px; border: 1px solid var(--border); font-weight: 600; cursor: pointer; background: ' + (isOos ? '#FFF7ED' : (gem.status === 'available' ? '#ECFDF5' : (gem.status === 'sold' ? '#FEF2F2' : '#F4F4F5'))) + '; color: ' + (isOos ? '#C2410C' : (gem.status === 'available' ? '#047857' : (gem.status === 'sold' ? '#B91C1C' : '#71717A'))) + ';">' +
+            '<option value="available"' + (gem.status === 'available' ? ' selected' : '') + '>Available</option>' +
+            '<option value="out-of-stock"' + (isOos ? ' selected' : '') + '>Out of Stock</option>' +
+            '<option value="sold"' + (gem.status === 'sold' ? ' selected' : '') + '>Sold</option>' +
+            '<option value="hidden"' + (gem.status === 'hidden' ? ' selected' : '') + '>Hidden</option>' +
+          '</select>';
+
+        const varCount = (gem.colorVariations && gem.colorVariations.length) ? gem.colorVariations.length : 0;
+        const varBadge = varCount > 0 ? ' &bull; <span style="display: inline-flex; align-items: center; gap: 3px; font-size: 0.68rem; background: #EEF2FF; color: #4338CA; padding: 1px 6px; border-radius: 4px; font-weight: 600;">' + varCount + ' color variations</span>' : '';
+
+        const isDewera = !gem.sellerId || gem.sellerId === 'dewera' || gem.isDewera;
+        const vaultBadge = isDewera
+          ? '<div style="margin-bottom: 3px;"><span style="display:inline-block; font-size: 0.62rem; text-transform: uppercase; background: #1C1917; color: #E8D5B0; padding: 2px 6px; border-radius: 3px; font-weight: 700; letter-spacing: 0.05em;">House of Dewera &bull; Sovereign</span></div>'
+          : '<div style="margin-bottom: 3px;"><span style="display:inline-block; font-size: 0.62rem; text-transform: uppercase; background: #FEF3C7; color: #92400E; padding: 2px 6px; border-radius: 3px; font-weight: 700; letter-spacing: 0.05em;">Marketplace: ' + (gem.sellerName || 'Atelier') + '</span></div>';
+
+        return '<tr>' +
+          '<td><div class="gem-swatch" style="background: #F9F7F2; border: 1px solid rgba(0,0,0,0.06);">' + swatchContent + '</div></td>' +
+          '<td>' + vaultBadge + '<strong style="font-size:0.9rem;">' + gem.name + '</strong><div style="font-size:0.75rem; color:var(--muted); margin-top:2px;">' + gem.origin + ' (' + (gem.images ? gem.images.length : 0) + ' photos)' + varBadge + '</div></td>' +
+          '<td>' + gem.type + '</td>' +
+          '<td>' + gem.weight + ' ct</td>' +
+          '<td>' + priceMarkup + '</td>' +
+          '<td>' + discountBadge + '</td>' +
+          '<td>' + statusSelect + '</td>' +
+          '<td style="text-align: right;">' +
+            '<div style="display: inline-flex; gap: 0.4rem; align-items: center;">' +
+              '<button class="btn-icon" onclick="openEditModal(\'' + gem.id + '\')" title="Edit">Edit</button>' +
+              '<button class="btn-icon" onclick="toggleOosStatus(\'' + gem.id + '\')" style="' + oosBtnStyle + '">' + oosBtnLabel + '</button>' +
+              '<button class="btn-icon" onclick="openDiscountModal(\'' + gem.id + '\')" title="Discount">% Disc</button>' +
+              '<button class="btn-icon" onclick="toggleSoldStatus(\'' + gem.id + '\')" style="' + soldBtnStyle + '">' + soldBtnLabel + '</button>' +
+              '<button class="btn-icon" onclick="toggleHiddenStatus(\'' + gem.id + '\')">' + hideBtnLabel + '</button>' +
+              '<button class="btn-icon btn-del" onclick="handleDelete(\'' + gem.id + '\', \'' + gem.name.replace(/'/g, "\\'") + '\')">Delete</button>' +
+            '</div>' +
+          '</td>' +
+        '</tr>';
+      }).join('');
+    }
+
+    async function quickChangeStatus(id, newStatus) {
+      const gem = getGems().find(g => g.id === id);
+      if (gem) {
+        const isDewera = !gem.sellerId || gem.sellerId === 'dewera' || gem.isDewera;
+        if (isDewera && getStaffRole() !== 'super_admin') {
+          alert('Access Denied: House of Dewera sovereign listings require Head Administrator clearance.');
+          renderTable();
+          return;
+        }
+      }
+      await updateGemStatus(id, newStatus);
+      showToast('Status updated to: ' + newStatus.toUpperCase());
+      renderTable();
+    }
+
+    async function toggleOosStatus(id) {
+      const next = toggleOutOfStock(id);
+      showToast('Inventory updated: ' + (next === 'out-of-stock' ? 'OUT OF STOCK' : 'AVAILABLE'));
+      renderTable();
+    }
+
+    async function toggleSoldStatus(id) {
+      const newStatus = toggleSold(id);
+      showToast('Gem updated: ' + newStatus.toUpperCase());
+      renderTable();
+    }
+
+    async function toggleHiddenStatus(id) {
+      const newStatus = toggleHidden(id);
+      showToast('Listing updated: ' + newStatus.toUpperCase());
+      renderTable();
+    }
+
+    function handleDelete(id, name) {
+      const gem = getGems().find(g => g.id === id);
+      if (gem) {
+        const isDewera = !gem.sellerId || gem.sellerId === 'dewera' || gem.isDewera;
+        if (isDewera && getStaffRole() !== 'super_admin') {
+          alert('Access Denied: House of Dewera sovereign listings require Head Administrator clearance.');
+          return;
+        }
+      }
+      if (confirm('Permanently delete "' + name + '" from vault inventory?')) {
+        deleteGem(id);
+        showToast('Gemstone removed.');
+        renderTable();
+      }
+    }
+
+    function openDiscountModal(id) {
+      const gem = getGems().find(g => g.id === id);
+      if (!gem) return;
+      const isDewera = !gem.sellerId || gem.sellerId === 'dewera' || gem.isDewera;
+      if (isDewera && getStaffRole() !== 'super_admin') {
+        alert('Access Denied: House of Dewera sovereign listings require Head Administrator clearance.');
+        return;
+      }
+      document.getElementById('discGemId').value = gem.id;
+      document.getElementById('discGemName').textContent = gem.name + ' (List Price: $' + gem.price.toLocaleString() + ')';
+      document.getElementById('discPercent').value = gem.discount || '';
+      document.getElementById('discountModal').style.display = 'flex';
+    }
+
+    function closeDiscountModal() {
+      document.getElementById('discountModal').style.display = 'none';
+    }
+
+    function saveQuickDiscount(e) {
+      e.preventDefault();
+      const id = document.getElementById('discGemId').value;
+      const pct = document.getElementById('discPercent').value;
+      applyDiscount(id, pct);
+      closeDiscountModal();
+      showToast('Discount updated.');
+      renderTable();
+    }
+
+    function togglePriceFields() {
+      const type = document.getElementById('editPriceType') ? document.getElementById('editPriceType').value : 'range';
+      const maxGroup = document.getElementById('editPriceMaxGroup');
+      if (maxGroup) {
+        maxGroup.style.display = (type === 'range') ? 'block' : 'none';
+      }
+    }
+
+    function openEditModal(id) {
+      const gem = getGems().find(g => g.id === id);
+      if (!gem) return;
+      const isDewera = !gem.sellerId || gem.sellerId === 'dewera' || gem.isDewera;
+      if (isDewera && getStaffRole() !== 'super_admin') {
+        alert('Access Denied: House of Dewera sovereign listings require Head Administrator clearance.');
+        return;
+      }
+
+      document.getElementById('editId').value = gem.id;
+      document.getElementById('editName').value = gem.name || '';
+      document.getElementById('editType').value = gem.type || '';
+      document.getElementById('editTreatment').value = gem.treatment || 'Heated';
+      document.getElementById('editOrigin').value = gem.origin || '';
+      document.getElementById('editWeight').value = gem.weight || '';
+      document.getElementById('editPriceType').value = gem.priceType || 'range';
+      document.getElementById('editPrice').value = gem.price || '';
+      document.getElementById('editPriceMax').value = gem.priceMax || '';
+      document.getElementById('editMarketNote').value = gem.marketNote || '';
+      togglePriceFields();
+      document.getElementById('editDiscount').value = gem.discount || '';
+      document.getElementById('editColor').value = gem.color || '';
+      document.getElementById('editClarity').value = gem.clarity || '';
+      document.getElementById('editStatus').value = gem.status || 'available';
+      document.getElementById('editCertificate').value = gem.certificate || '';
+      document.getElementById('editGradFrom').value = gem.gradientFrom || '#9B1B30';
+      document.getElementById('editGradTo').value = gem.gradientTo || '#C62A3D';
+      document.getElementById('editDesc').value = gem.description || '';
+      document.getElementById('editTagline').value = gem.tagline || '';
+
+      const hl = gem.highlights || [];
+      document.getElementById('editH1Cat').value = hl[0] ? hl[0].category : '';
+      document.getElementById('editH1Title').value = hl[0] ? hl[0].title : '';
+      document.getElementById('editH1Desc').value = hl[0] ? hl[0].description : '';
+
+      document.getElementById('editH2Cat').value = hl[1] ? hl[1].category : '';
+      document.getElementById('editH2Title').value = hl[1] ? hl[1].title : '';
+      document.getElementById('editH2Desc').value = hl[1] ? hl[1].description : '';
+
+      document.getElementById('editH3Cat').value = hl[2] ? hl[2].category : '';
+      document.getElementById('editH3Title').value = hl[2] ? hl[2].title : '';
+      document.getElementById('editH3Desc').value = hl[2] ? hl[2].description : '';
+
+      editUploadedImages = gem.images ? [...gem.images] : [];
+      renderEditPhotoStrip();
+
+      // Load Color Variations
+      editColorVariations = (gem.colorVariations && Array.isArray(gem.colorVariations))
+        ? JSON.parse(JSON.stringify(gem.colorVariations))
+        : [];
+      renderEditVariations();
+
+      recalcSalePrice();
+      document.getElementById('editModal').style.display = 'flex';
+    }
+
+    function renderEditVariations() {
+      const list = document.getElementById('editVariationsList');
+      if (!list) return;
+
+      if (!editColorVariations || editColorVariations.length === 0) {
+        list.innerHTML = '<div style="font-size: 0.78rem; color: var(--muted); padding: 8px; text-align: center;">No color variations added yet. Click "+ Add Color Variation" to add multiple color types and prices.</div>';
+        return;
+      }
+
+      list.innerHTML = editColorVariations.map((v, i) => {
+        return '<div style="display: grid; grid-template-columns: 2fr 110px 1.5fr 1.5fr 36px; gap: 8px; align-items: center; background: #FFFFFF; border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; margin-bottom: 6px;">' +
+          '<div>' +
+            '<input type="text" class="form-control" value="' + (v.name || '') + '" placeholder="Color Name (e.g. Cornflower)" onchange="updateEditVarField(' + i + ', \'name\', this.value)" style="font-size: 0.78rem; padding: 6px 8px;">' +
+          '</div>' +
+          '<div style="display: flex; align-items: center; gap: 4px;">' +
+            '<input type="color" value="' + (v.code || '#1A2B6D') + '" onchange="updateEditVarCode(' + i + ', this.value)" style="width: 32px; height: 32px; padding: 1px; border: 1px solid var(--border); border-radius: 4px; cursor: pointer;">' +
+            '<input type="text" class="form-control" value="' + (v.code || '#1A2B6D') + '" onchange="updateEditVarCode(' + i + ', this.value)" style="font-size: 0.72rem; padding: 4px 6px; width: 62px; font-family: monospace;">' +
+          '</div>' +
+          '<div>' +
+            '<input type="number" class="form-control" value="' + (v.price || '') + '" placeholder="Price USD" onchange="updateEditVarField(' + i + ', \'price\', Number(this.value))" style="font-size: 0.78rem; padding: 6px 8px;">' +
+          '</div>' +
+          '<div>' +
+            '<select class="form-control" onchange="updateEditVarField(' + i + ', \'status\', this.value)" style="font-size: 0.75rem; padding: 6px 6px;">' +
+              '<option value="available"' + (v.status === 'available' ? ' selected' : '') + '>Available</option>' +
+              '<option value="out-of-stock"' + (v.status === 'out-of-stock' ? ' selected' : '') + '>Out of Stock</option>' +
+            '</select>' +
+          '</div>' +
+          '<div style="text-align: right;">' +
+            '<button type="button" class="btn-del" onclick="removeEditVariationRow(' + i + ')" style="padding: 4px 8px; font-size: 0.8rem; border-radius: 4px; border: 1px solid #FCA5A5; background: #FEF2F2; color: #DC2626; cursor: pointer;">&times;</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function addEditVariationRow() {
+      editColorVariations.push({
+        id: 'v-' + Date.now().toString(36),
+        name: 'New Color Saturation',
+        code: '#1A2B6D',
+        price: 5000,
+        priceMax: 6500,
+        status: 'available',
+        desc: 'Artisanal Ceylon saturation grade.'
+      });
+      renderEditVariations();
+    }
+
+    function removeEditVariationRow(idx) {
+      editColorVariations.splice(idx, 1);
+      renderEditVariations();
+    }
+
+    function updateEditVarField(idx, field, val) {
+      if (editColorVariations[idx]) {
+        editColorVariations[idx][field] = val;
+      }
+    }
+
+    function updateEditVarCode(idx, hex) {
+      if (editColorVariations[idx]) {
+        editColorVariations[idx].code = hex;
+        renderEditVariations();
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('editModal').style.display = 'none';
+    }
+
+    function recalcSalePrice() {
+      const price = parseFloat(document.getElementById('editPrice').value) || 0;
+      const discount = parseFloat(document.getElementById('editDiscount').value) || 0;
+      const saleInput = document.getElementById('editSalePrice');
+      if (discount > 0 && price > 0) {
+        saleInput.value = Math.round(price * (1 - discount / 100));
+      } else {
+        saleInput.value = '';
+      }
+    }
+
+    async function saveEditForm(e) {
+      e.preventDefault();
+      const id = document.getElementById('editId').value;
+      const price = parseFloat(document.getElementById('editPrice').value) || 0;
+      const priceMax = parseFloat(document.getElementById('editPriceMax').value) || null;
+      const priceType = document.getElementById('editPriceType').value;
+      const marketNote = document.getElementById('editMarketNote').value.trim();
+      const discount = parseFloat(document.getElementById('editDiscount').value) || null;
+      const salePrice = discount ? Math.round(price * (1 - discount / 100)) : null;
+
+      const highlights = [];
+      const h1Title = document.getElementById('editH1Title').value.trim();
+      if (h1Title) {
+        highlights.push({
+          category: document.getElementById('editH1Cat').value.trim() || 'Provenance',
+          title: h1Title,
+          description: document.getElementById('editH1Desc').value.trim()
+        });
+      }
+      const h2Title = document.getElementById('editH2Title').value.trim();
+      if (h2Title) {
+        highlights.push({
+          category: document.getElementById('editH2Cat').value.trim() || 'Optical Quality',
+          title: h2Title,
+          description: document.getElementById('editH2Desc').value.trim()
+        });
+      }
+      const h3Title = document.getElementById('editH3Title').value.trim();
+      if (h3Title) {
+        highlights.push({
+          category: document.getElementById('editH3Cat').value.trim() || 'Certification',
+          title: h3Title,
+          description: document.getElementById('editH3Desc').value.trim()
+        });
+      }
+
+      const existingGem = getGems().find(g => g.id === id);
+
+      const updatedData = {
+        name: document.getElementById('editName').value.trim(),
+        type: document.getElementById('editType').value.trim(),
+        treatment: document.getElementById('editTreatment').value,
+        origin: document.getElementById('editOrigin').value.trim(),
+        weight: parseFloat(document.getElementById('editWeight').value) || 0,
+        price,
+        priceMax,
+        priceType,
+        marketNote: marketNote || (existingGem ? existingGem.marketNote : ''),
+        colorTiers: existingGem && existingGem.colorTiers ? existingGem.colorTiers : [],
+        colorVariations: editColorVariations,
+        discount,
+        salePrice,
+        color: document.getElementById('editColor').value.trim(),
+        clarity: document.getElementById('editClarity').value.trim(),
+        status: document.getElementById('editStatus').value,
+        certificate: document.getElementById('editCertificate').value.trim(),
+        gradientFrom: document.getElementById('editGradFrom').value,
+        gradientTo: document.getElementById('editGradTo').value,
+        description: document.getElementById('editDesc').value.trim(),
+        tagline: document.getElementById('editTagline').value.trim() || (existingGem ? existingGem.tagline : ''),
+        highlights: highlights.length > 0 ? highlights : (existingGem && existingGem.highlights ? existingGem.highlights : []),
+        images: editUploadedImages
+      };
+
+      await updateGem(id, updatedData);
+      closeModal();
+      showToast('Gemstone updated & synchronized across store.');
+      renderTable();
+    }
+
+    async function initWaConfig() {
+      let email = localStorage.getItem('dewera_business_email') || 'deweragems@gmail.com';
+      let wa = localStorage.getItem('dewera_whatsapp') || '+94770000000';
+      const emailDisp = document.getElementById('currentEmailDisplay');
+      const emailInp = document.getElementById('adminEmailInput');
+      const waDisp = document.getElementById('currentWaDisplay');
+      const waInp = document.getElementById('adminWaInput');
+
+      if (emailDisp) emailDisp.textContent = email;
+      if (emailInp) emailInp.value = email;
+      if (waDisp) waDisp.textContent = wa;
+      if (waInp) waInp.value = wa;
+
+      try {
+        const res = await fetch('/api/config');
+        if (res.ok) {
+          const cfg = await res.json();
+          if (cfg.businessEmail) {
+            email = cfg.businessEmail;
+            localStorage.setItem('dewera_business_email', email);
+            if (emailDisp) emailDisp.textContent = email;
+            if (emailInp) emailInp.value = email;
+          }
+          if (cfg.whatsappNumber) {
+            wa = cfg.whatsappNumber;
+            localStorage.setItem('dewera_whatsapp', wa);
+            if (waDisp) waDisp.textContent = wa;
+            if (waInp) waInp.value = wa;
+          }
+        }
+      } catch(e) {}
+    }
+
+    async function saveBusinessEmail() {
+      const inp = document.getElementById('adminEmailInput');
+      const val = inp ? inp.value.trim() : '';
+      if (!val || !val.includes('@')) {
+        showToast('Please enter a valid concierge email address');
+        return;
+      }
+      localStorage.setItem('dewera_business_email', val);
+      const disp = document.getElementById('currentEmailDisplay');
+      if (disp) disp.textContent = val;
+
+      try {
+        await fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ businessEmail: val })
+        });
+        showToast('Storefront email updated to ' + val);
+      } catch(e) {
+        showToast('Email saved locally (' + val + ')');
+      }
+    }
+
+    async function saveWaNumber() {
+      const inp = document.getElementById('adminWaInput');
+      const val = inp ? inp.value.trim() : '';
+      if (!val) {
+        showToast('Please enter a valid phone or WhatsApp number');
+        return;
+      }
+      localStorage.setItem('dewera_whatsapp', val);
+      const disp = document.getElementById('currentWaDisplay');
+      if (disp) disp.textContent = val;
+
+      try {
+        await fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ whatsappNumber: val })
+        });
+        showToast('Storefront WhatsApp updated to ' + val);
+      } catch(e) {
+        showToast('WhatsApp saved locally (' + val + ')');
+      }
+    }
+  </script>
+</body>
+</html>

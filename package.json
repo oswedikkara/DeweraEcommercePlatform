@@ -1,0 +1,32 @@
+{
+  "name": "dewera-luxury-gemstones",
+  "version": "1.0.0",
+  "description": "Dewera Natural Heated Ceylon Gemstones - Sovereign Vault & Multi-Vendor Atelier Marketplace",
+  "main": "store/server.js",
+  "scripts": {
+    "start": "node store/server.js",
+    "start:store": "node store/server.js",
+    "start:admin": "node admin/server.js",
+    "seed": "node backend/database/db.js",
+    "test": "node test/device_audit.js"
+  },
+  "keywords": [
+    "dewera",
+    "ceylon-gemstones",
+    "sapphire",
+    "padparadscha",
+    "natural-heated",
+    "luxury-atelier",
+    "marketplace",
+    "escrow"
+  ],
+  "author": "House of Dewera",
+  "license": "UNLICENSED",
+  "private": true,
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "devDependencies": {
+    "sharp": "^0.35.4"
+  }
+}

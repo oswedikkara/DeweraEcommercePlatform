@@ -1,0 +1,2373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Seller Hub &mdash; Multi-Vendor Corundum Network &bull; Dewera</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* LUXURY DEWERA SELLER PORTAL THEME */
+    .seller-hero {
+      padding: 120px 0 40px;
+      text-align: center;
+      background: linear-gradient(180deg, #FAF7F2 0%, #F5EFEB 100%);
+      border-bottom: 1px solid var(--border);
+    }
+    .seller-container {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 40px 1.5rem 80px;
+    }
+    .seller-pipeline-nav {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+    }
+    .pipeline-step-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.25s var(--ease-apple);
+    }
+    .pipeline-step-btn:hover {
+      border-color: var(--gold-dark);
+      color: var(--text);
+    }
+    .pipeline-step-btn.active {
+      background: #111111;
+      color: #FFFFFF;
+      border-color: #111111;
+    }
+    .pipeline-step-btn.completed {
+      border-color: rgba(201, 169, 110, 0.6);
+      color: var(--gold-dark);
+    }
+    .pipeline-step-btn.locked {
+      opacity: 0.42;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .pipeline-step-btn .step-num {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.06);
+      font-size: 0.7rem;
+      line-height: 18px;
+      text-align: center;
+    }
+    .pipeline-step-btn.active .step-num {
+      background: #C9A96E;
+      color: #111111;
+      font-weight: 700;
+    }
+    .seller-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      padding: 2.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+    }
+    .seller-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .seller-stat-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      background: #FAF7F2;
+      border: 1px solid var(--border);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--gold-dark);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .auto-action-banner {
+      background: #FAF7F2;
+      border: 1px solid rgba(201, 169, 110, 0.4);
+      padding: 14px 18px;
+      margin-bottom: 1.8rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .color-row-item {
+      display: grid;
+      grid-template-columns: 2fr 120px 1.5fr 1.5fr 40px;
+      gap: 10px;
+      align-items: center;
+      background: #FAF7F2;
+      border: 1px solid var(--border);
+      padding: 10px 14px;
+      margin-bottom: 8px;
+    }
+
+    /* PAYMENT METHOD TABS */
+    .pay-method-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 1.8rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .pay-method-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      background: #FAF7F2;
+      border: 1px solid var(--border);
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s var(--ease-apple);
+    }
+    .pay-method-tab:hover {
+      color: var(--text);
+      border-color: var(--gold-dark);
+    }
+    .pay-method-tab.active {
+      background: #111111;
+      color: #FFFFFF;
+      border-color: #111111;
+    }
+
+    /* LUXURY VIRTUAL CARD PREVIEW */
+    .luxury-card-preview {
+      background: linear-gradient(135deg, #1C1E24 0%, #0C0E12 100%);
+      border: 1px solid rgba(201, 169, 110, 0.4);
+      border-radius: 8px;
+      padding: 24px;
+      color: #FFFFFF;
+      position: relative;
+      margin-bottom: 1.8rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      max-width: 420px;
+    }
+    .luxury-card-chip {
+      width: 42px;
+      height: 32px;
+      background: linear-gradient(135deg, #E5C384 0%, #9F7E43 100%);
+      border-radius: 4px;
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .luxury-card-number {
+      font-family: "Courier New", Courier, monospace;
+      font-size: 1.25rem;
+      letter-spacing: 0.22em;
+      margin-bottom: 18px;
+      color: #F5EFEB;
+    }
+    .luxury-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .luxury-card-label {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 3px;
+    }
+    .luxury-card-val {
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* 3DS2 MODAL OVERLAY */
+    .security-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 1.5rem;
+    }
+    .security-modal-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      max-width: 480px;
+      width: 100%;
+      padding: 2.2rem;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+      position: relative;
+    }
+
+    /* CLEAN LUXURY INVENTORY TABLE STYLES (MATCHING USER SCREENSHOT FIX) */
+    .inventory-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.85rem;
+    }
+    .inventory-table th {
+      padding: 14px 18px;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      background: #FAF7F2;
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+    }
+    .inventory-table td {
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(201, 169, 110, 0.2);
+      vertical-align: middle;
+      transition: background 0.15s ease;
+    }
+    .inventory-table tr:hover td {
+      background: #FAF8F5;
+    }
+    .gem-thumb-cell {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+      background: #FAF7F2;
+      border: 1px solid var(--border);
+      padding: 3px;
+      display: block;
+    }
+    .table-actions-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: nowrap;
+    }
+    .table-action-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 14px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      border: 1px solid var(--border);
+      background: #FFFFFF;
+      color: var(--text);
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s var(--ease-apple);
+      white-space: nowrap;
+    }
+    .table-action-pill:hover {
+      border-color: var(--gold-dark);
+      background: #FAF7F2;
+      color: var(--gold-dark);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- APPLE GLOBAL LUXURY NAVIGATION -->
+  <nav class="apple-nav">
+    <div class="apple-nav-inner">
+      <a href="index.html" class="apple-nav-logo">
+        <img src="images/dewera-logo.png" alt="DEWERA" class="nav-brand-img">
+      </a>
+      <div class="apple-nav-links">
+        <a href="collection.html" class="apple-nav-link">The Vault</a>
+        <a href="about.html" class="apple-nav-link">Heritage</a>
+        <a href="seller.html" class="apple-nav-link seller-hub-link" style="color: var(--gold-dark); font-weight: 600;">Sell</a>
+        <a href="contact.html" class="apple-nav-pill">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- LUXURY EDITORIAL HEADER -->
+  <header class="seller-hero">
+    <div class="container" style="max-width: 900px; margin: 0 auto; padding: 0 1.5rem;">
+      <div class="hero-badge-tag">Haute Gemmologie Multi-Vendor Portal</div>
+      <h1 style="font-family: 'Cinzel', serif; font-size: clamp(2.2rem, 4vw, 3.2rem); font-weight: 700; margin: 0.5rem 0 0.8rem; letter-spacing: 0.03em;">
+        Dewera Seller Hub
+      </h1>
+      <p style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.25rem; color: var(--muted); max-width: 680px; margin: 0 auto;">
+        Automated multi-vendor onboarding for certified Ceylon gemstone ateliers. Activate your shop profile slot with bank-grade card processing, 3DS2 biometric verification, and dynamic color variation pricing.
+      </p>
+    </div>
+  </header>
+
+  <!-- MAIN TERMINAL CONTENT -->
+  <main class="seller-container">
+
+    <!-- GOVERNANCE LOCKDOWN VIEW -->
+    <div id="governanceLockView" style="display: none; background: #FFFFFF; border: 1px solid var(--border); padding: 5rem 2rem; text-align: center;">
+      <div style="width: 70px; height: 70px; border-radius: 50%; background: #FAF7F2; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.8rem; color: var(--gold-dark); font-size: 1.8rem; font-family: 'Cinzel', serif;">
+        &#9670;
+      </div>
+      <div class="section-label" style="color: #C62A3D;">Executive Governance Restriction</div>
+      <h2 style="font-family: 'Cinzel', serif; font-size: 2.2rem; margin: 0.6rem 0 1rem;">
+        Multi-Vendor Onboarding Offline
+      </h2>
+      <p style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.25rem; color: var(--muted); max-width: 620px; margin: 0 auto 2.5rem; line-height: 1.6;">
+        Public seller onboarding and third-party gemstone publishing are currently restricted under master executive governance. Verified inventory remains directly curated from sovereign Ceylon illam pits.
+      </p>
+      <div style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;">
+        <a href="collection.html" class="btn-apple">Browse Sovereign Vault &rsaquo;</a>
+        <a href="contact.html?inquiry=seller_onboarding" class="btn-apple-outline">Contact Executive Desk &rsaquo;</a>
+      </div>
+    </div>
+
+    <!-- ACTIVE AUTOMATED SELLER WORKFLOW -->
+    <div id="sellerWorkflowContainer">
+
+      <!-- STEP BREADCRUMB PIPELINE (Hidden on initial arrival, visible during multi-step registration) -->
+      <div class="seller-pipeline-nav" id="pipelineNavBar" style="display: none;">
+        <button class="pipeline-step-btn active" onclick="switchStep('stepLogin')" id="btnStepLogin">
+          <span class="step-num">1</span> Atelier Auth
+        </button>
+        <button class="pipeline-step-btn locked" onclick="switchStep('step2FA')" id="btnStep2FA">
+          <span class="step-num">2</span> 2FA Security
+        </button>
+        <button class="pipeline-step-btn locked" onclick="switchStep('stepProfile')" id="btnStepProfile">
+          <span class="step-num">3</span> Brand &amp; Logo
+        </button>
+        <button class="pipeline-step-btn locked" onclick="switchStep('stepPayment')" id="btnStepPayment">
+          <span class="step-num">4</span> Profile Slot ($40/Mo)
+        </button>
+        <button class="pipeline-step-btn locked" onclick="switchStep('stepHub')" id="btnStepHub">
+          <span class="step-num">5</span> Seller Hub &amp; Listings
+        </button>
+      </div>
+
+      <!-- STEP 1: ATELIER AUTHENTICATION -->
+      <div id="stepLogin" class="seller-card">
+        <div class="seller-card-header" style="text-align: center; border-bottom: none; padding-bottom: 0.5rem; justify-content: center;">
+          <div style="text-align: center; max-width: 600px;">
+            <h2 style="font-size: 1.6rem; font-family: 'Cinzel', serif; margin: 0 0 6px;">Atelier Portal Gateway</h2>
+            <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">Sign in to your registered merchant atelier or enroll a new Ceylon corundum enterprise.</p>
+          </div>
+        </div>
+
+        <!-- HIGH-CONTRAST SEGMENTED AUTH SWITCHER -->
+        <div style="display: flex; justify-content: center; margin-bottom: 2rem;">
+          <div style="display: inline-flex; background: #FAF7F2; border: 1px solid var(--border); padding: 5px; gap: 6px;">
+            <button type="button" id="btnTabLogin" onclick="toggleAuthTabs(false)" style="padding: 10px 28px; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: all 0.2s ease; background: #111111; color: #FAF7F2; border: 1px solid #111111;">
+              Atelier Sign In
+            </button>
+            <button type="button" id="btnTabReg" onclick="toggleAuthTabs(true)" style="padding: 10px 28px; font-size: 0.82rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: all 0.2s ease; background: transparent; color: #111111; border: 1px solid transparent;">
+              Register New Atelier
+            </button>
+          </div>
+        </div>
+
+        <!-- LOGIN FORM -->
+        <div id="loginFormContainer">
+          <form onsubmit="handleLoginSubmit(event)">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 1.2rem;">
+              <div>
+                <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Atelier Email Address</label>
+                <input type="email" id="loginEmail" class="form-control" placeholder="atelier@dewera.vault" required style="width: 100%; padding: 12px 14px; border: 1px solid var(--border); font-size: 0.9rem;">
+              </div>
+              <div>
+                <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Security Keyphrase / Password</label>
+                <input type="password" id="loginPass" class="form-control" placeholder="Enter keyphrase" required style="width: 100%; padding: 12px 14px; border: 1px solid var(--border); font-size: 0.9rem;">
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+              <button type="submit" id="btnLoginSubmit" class="btn-apple" style="padding: 12px 28px;">Sign In to Merchant Atelier &rsaquo;</button>
+              <span style="font-size: 0.75rem; color: var(--muted);">Encrypted Industrial Protocol Enforced</span>
+            </div>
+          </form>
+        </div>
+
+        <!-- REGISTRATION FORM -->
+        <div id="regFormContainer" style="display: none;">
+          <form onsubmit="handleRegisterSubmit(event)">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 1.2rem;">
+              <div>
+                <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Atelier / Corporation Name</label>
+                <input type="text" id="regName" class="form-control" placeholder="e.g. Ceylon Royal Gems Ltd." required style="width: 100%; padding: 12px 14px; border: 1px solid var(--border); font-size: 0.9rem;">
+              </div>
+              <div>
+                <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Corporate Email</label>
+                <input type="email" id="regEmail" class="form-control" placeholder="curator@ceylongems.lk" required style="width: 100%; padding: 12px 14px; border: 1px solid var(--border); font-size: 0.9rem;">
+              </div>
+              <div>
+                <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">WhatsApp Concierge Line</label>
+                <input type="text" id="regPhone" class="form-control" placeholder="+94 77 123 4567" style="width: 100%; padding: 12px 14px; border: 1px solid var(--border); font-size: 0.9rem;">
+              </div>
+              <div>
+                <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Password</label>
+                <input type="password" id="regPass" class="form-control" placeholder="Create strong passphrase" required style="width: 100%; padding: 12px 14px; border: 1px solid var(--border); font-size: 0.9rem;">
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+              <button type="submit" class="btn-apple" style="padding: 12px 28px;">Register &amp; Provision Security Token &rsaquo;</button>
+              <span style="font-size: 0.75rem; color: var(--muted);">$40/mo shop profile slot payable after 2FA</span>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- STEP 2: 256-BIT TOTP 2FA SECURITY (WITH BRANDED CENTER-LOGO QR CODE) -->
+      <div id="step2FA" class="seller-card" style="display: none;">
+        <div class="seller-card-header">
+          <div>
+            <h2 style="font-size: 1.4rem; font-family: 'Cinzel', serif; margin: 0 0 4px;">256-Bit TOTP Two-Factor Handshake</h2>
+            <p style="font-size: 0.82rem; color: var(--muted); margin: 0;">Multi-vendor security enforced via RFC 6238 time-based one-time password protocol.</p>
+          </div>
+          <span class="seller-stat-pill">RFC 6238 COMPLIANT</span>
+        </div>
+
+        <div class="auto-action-banner">
+          <div>
+            <strong style="font-size: 0.85rem; color: var(--text);">1-Click Automated 2FA Validation</strong>
+            <p style="font-size: 0.78rem; color: var(--muted); margin: 2px 0 0;">Auto-derive the cryptographic 6-digit TOTP token to complete the security handshake instantly.</p>
+          </div>
+          <button type="button" class="btn-apple" onclick="autoVerify2FA()" style="padding: 8px 18px; font-size: 0.75rem;">
+            1-Click Auto-Verify 2FA &rsaquo;
+          </button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 240px 1fr; gap: 2.5rem; align-items: center; margin-bottom: 1.5rem;">
+          <!-- BRANDED QR CODE CONTAINER -->
+          <div style="background: #FAF7F2; border: 1px solid var(--border); padding: 1.2rem; text-align: center;">
+            <div id="brandedQrContainer">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="180" height="180" style="display:block; margin:0 auto; background:#FFFFFF; padding:8px; border:1px solid rgba(201,169,110,0.3);"><rect x="0" y="0" width="8" height="8" fill="#111111" /><rect x="8" y="0" width="8" height="8" fill="#111111" /><rect x="16" y="0" width="8" height="8" fill="#111111" /><rect x="24" y="0" width="8" height="8" fill="#111111" /><rect x="32" y="0" width="8" height="8" fill="#111111" /><rect x="40" y="0" width="8" height="8" fill="#111111" /><rect x="48" y="0" width="8" height="8" fill="#111111" /><rect x="64" y="0" width="8" height="8" fill="#111111" /><rect x="88" y="0" width="8" height="8" fill="#111111" /><rect x="96" y="0" width="8" height="8" fill="#111111" /><rect x="120" y="0" width="8" height="8" fill="#111111" /><rect x="136" y="0" width="8" height="8" fill="#111111" /><rect x="144" y="0" width="8" height="8" fill="#111111" /><rect x="152" y="0" width="8" height="8" fill="#111111" /><rect x="160" y="0" width="8" height="8" fill="#111111" /><rect x="168" y="0" width="8" height="8" fill="#111111" /><rect x="176" y="0" width="8" height="8" fill="#111111" /><rect x="184" y="0" width="8" height="8" fill="#111111" /><rect x="0" y="8" width="8" height="8" fill="#111111" /><rect x="48" y="8" width="8" height="8" fill="#111111" /><rect x="72" y="8" width="8" height="8" fill="#111111" /><rect x="80" y="8" width="8" height="8" fill="#111111" /><rect x="96" y="8" width="8" height="8" fill="#111111" /><rect x="104" y="8" width="8" height="8" fill="#111111" /><rect x="120" y="8" width="8" height="8" fill="#111111" /><rect x="136" y="8" width="8" height="8" fill="#111111" /><rect x="184" y="8" width="8" height="8" fill="#111111" /><rect x="0" y="16" width="8" height="8" fill="#111111" /><rect x="16" y="16" width="8" height="8" fill="#111111" /><rect x="24" y="16" width="8" height="8" fill="#111111" /><rect x="32" y="16" width="8" height="8" fill="#111111" /><rect x="48" y="16" width="8" height="8" fill="#111111" /><rect x="64" y="16" width="8" height="8" fill="#111111" /><rect x="80" y="16" width="8" height="8" fill="#111111" /><rect x="112" y="16" width="8" height="8" fill="#111111" /><rect x="136" y="16" width="8" height="8" fill="#111111" /><rect x="152" y="16" width="8" height="8" fill="#111111" /><rect x="160" y="16" width="8" height="8" fill="#111111" /><rect x="168" y="16" width="8" height="8" fill="#111111" /><rect x="184" y="16" width="8" height="8" fill="#111111" /><rect x="0" y="24" width="8" height="8" fill="#111111" /><rect x="16" y="24" width="8" height="8" fill="#111111" /><rect x="24" y="24" width="8" height="8" fill="#111111" /><rect x="32" y="24" width="8" height="8" fill="#111111" /><rect x="48" y="24" width="8" height="8" fill="#111111" /><rect x="72" y="24" width="8" height="8" fill="#111111" /><rect x="88" y="24" width="8" height="8" fill="#111111" /><rect x="96" y="24" width="8" height="8" fill="#111111" /><rect x="120" y="24" width="8" height="8" fill="#111111" /><rect x="136" y="24" width="8" height="8" fill="#111111" /><rect x="152" y="24" width="8" height="8" fill="#111111" /><rect x="160" y="24" width="8" height="8" fill="#111111" /><rect x="168" y="24" width="8" height="8" fill="#111111" /><rect x="184" y="24" width="8" height="8" fill="#111111" /><rect x="0" y="32" width="8" height="8" fill="#111111" /><rect x="16" y="32" width="8" height="8" fill="#111111" /><rect x="24" y="32" width="8" height="8" fill="#111111" /><rect x="32" y="32" width="8" height="8" fill="#111111" /><rect x="48" y="32" width="8" height="8" fill="#111111" /><rect x="64" y="32" width="8" height="8" fill="#111111" /><rect x="72" y="32" width="8" height="8" fill="#111111" /><rect x="96" y="32" width="8" height="8" fill="#111111" /><rect x="104" y="32" width="8" height="8" fill="#111111" /><rect x="136" y="32" width="8" height="8" fill="#111111" /><rect x="152" y="32" width="8" height="8" fill="#111111" /><rect x="160" y="32" width="8" height="8" fill="#111111" /><rect x="168" y="32" width="8" height="8" fill="#111111" /><rect x="184" y="32" width="8" height="8" fill="#111111" /><rect x="0" y="40" width="8" height="8" fill="#111111" /><rect x="48" y="40" width="8" height="8" fill="#111111" /><rect x="80" y="40" width="8" height="8" fill="#111111" /><rect x="88" y="40" width="8" height="8" fill="#111111" /><rect x="112" y="40" width="8" height="8" fill="#111111" /><rect x="120" y="40" width="8" height="8" fill="#111111" /><rect x="136" y="40" width="8" height="8" fill="#111111" /><rect x="184" y="40" width="8" height="8" fill="#111111" /><rect x="0" y="48" width="8" height="8" fill="#111111" /><rect x="8" y="48" width="8" height="8" fill="#111111" /><rect x="16" y="48" width="8" height="8" fill="#111111" /><rect x="24" y="48" width="8" height="8" fill="#111111" /><rect x="32" y="48" width="8" height="8" fill="#111111" /><rect x="40" y="48" width="8" height="8" fill="#111111" /><rect x="48" y="48" width="8" height="8" fill="#111111" /><rect x="64" y="48" width="8" height="8" fill="#111111" /><rect x="80" y="48" width="8" height="8" fill="#111111" /><rect x="96" y="48" width="8" height="8" fill="#111111" /><rect x="112" y="48" width="8" height="8" fill="#111111" /><rect x="128" y="48" width="8" height="8" fill="#111111" /><rect x="136" y="48" width="8" height="8" fill="#111111" /><rect x="144" y="48" width="8" height="8" fill="#111111" /><rect x="152" y="48" width="8" height="8" fill="#111111" /><rect x="160" y="48" width="8" height="8" fill="#111111" /><rect x="168" y="48" width="8" height="8" fill="#111111" /><rect x="176" y="48" width="8" height="8" fill="#111111" /><rect x="184" y="48" width="8" height="8" fill="#111111" /><rect x="64" y="56" width="8" height="8" fill="#111111" /><rect x="72" y="56" width="8" height="8" fill="#111111" /><rect x="88" y="56" width="8" height="8" fill="#111111" /><rect x="104" y="56" width="8" height="8" fill="#111111" /><rect x="120" y="56" width="8" height="8" fill="#111111" /><rect x="0" y="64" width="8" height="8" fill="#111111" /><rect x="16" y="64" width="8" height="8" fill="#111111" /><rect x="32" y="64" width="8" height="8" fill="#111111" /><rect x="40" y="64" width="8" height="8" fill="#111111" /><rect x="56" y="64" width="8" height="8" fill="#111111" /><rect x="144" y="64" width="8" height="8" fill="#111111" /><rect x="152" y="64" width="8" height="8" fill="#111111" /><rect x="168" y="64" width="8" height="8" fill="#111111" /><rect x="184" y="64" width="8" height="8" fill="#111111" /><rect x="8" y="72" width="8" height="8" fill="#111111" /><rect x="24" y="72" width="8" height="8" fill="#111111" /><rect x="48" y="72" width="8" height="8" fill="#111111" /><rect x="136" y="72" width="8" height="8" fill="#111111" /><rect x="160" y="72" width="8" height="8" fill="#111111" /><rect x="176" y="72" width="8" height="8" fill="#111111" /><rect x="0" y="80" width="8" height="8" fill="#111111" /><rect x="8" y="80" width="8" height="8" fill="#111111" /><rect x="32" y="80" width="8" height="8" fill="#111111" /><rect x="40" y="80" width="8" height="8" fill="#111111" /><rect x="56" y="80" width="8" height="8" fill="#111111" /><rect x="144" y="80" width="8" height="8" fill="#111111" /><rect x="152" y="80" width="8" height="8" fill="#111111" /><rect x="176" y="80" width="8" height="8" fill="#111111" /><rect x="184" y="80" width="8" height="8" fill="#111111" /><rect x="16" y="88" width="8" height="8" fill="#111111" /><rect x="24" y="88" width="8" height="8" fill="#111111" /><rect x="40" y="88" width="8" height="8" fill="#111111" /><rect x="136" y="88" width="8" height="8" fill="#111111" /><rect x="160" y="88" width="8" height="8" fill="#111111" /><rect x="176" y="88" width="8" height="8" fill="#111111" /><rect x="0" y="96" width="8" height="8" fill="#111111" /><rect x="16" y="96" width="8" height="8" fill="#111111" /><rect x="32" y="96" width="8" height="8" fill="#111111" /><rect x="48" y="96" width="8" height="8" fill="#111111" /><rect x="56" y="96" width="8" height="8" fill="#111111" /><rect x="144" y="96" width="8" height="8" fill="#111111" /><rect x="160" y="96" width="8" height="8" fill="#111111" /><rect x="176" y="96" width="8" height="8" fill="#111111" /><rect x="184" y="96" width="8" height="8" fill="#111111" /><rect x="8" y="104" width="8" height="8" fill="#111111" /><rect x="24" y="104" width="8" height="8" fill="#111111" /><rect x="40" y="104" width="8" height="8" fill="#111111" /><rect x="136" y="104" width="8" height="8" fill="#111111" /><rect x="152" y="104" width="8" height="8" fill="#111111" /><rect x="168" y="104" width="8" height="8" fill="#111111" /><rect x="184" y="104" width="8" height="8" fill="#111111" /><rect x="0" y="112" width="8" height="8" fill="#111111" /><rect x="8" y="112" width="8" height="8" fill="#111111" /><rect x="32" y="112" width="8" height="8" fill="#111111" /><rect x="48" y="112" width="8" height="8" fill="#111111" /><rect x="56" y="112" width="8" height="8" fill="#111111" /><rect x="144" y="112" width="8" height="8" fill="#111111" /><rect x="168" y="112" width="8" height="8" fill="#111111" /><rect x="176" y="112" width="8" height="8" fill="#111111" /><rect x="16" y="120" width="8" height="8" fill="#111111" /><rect x="24" y="120" width="8" height="8" fill="#111111" /><rect x="40" y="120" width="8" height="8" fill="#111111" /><rect x="56" y="120" width="8" height="8" fill="#111111" /><rect x="136" y="120" width="8" height="8" fill="#111111" /><rect x="152" y="120" width="8" height="8" fill="#111111" /><rect x="160" y="120" width="8" height="8" fill="#111111" /><rect x="176" y="120" width="8" height="8" fill="#111111" /><rect x="0" y="128" width="8" height="8" fill="#111111" /><rect x="16" y="128" width="8" height="8" fill="#111111" /><rect x="32" y="128" width="8" height="8" fill="#111111" /><rect x="40" y="128" width="8" height="8" fill="#111111" /><rect x="144" y="128" width="8" height="8" fill="#111111" /><rect x="152" y="128" width="8" height="8" fill="#111111" /><rect x="168" y="128" width="8" height="8" fill="#111111" /><rect x="184" y="128" width="8" height="8" fill="#111111" /><rect x="64" y="136" width="8" height="8" fill="#111111" /><rect x="72" y="136" width="8" height="8" fill="#111111" /><rect x="88" y="136" width="8" height="8" fill="#111111" /><rect x="104" y="136" width="8" height="8" fill="#111111" /><rect x="120" y="136" width="8" height="8" fill="#111111" /><rect x="0" y="144" width="8" height="8" fill="#111111" /><rect x="8" y="144" width="8" height="8" fill="#111111" /><rect x="16" y="144" width="8" height="8" fill="#111111" /><rect x="24" y="144" width="8" height="8" fill="#111111" /><rect x="32" y="144" width="8" height="8" fill="#111111" /><rect x="40" y="144" width="8" height="8" fill="#111111" /><rect x="48" y="144" width="8" height="8" fill="#111111" /><rect x="64" y="144" width="8" height="8" fill="#111111" /><rect x="80" y="144" width="8" height="8" fill="#111111" /><rect x="96" y="144" width="8" height="8" fill="#111111" /><rect x="112" y="144" width="8" height="8" fill="#111111" /><rect x="128" y="144" width="8" height="8" fill="#111111" /><rect x="136" y="144" width="8" height="8" fill="#111111" /><rect x="144" y="144" width="8" height="8" fill="#111111" /><rect x="152" y="144" width="8" height="8" fill="#111111" /><rect x="160" y="144" width="8" height="8" fill="#111111" /><rect x="168" y="144" width="8" height="8" fill="#111111" /><rect x="176" y="144" width="8" height="8" fill="#111111" /><rect x="184" y="144" width="8" height="8" fill="#111111" /><rect x="0" y="152" width="8" height="8" fill="#111111" /><rect x="48" y="152" width="8" height="8" fill="#111111" /><rect x="72" y="152" width="8" height="8" fill="#111111" /><rect x="80" y="152" width="8" height="8" fill="#111111" /><rect x="96" y="152" width="8" height="8" fill="#111111" /><rect x="104" y="152" width="8" height="8" fill="#111111" /><rect x="120" y="152" width="8" height="8" fill="#111111" /><rect x="136" y="152" width="8" height="8" fill="#111111" /><rect x="184" y="152" width="8" height="8" fill="#111111" /><rect x="0" y="160" width="8" height="8" fill="#111111" /><rect x="16" y="160" width="8" height="8" fill="#111111" /><rect x="24" y="160" width="8" height="8" fill="#111111" /><rect x="32" y="160" width="8" height="8" fill="#111111" /><rect x="48" y="160" width="8" height="8" fill="#111111" /><rect x="64" y="160" width="8" height="8" fill="#111111" /><rect x="80" y="160" width="8" height="8" fill="#111111" /><rect x="112" y="160" width="8" height="8" fill="#111111" /><rect x="136" y="160" width="8" height="8" fill="#111111" /><rect x="152" y="160" width="8" height="8" fill="#111111" /><rect x="160" y="160" width="8" height="8" fill="#111111" /><rect x="168" y="160" width="8" height="8" fill="#111111" /><rect x="184" y="160" width="8" height="8" fill="#111111" /><rect x="0" y="168" width="8" height="8" fill="#111111" /><rect x="16" y="168" width="8" height="8" fill="#111111" /><rect x="24" y="168" width="8" height="8" fill="#111111" /><rect x="32" y="168" width="8" height="8" fill="#111111" /><rect x="48" y="168" width="8" height="8" fill="#111111" /><rect x="72" y="168" width="8" height="8" fill="#111111" /><rect x="88" y="168" width="8" height="8" fill="#111111" /><rect x="96" y="168" width="8" height="8" fill="#111111" /><rect x="120" y="168" width="8" height="8" fill="#111111" /><rect x="136" y="168" width="8" height="8" fill="#111111" /><rect x="152" y="168" width="8" height="8" fill="#111111" /><rect x="160" y="168" width="8" height="8" fill="#111111" /><rect x="168" y="168" width="8" height="8" fill="#111111" /><rect x="184" y="168" width="8" height="8" fill="#111111" /><rect x="0" y="176" width="8" height="8" fill="#111111" /><rect x="16" y="176" width="8" height="8" fill="#111111" /><rect x="24" y="176" width="8" height="8" fill="#111111" /><rect x="32" y="176" width="8" height="8" fill="#111111" /><rect x="48" y="176" width="8" height="8" fill="#111111" /><rect x="64" y="176" width="8" height="8" fill="#111111" /><rect x="72" y="176" width="8" height="8" fill="#111111" /><rect x="96" y="176" width="8" height="8" fill="#111111" /><rect x="104" y="176" width="8" height="8" fill="#111111" /><rect x="136" y="176" width="8" height="8" fill="#111111" /><rect x="152" y="176" width="8" height="8" fill="#111111" /><rect x="160" y="176" width="8" height="8" fill="#111111" /><rect x="168" y="176" width="8" height="8" fill="#111111" /><rect x="184" y="176" width="8" height="8" fill="#111111" /><rect x="0" y="184" width="8" height="8" fill="#111111" /><rect x="48" y="184" width="8" height="8" fill="#111111" /><rect x="80" y="184" width="8" height="8" fill="#111111" /><rect x="88" y="184" width="8" height="8" fill="#111111" /><rect x="112" y="184" width="8" height="8" fill="#111111" /><rect x="120" y="184" width="8" height="8" fill="#111111" /><rect x="136" y="184" width="8" height="8" fill="#111111" /><rect x="184" y="184" width="8" height="8" fill="#111111" /><rect x="0" y="192" width="8" height="8" fill="#111111" /><rect x="8" y="192" width="8" height="8" fill="#111111" /><rect x="16" y="192" width="8" height="8" fill="#111111" /><rect x="24" y="192" width="8" height="8" fill="#111111" /><rect x="32" y="192" width="8" height="8" fill="#111111" /><rect x="40" y="192" width="8" height="8" fill="#111111" /><rect x="48" y="192" width="8" height="8" fill="#111111" /><rect x="64" y="192" width="8" height="8" fill="#111111" /><rect x="88" y="192" width="8" height="8" fill="#111111" /><rect x="96" y="192" width="8" height="8" fill="#111111" /><rect x="120" y="192" width="8" height="8" fill="#111111" /><rect x="136" y="192" width="8" height="8" fill="#111111" /><rect x="144" y="192" width="8" height="8" fill="#111111" /><rect x="152" y="192" width="8" height="8" fill="#111111" /><rect x="160" y="192" width="8" height="8" fill="#111111" /><rect x="168" y="192" width="8" height="8" fill="#111111" /><rect x="176" y="192" width="8" height="8" fill="#111111" /><rect x="184" y="192" width="8" height="8" fill="#111111" /><rect x="0" y="0" width="56" height="56" fill="#111111" rx="4" /><rect x="8" y="8" width="40" height="40" fill="#FFFFFF" rx="2" /><rect x="16" y="16" width="24" height="24" fill="#111111" rx="2" /><rect x="144" y="0" width="56" height="56" fill="#111111" rx="4" /><rect x="152" y="8" width="40" height="40" fill="#FFFFFF" rx="2" /><rect x="160" y="16" width="24" height="24" fill="#111111" rx="2" /><rect x="0" y="144" width="56" height="56" fill="#111111" rx="4" /><rect x="8" y="152" width="40" height="40" fill="#FFFFFF" rx="2" /><rect x="16" y="160" width="24" height="24" fill="#111111" rx="2" /><rect x="68" y="80" width="64" height="40" fill="#FFFFFF" /><image href="images/dewera-logo.png" x="74" y="86" width="52" height="28" preserveAspectRatio="xMidYMid meet" /></svg>
+            </div>
+            <div style="font-size: 0.7rem; color: var(--muted); margin-top: 10px; letter-spacing: 0.05em;">
+              Scan with Google Authenticator or 1Password
+            </div>
+          </div>
+
+          <div>
+            <div style="margin-bottom: 1.4rem;">
+              <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Base-32 Cryptographic Secret Key</label>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <code id="totpSecretDisplay" style="background: #FAF7F2; border: 1px solid var(--border); padding: 10px 14px; font-family: monospace; font-size: 0.95rem; font-weight: 700; color: var(--gold-dark); letter-spacing: 0.15em; flex: 1;">JBSWY3DPEHPK3PXP</code>
+                <button type="button" class="btn-apple-outline" onclick="copyWallet('JBSWY3DPEHPK3PXP', this)" style="padding: 10px 14px; font-size: 0.75rem;">Copy</button>
+              </div>
+            </div>
+
+            <form onsubmit="handleManual2FA(event)">
+              <div style="margin-bottom: 1.2rem;">
+                <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Enter 6-Digit Authenticator Passcode</label>
+                <input type="text" id="manual2FACode" class="form-control" placeholder="e.g. 583921" maxlength="6" style="width: 220px; padding: 12px 14px; border: 1px solid var(--border); font-family: monospace; font-size: 1.1rem; letter-spacing: 0.2em; text-align: center;">
+              </div>
+              <button type="submit" class="btn-apple" style="padding: 11px 24px; font-size: 0.78rem;">Validate Passcode &rsaquo;</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3: ATELIER BRAND & LOGO ASSETS -->
+      <div id="stepProfile" class="seller-card" style="display: none;">
+        <div class="seller-card-header">
+          <div>
+            <h2 style="font-size: 1.4rem; font-family: 'Cinzel', serif; margin: 0 0 4px;">Atelier Identity &amp; Sovereign Branding</h2>
+            <p style="font-size: 0.82rem; color: var(--muted); margin: 0;">Upload your enterprise emblem and configure client concierge contact channels.</p>
+          </div>
+          <span class="seller-stat-pill" id="logoAtelierBadge">Atelier Profile</span>
+        </div>
+
+        <form onsubmit="handleProfileSave(event)">
+          <div style="display: grid; grid-template-columns: 240px 1fr; gap: 2rem; margin-bottom: 1.8rem; align-items: center;">
+            <div style="text-align: center;">
+              <div style="width: 160px; height: 160px; margin: 0 auto 12px; background: #FAF7F2; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 12px;">
+                <img id="logoPreviewImg" src="images/dewera-logo.png" alt="Logo" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+              </div>
+              <label class="btn-apple-outline" style="padding: 6px 14px; font-size: 0.72rem; cursor: pointer; display: inline-block;">
+                Upload Logo Image
+                <input type="file" accept="image/*" onchange="handleLogoUpload(event)" style="display: none;">
+              </label>
+            </div>
+
+            <div>
+              <div style="margin-bottom: 1.2rem;">
+                <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Atelier Emblem File URL</label>
+                <input type="text" id="profLogoUrl" class="form-control" placeholder="images/dewera-logo.png" value="" style="width: 100%; padding: 12px 14px; border: 1px solid var(--border); font-size: 0.9rem;">
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 1.2rem;">
+                <div>
+                  <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Display Atelier Name</label>
+                  <input type="text" id="profAtelierName" class="form-control" placeholder="e.g. Ceylon Gem Atelier" value="" required style="width: 100%; padding: 12px 14px; border: 1px solid var(--border); font-size: 0.9rem;">
+                </div>
+                <div>
+                  <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Concierge Line</label>
+                  <input type="text" id="profPhone" class="form-control" placeholder="+94 77 000 0000" value="" style="width: 100%; padding: 12px 14px; border: 1px solid var(--border); font-size: 0.9rem;">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+            <button type="submit" class="btn-apple" style="padding: 12px 28px;">Save Brand Assets &amp; Proceed to Payment &rsaquo;</button>
+            <span style="font-size: 0.75rem; color: var(--muted);">Direct synchronization with merchant directory</span>
+          </div>
+        </form>
+      </div>
+
+      <!-- STEP 4: SHOP PROFILE SLOT PAYMENT ($40/MO) GATE (PURE AUTOMATED CARD & SAFE WALLET) -->
+      <div id="stepPayment" class="seller-card" style="display: none;">
+        <div class="seller-card-header">
+          <div>
+            <h2 style="font-size: 1.4rem; font-family: 'Cinzel', serif; margin: 0 0 4px;">Shop Profile Slot &mdash; Monthly Subscription ($40.00 USD)</h2>
+            <p style="font-size: 0.82rem; color: var(--muted); margin: 0;">Automated monthly subscription required to maintain an active profile and publish gemstone listings.</p>
+          </div>
+          <span class="seller-stat-pill" id="subLicenseBadge">SETTLEMENT GATE</span>
+        </div>
+
+        <!-- RENEWAL WARNING BANNER (Shown when subscription is expired or unpaid) -->
+        <div id="paymentRenewalWarning" style="display: none; background: #FFFBEB; border: 1px solid #F59E0B; padding: 14px 18px; margin-bottom: 1.5rem;">
+          <div style="display: flex; align-items: flex-start; gap: 12px;">
+            <div style="color: #D97706; font-size: 1.2rem; line-height: 1;">&#9888;</div>
+            <div>
+              <strong style="color: #92400E; font-size: 0.9rem;">Monthly Subscription Settlement Required</strong>
+              <p style="color: #B45309; font-size: 0.8rem; margin: 4px 0 0;" id="renewalExpiryText">
+                Active $40.00 USD monthly subscription required before opening your atelier vault and publishing gemstone listings. Your atelier profile and gemstone records remain permanently preserved.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- PAYMENT METHOD TABS -->
+        <div class="pay-method-tabs">
+          <button type="button" class="pay-method-tab active" id="tabPayCard" onclick="switchPayTab('card')">
+            Automated Card Payment (Zero-Fee Bank Gateway) &bull; Recommended
+          </button>
+          <button type="button" class="pay-method-tab" id="tabPayWallet" onclick="switchPayTab('wallet')">
+            Safe Wallet Escrow (USDT / Crypto)
+          </button>
+          <button type="button" class="pay-method-tab" id="tabPayWire" onclick="switchPayTab('wire')">
+            Corporate Bank Wire Depository
+          </button>
+        </div>
+
+        <!-- PAYMENT VIEW 1: AUTOMATED CARD GATEWAY -->
+        <div id="viewPayCard">
+          <!-- 1-CLICK CARD TEST PRESETS BANNER -->
+          <div class="auto-action-banner" style="background: #FAF7F2; border-color: var(--gold);">
+            <div>
+              <strong style="font-size: 0.88rem; color: var(--gold-dark);">&#9670; 1-Click Automated Test Cards</strong>
+              <p style="font-size: 0.78rem; color: var(--muted); margin: 3px 0 0;">
+                Select a bank-verified test card to auto-populate credentials and experience instant 3DS2 checkout.
+              </p>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button type="button" class="btn-apple-outline" onclick="applyTestCard('visa')" style="padding: 6px 12px; font-size: 0.72rem;">Visa Business Infinite</button>
+              <button type="button" class="btn-apple-outline" onclick="applyTestCard('mc')" style="padding: 6px 12px; font-size: 0.72rem;">Mastercard World Elite</button>
+              <button type="button" class="btn-apple-outline" onclick="applyTestCard('amex')" style="padding: 6px 12px; font-size: 0.72rem;">AMEX Centurion</button>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: flex-start; margin-bottom: 1.5rem;">
+            <!-- CARD PREVIEW WIDGET -->
+            <div>
+              <div class="luxury-card-preview" id="virtualCardWidget">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                  <span style="font-family: 'Cinzel', serif; font-size: 0.85rem; letter-spacing: 0.15em; color: #C9A96E;">DEWERA MERCHANTS</span>
+                  <span id="cardBrandBadge" style="font-size: 0.8rem; font-weight: 800; letter-spacing: 0.1em; color: #FFFFFF;">VISA</span>
+                </div>
+                <div class="luxury-card-chip"></div>
+                <div class="luxury-card-number" id="previewCardNumber">&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull;</div>
+                <div class="luxury-card-footer">
+                  <div>
+                    <div class="luxury-card-label">Atelier Cardholder</div>
+                    <div class="luxury-card-val" id="previewCardHolder">ATELIER CARDHOLDER</div>
+                  </div>
+                  <div>
+                    <div class="luxury-card-label">Expires</div>
+                    <div class="luxury-card-val" id="previewCardExpiry">12/28</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SECURITY CREDENTIALS -->
+              <div style="background: #FAF7F2; border: 1px solid var(--border); padding: 14px 16px; font-size: 0.75rem; color: var(--muted); line-height: 1.6;">
+                <div style="font-weight: 700; color: var(--text); margin-bottom: 4px;">
+                  Bank-Grade Zero-Fee Security Engine
+                </div>
+                &bull; PCI-DSS compliant: Card numbers never saved raw; ephemeral tokenization only.<br>
+                &bull; 3D Secure 2.0 Strong Customer Authentication (SCA) biometric &amp; OTP challenge.<br>
+                &bull; Zero gateway commissions deducted &mdash; 100% direct shop slot provisioning.
+              </div>
+            </div>
+
+            <!-- CARD INPUT FORM -->
+            <form onsubmit="handleCardPaymentSubmit(event)">
+              <div style="margin-bottom: 1.2rem;">
+                <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Cardholder Full Legal Name *</label>
+                <input type="text" id="cardHolder" class="form-control" placeholder="e.g. Gem Curator Name" value="" required oninput="updateCardPreview()" style="width: 100%; padding: 12px 14px; border: 1px solid var(--border); font-size: 0.9rem;">
+              </div>
+
+              <div style="margin-bottom: 1.2rem;">
+                <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Credit / Debit Card Number *</label>
+                <input type="text" id="cardNumber" class="form-control" placeholder="4242 •••• •••• 4242" value="" maxlength="19" required oninput="formatAndPreviewCard(this)" style="width: 100%; padding: 12px 14px; border: 1px solid var(--border); font-family: monospace; font-size: 1rem; letter-spacing: 0.1em;">
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 1.2rem;">
+                <div>
+                  <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Month</label>
+                  <select id="cardExpMonth" class="form-control" onchange="updateCardPreview()" style="width: 100%; padding: 12px; border: 1px solid var(--border); font-size: 0.9rem;">
+                    <option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12" selected>12</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Year</label>
+                  <select id="cardExpYear" class="form-control" onchange="updateCardPreview()" style="width: 100%; padding: 12px; border: 1px solid var(--border); font-size: 0.9rem;">
+                    <option value="26">2026</option><option value="27">2027</option><option value="28" selected>2028</option><option value="29">2029</option><option value="30">2030</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">CVV / CVC</label>
+                  <input type="password" id="cardCvv" class="form-control" placeholder="•••" value="" maxlength="4" required style="width: 100%; padding: 12px; border: 1px solid var(--border); font-family: monospace; font-size: 1rem; text-align: center;">
+                </div>
+              </div>
+
+              <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Billing Country / Jurisdiction</label>
+                <select id="cardCountry" class="form-control" style="width: 100%; padding: 12px; border: 1px solid var(--border); font-size: 0.9rem;">
+                  <option value="Sri Lanka" selected>Sri Lanka (Ratna Dweepa)</option>
+                  <option value="United Arab Emirates">United Arab Emirates (Dubai)</option>
+                  <option value="Singapore">Singapore</option>
+                  <option value="Switzerland">Switzerland</option>
+                  <option value="United Kingdom">United Kingdom</option>
+                  <option value="United States">United States</option>
+                </select>
+              </div>
+
+              <button type="submit" class="btn-apple" id="btnPaySubmit" style="width: 100%; padding: 14px; font-size: 0.88rem; font-weight: 700; background: var(--gold-dark); border-color: var(--gold-dark);">
+                Pay $40.00 USD &bull; Activate 30-Day Slot &rsaquo;
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- PAYMENT VIEW 2: SAFE WALLET ESCROW -->
+        <div id="viewPayWallet" style="display: none;">
+          <div class="auto-action-banner" style="background: #FAF7F2; border-color: var(--gold);">
+            <div>
+              <strong style="font-size: 0.88rem; color: var(--gold-dark);">&#9670; Automated Safe Wallet Settlement</strong>
+              <p style="font-size: 0.78rem; color: var(--muted); margin: 3px 0 0;">
+                Click below to automatically verify the $40.00 USD Safe Wallet escrow, unlock all seller privileges, and open the listing engine.
+              </p>
+            </div>
+            <button type="button" class="btn-apple" onclick="autoConfirmEscrow()" style="padding: 11px 24px; font-size: 0.78rem; background: var(--gold-dark); border-color: var(--gold-dark);">
+              Automate Settlement &amp; Unlock Hub &rsaquo;
+            </button>
+          </div>
+
+          <div style="background: #FFFFFF; border: 1px solid var(--border); padding: 14px 18px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
+            <div>
+              <div style="font-size: 0.72rem; color: var(--gold-dark); font-weight: 700; text-transform: uppercase;">USDT (TRC-20 Safe Wallet) &bull; Lowest Gas Fees</div>
+              <div style="font-family: monospace; font-size: 0.85rem; color: var(--text); word-break: break-all; margin-top: 3px;">TYDzsxd54kE31x845c0882nLK98F4V11eX</div>
+            </div>
+            <button type="button" class="btn-apple-outline" onclick="copyWallet('TYDzsxd54kE31x845c0882nLK98F4V11eX', this)" style="padding: 6px 14px; font-size: 0.72rem;">Copy Address</button>
+          </div>
+
+          <div style="background: #FFFFFF; border: 1px solid var(--border); padding: 14px 18px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
+            <div>
+              <div style="font-size: 0.72rem; color: var(--gold-dark); font-weight: 700; text-transform: uppercase;">USDT / USDC (ERC-20 Safe Wallet) &bull; Ethereum Mainnet</div>
+              <div style="font-family: monospace; font-size: 0.85rem; color: var(--text); word-break: break-all; margin-top: 3px;">0x71C8363837937A71bF85786A7283B4652F942460</div>
+            </div>
+            <button type="button" class="btn-apple-outline" onclick="copyWallet('0x71C8363837937A71bF85786A7283B4652F942460', this)" style="padding: 6px 14px; font-size: 0.72rem;">Copy Address</button>
+          </div>
+
+          <div style="background: #FAF7F2; border: 1px solid var(--border); padding: 1.5rem; margin-top: 1.5rem;">
+            <h4 style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin: 0 0 6px;">Manual Blockchain Hash (Optional Audit)</h4>
+            <p style="font-size: 0.76rem; color: var(--muted); margin: 0 0 1rem;">Paste on-chain transaction hash below to log payment.</p>
+            <form onsubmit="handleManualPayment(event)">
+              <div style="display: grid; grid-template-columns: 200px 1fr; gap: 14px;">
+                <select id="manualWalletType" class="form-control" style="width: 100%; padding: 10px; border: 1px solid var(--border); font-size: 0.82rem;">
+                  <option value="usdtTrc20">USDT (TRC-20)</option>
+                  <option value="usdtErc20">USDT (ERC-20)</option>
+                  <option value="usdcErc20">USDC (ERC-20)</option>
+                  <option value="btc">Bitcoin (BTC)</option>
+                </select>
+                <input type="text" id="manualTxHash" class="form-control" placeholder="Paste TxID / Transaction Hash" style="width: 100%; padding: 10px; border: 1px solid var(--border); font-size: 0.82rem;">
+              </div>
+              <div style="margin-top: 1rem; display: flex; gap: 10px;">
+                <button type="submit" class="btn-apple-outline" style="padding: 8px 18px; font-size: 0.75rem;">Submit Hash &rsaquo;</button>
+                <button type="button" class="btn-apple" onclick="autoConfirmEscrow()" style="padding: 8px 18px; font-size: 0.75rem;">Instant 1-Click Verification &rsaquo;</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- PAYMENT VIEW 3: CORPORATE BANK WIRE -->
+        <div id="viewPayWire" style="display: none;">
+          <div class="auto-action-banner" style="background: #FAF7F2; border-color: var(--gold);">
+            <div>
+              <strong style="font-size: 0.88rem; color: var(--gold-dark);">&#9670; Corporate Bank Depository Wire</strong>
+              <p style="font-size: 0.78rem; color: var(--muted); margin: 3px 0 0;">
+                Direct bank settlement for registered ateliers. Wire transfers are verified within 1 business hour.
+              </p>
+            </div>
+            <button type="button" class="btn-apple" onclick="confirmBankWirePayment()" style="padding: 11px 24px; font-size: 0.78rem; background: var(--gold-dark); border-color: var(--gold-dark);">
+              Submit Wire Notice &amp; Unlock Hub &rsaquo;
+            </button>
+          </div>
+
+          <div style="background: #FFFFFF; border: 1px solid var(--border); padding: 1.5rem; margin-bottom: 1.2rem;">
+            <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold-dark); font-weight: 700; margin-bottom: 1rem;">
+              Beneficiary Bank Account Details
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 1.2rem; font-size: 0.85rem;">
+              <div>
+                <span style="display: block; font-size: 0.65rem; text-transform: uppercase; color: var(--muted); letter-spacing: 0.08em;">Bank Name</span>
+                <strong id="wireBankName">Commercial Bank of Ceylon</strong>
+              </div>
+              <div>
+                <span style="display: block; font-size: 0.65rem; text-transform: uppercase; color: var(--muted); letter-spacing: 0.08em;">Beneficiary / Account Name</span>
+                <strong id="wireAccountName">House of Dewera (Pvt) Ltd</strong>
+              </div>
+              <div>
+                <span style="display: block; font-size: 0.65rem; text-transform: uppercase; color: var(--muted); letter-spacing: 0.08em;">Account Number / IBAN</span>
+                <strong style="font-family: monospace; color: #107C41;" id="wireAccountNumber">100029384756</strong>
+              </div>
+              <div>
+                <span style="display: block; font-size: 0.65rem; text-transform: uppercase; color: var(--muted); letter-spacing: 0.08em;">SWIFT / BIC Code</span>
+                <strong style="font-family: monospace;" id="wireSwiftCode">COMBCEKL</strong>
+              </div>
+              <div>
+                <span style="display: block; font-size: 0.65rem; text-transform: uppercase; color: var(--muted); letter-spacing: 0.08em;">Branch</span>
+                <strong id="wireBranch">Colombo Elite / Ratnapura Branch</strong>
+              </div>
+              <div>
+                <span style="display: block; font-size: 0.65rem; text-transform: uppercase; color: var(--muted); letter-spacing: 0.08em;">Settlement Currency</span>
+                <strong id="wireCurrency">USD / LKR</strong>
+              </div>
+            </div>
+            <div style="background: #FAF7F2; border: 1px solid var(--border); padding: 12px 14px; font-size: 0.78rem; color: var(--muted);" id="wireInstructions">
+              Include your Atelier ID or Gemstone Reference in the wire transfer memo.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 5: EBAY-STYLE SELLER HUB & GEMSTONE LISTING ENGINE -->
+      <div id="stepHub" class="seller-card" style="display: none;">
+        
+        <!-- INSTANT SUCCESS TOAST NOTIFICATION (SHOWN IMMEDIATELY AFTER PAYMENT) -->
+        <div id="hubSuccessToast" style="display: none; background: #ECFDF5; border: 1px solid #A7F3D0; padding: 14px 18px; margin-bottom: 1.8rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <strong style="color: #065F46; font-size: 0.88rem;">&#9670; Profile Slot Activated &bull; 30 Days Live Access</strong>
+              <p style="font-size: 0.78rem; color: #047857; margin: 2px 0 0;" id="hubSuccessMsg">
+                Your monthly subscription is active. Your verified atelier emblem and gemstone listings are now live in the sovereign vault.
+              </p>
+            </div>
+            <span class="seller-stat-pill" style="background:#FFFFFF; border-color:#A7F3D0; color:#065F46;">VERIFIED CEYLON ATELIER</span>
+          </div>
+        </div>
+
+        <!-- EXPIRATION & PROFILE PRESERVATION BANNER (DYNAMIC) -->
+        <div id="hubExpirationBanner" style="display: none; background: #FFFBEB; border: 1px solid #F59E0B; padding: 14px 18px; margin-bottom: 1.8rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <strong style="color: #B45309; font-size: 0.88rem;">30-Day Profile Slot Expired</strong>
+              <p style="font-size: 0.78rem; color: #78350F; margin: 2px 0 0;">
+                Your profile, custom emblem, and gem inventory are <strong>permanently preserved</strong>. Pay $40 to instantly renew your slot for another 30 days.
+              </p>
+            </div>
+            <button type="button" class="btn-apple" onclick="switchStep('stepPayment')" style="padding: 8px 18px; font-size: 0.75rem; background: #B45309; border-color: #B45309;">
+              Renew Slot for $40 &rsaquo;
+            </button>
+          </div>
+        </div>
+
+        <!-- EXECUTIVE SANCTION & TRANSPARENT APPEAL PORTAL (SHOWN WHEN SUSPENDED OR BANNED) -->
+        <div id="hubSanctionBanner" style="display: none; background: #FFF5F5; border: 1px solid #FEB2B2; padding: 1.5rem 1.8rem; margin-bottom: 1.8rem;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid #FED7D7; padding-bottom: 1rem; margin-bottom: 1.2rem;">
+            <div>
+              <div style="font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.15em; color: #9B2C2C; font-weight: 700;">Dewera Merchant Governance Sanction</div>
+              <h3 style="font-size: 1.25rem; font-weight: 700; color: #9B2C2C; margin: 2px 0 0;" id="sanctionNoticeTitle">Account Under Compliance Sanction</h3>
+              <p style="font-size: 0.78rem; color: #742A2A; margin: 4px 0 0;">
+                All gemstone listings from your atelier have been temporarily removed from public discovery in accordance with Dewera authenticity bylaws.
+              </p>
+            </div>
+            <span class="badge-industrial badge-industrial-danger" id="sanctionBadgeStatus" style="font-size: 0.75rem; padding: 6px 12px;">SUSPENDED</span>
+          </div>
+
+          <!-- SANCTION EVIDENCE & REASON AUDIT DOSSIER -->
+          <div style="background: #FFFFFF; border: 1px solid #FED7D7; padding: 14px 16px; margin-bottom: 1.4rem;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 10px; font-size: 0.78rem;">
+              <div>
+                <span style="color: var(--muted); text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.08em; display: block;">Official Violation Classification</span>
+                <strong style="color: #9B2C2C; font-size: 0.85rem;" id="sanctionReasonDisplay">Violation Reason</strong>
+              </div>
+              <div>
+                <span style="color: var(--muted); text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.08em; display: block;">Actioned By</span>
+                <strong id="sanctionOfficerDisplay">Senior Governance Admin</strong>
+              </div>
+              <div>
+                <span style="color: var(--muted); text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.08em; display: block;">Date Actioned</span>
+                <span id="sanctionDateDisplay">2026-09-22</span>
+              </div>
+            </div>
+            <div style="border-top: 1px solid var(--border); padding-top: 8px; font-size: 0.78rem;">
+              <span style="color: var(--muted); text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.08em; display: block; margin-bottom: 2px;">Forensic Lab Evidence / Inquiries Record</span>
+              <div id="sanctionProofDisplay" style="background: #FAF7F2; border: 1px solid var(--border); padding: 8px 12px; font-family: monospace; font-size: 0.78rem; color: var(--text); line-height: 1.5; white-space: pre-wrap;">Forensic proof text</div>
+            </div>
+          </div>
+
+          <!-- INTERACTIVE REINSTATEMENT APPEAL PORTAL -->
+          <div style="background: #FFFFFF; border: 1px solid var(--border); padding: 1.25rem 1.5rem;">
+            <div id="appealPendingNotice" style="display: none; background: #EFF6FF; border: 1px solid #BFDBFE; padding: 14px 16px; font-size: 0.82rem; color: #1E40AF; margin-bottom: 1rem;">
+              <div style="font-weight: 700; font-size: 0.88rem; margin-bottom: 4px;">Formal Reinstatement Appeal Under Executive Adjudication</div>
+              <p style="margin: 0 0 8px; line-height: 1.5;">
+                Your appeal dossier has been registered in the Appeals &amp; Incident Compliance Desk. Governance Admins are reviewing your statement against evidentiary records.
+              </p>
+              <div style="font-size: 0.75rem; color: #3B82F6; border-top: 1px solid #DBEAFE; padding-top: 6px;">
+                <strong>Submitted Statement:</strong> <span id="pendingAppealStatement"></span>
+              </div>
+            </div>
+
+            <form id="appealSubmitForm" onsubmit="handleSellerAppealSubmit(event)">
+              <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text); font-weight: 700; margin-bottom: 6px;">
+                Submit Formal Reinstatement Appeal
+              </div>
+              <p style="font-size: 0.78rem; color: var(--muted); margin: 0 0 12px; line-height: 1.5;">
+                If you believe this sanction is in error or have addressed the underlying gemological issue (e.g. independent GIA / SSEF re-testing), submit your defense statement below.
+              </p>
+              <div style="margin-bottom: 12px;">
+                <label style="display: block; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 4px; font-weight: 600;">Defense Statement &amp; Rectification Explanation</label>
+                <textarea id="appealStatementInput" class="form-control" rows="3" placeholder="Detail your defense, explanation, or rectifying steps taken..." required style="width: 100%; padding: 10px; border: 1px solid var(--border); font-size: 0.82rem; line-height: 1.5;"></textarea>
+              </div>
+              <div style="margin-bottom: 14px;">
+                <label style="display: block; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 4px; font-weight: 600;">Supporting Document / Lab Certificate Dossier URL (Optional)</label>
+                <input type="text" id="appealDocumentInput" class="form-control" placeholder="https://... or Dossier File Reference" style="width: 100%; padding: 8px 12px; border: 1px solid var(--border); font-size: 0.82rem;">
+              </div>
+              <button type="submit" class="btn-apple" id="btnSubmitAppeal" style="padding: 10px 22px; font-size: 0.8rem;">
+                Submit Formal Appeal &rsaquo;
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div class="seller-card-header">
+          <div>
+            <h2 style="font-size: 1.4rem; font-family: 'Cinzel', serif; margin: 0 0 4px;" id="hubHeaderAtelierTitle">Atelier Seller Hub</h2>
+            <p style="font-size: 0.82rem; color: var(--muted); margin: 0;">Manage your vault inventory, track listings, and publish loose Ceylon gemstones with multiple color saturation grades.</p>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="btn-apple-outline" onclick="showHubView('inventory')" id="btnHubInv" style="padding: 7px 14px; font-size: 0.75rem;">My Listings</button>
+            <button class="btn-apple" onclick="showHubView('create')" id="btnHubCreate" style="padding: 7px 18px; font-size: 0.75rem;">+ Create New Listing</button>
+            <button type="button" class="btn-apple-outline" onclick="signOutSeller()" id="btnSignOutAtelier" style="padding: 7px 14px; font-size: 0.75rem; border-color: #DC2626; color: #DC2626;">Sign Out Atelier</button>
+          </div>
+        </div>
+
+        <!-- EBAY-STYLE SELLER STATS BAR -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 2rem;">
+          <div style="background: #FAF7F2; border: 1px solid var(--border); padding: 16px; text-align: center;">
+            <div style="font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600;">Active Listings</div>
+            <div style="font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 700; color: var(--text); margin-top: 4px;" id="statTotalListings">0</div>
+          </div>
+          <div style="background: #FAF7F2; border: 1px solid var(--border); padding: 16px; text-align: center;">
+            <div style="font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600;">Slot Status</div>
+            <div style="font-size: 0.95rem; font-weight: 700; color: #047857; margin-top: 6px;" id="hubLicenseStatusDisplay">Active (30 Days Left)</div>
+          </div>
+          <div style="background: #FAF7F2; border: 1px solid var(--border); padding: 16px; text-align: center;">
+            <div style="font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600;">Atelier Trust Rating</div>
+            <div style="font-size: 1rem; font-weight: 700; color: var(--gold-dark); margin-top: 8px;">
+              <span id="hubRatingDisplay">5.00</span> &bull; 100% Positive Feedback
+            </div>
+          </div>
+        </div>
+
+        <!-- VIEW A: ACTIVE LISTINGS INVENTORY TABLE (CLEAN, SPACIOUS, LUXURY APPLE STYLE) -->
+        <div id="hubInventoryView">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
+            <div>
+              <h3 style="font-size: 1.15rem; font-family: 'Cinzel', serif; margin: 0;">Sovereign Vault Inventory</h3>
+              <span style="font-size: 0.75rem; color: var(--muted);">Direct illam extraction &bull; Verified natural permanent thermal metallurgy</span>
+            </div>
+            <a href="collection.html" target="_blank" class="table-action-pill">View Live in Vault &rsaquo;</a>
+          </div>
+
+          <div style="overflow-x: auto; border: 1px solid var(--border); background: #FFFFFF;">
+            <table class="inventory-table">
+              <thead>
+                <tr>
+                  <th style="width: 60px;">Specimen</th>
+                  <th>Gemstone Name</th>
+                  <th>Variety</th>
+                  <th>Weight</th>
+                  <th>Valuation Guide</th>
+                  <th>Color Variations</th>
+                  <th>Status</th>
+                  <th style="text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="sellerGemsTableBody">
+                <!-- Clean rows injected via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- VIEW B: CREATE NEW GEMSTONE LISTING -->
+        <div id="hubCreateView" style="display: none;">
+          <div class="auto-action-banner">
+            <div>
+              <strong style="font-size: 0.85rem; color: var(--gold-dark);">&#9670; 1-Click Ceylon Specimen Presets</strong>
+              <p style="font-size: 0.76rem; color: var(--muted); margin: 2px 0 0;">Auto-fill accurate gemological specifications, thermal metallurgy, and color saturation models.</p>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button type="button" class="btn-apple-outline" onclick="applyGemPreset('blue_sapphire')" style="padding: 6px 12px; font-size: 0.72rem;">Royal Blue Specimen</button>
+              <button type="button" class="btn-apple-outline" onclick="applyGemPreset('padparadscha')" style="padding: 6px 12px; font-size: 0.72rem;">Padparadscha Specimen</button>
+              <button type="button" class="btn-apple-outline" onclick="applyGemPreset('yellow_sapphire')" style="padding: 6px 12px; font-size: 0.72rem;">Pushparaga Specimen</button>
+            </div>
+          </div>
+
+          <form onsubmit="handlePublishListing(event)">
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 18px; margin-bottom: 1.2rem;">
+              <div>
+                <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Gemstone Title *</label>
+                <input type="text" id="listTitle" class="form-control" required placeholder="e.g. Ceylon Royal Blue Sapphire (Elahera Extraction)" style="width: 100%; padding: 11px 14px; border: 1px solid var(--border); font-size: 0.88rem;">
+              </div>
+              <div>
+                <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Corundum Variety *</label>
+                <select id="listType" class="form-control" required style="width: 100%; padding: 11px 14px; border: 1px solid var(--border); font-size: 0.88rem;">
+                  <option value="Blue Sapphire">Blue Sapphire</option>
+                  <option value="Padparadscha">Padparadscha Sapphire</option>
+                  <option value="Yellow Sapphire">Yellow Sapphire (Pushparaga)</option>
+                  <option value="Ruby">Ceylon Star Ruby</option>
+                  <option value="Alexandrite">Ceylon Alexandrite</option>
+                  <option value="Cat's Eye">Chrysoberyl Cat's Eye</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; margin-bottom: 1.2rem;">
+              <div>
+                <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Weight (Carats) *</label>
+                <input type="number" id="listWeight" step="0.01" class="form-control" placeholder="3.45" value="" required style="width: 100%; padding: 10px 12px; border: 1px solid var(--border); font-size: 0.85rem;">
+              </div>
+              <div>
+                <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Clarity Grade *</label>
+                <input type="text" id="listClarity" class="form-control" placeholder="Eye Clean / VVS1" value="" required style="width: 100%; padding: 10px 12px; border: 1px solid var(--border); font-size: 0.85rem;">
+              </div>
+              <div>
+                <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Enhancement *</label>
+                <select id="listTreatment" class="form-control" style="width: 100%; padding: 10px 12px; border: 1px solid var(--border); font-size: 0.85rem;">
+                  <option value="Heated">Natural Heated (Permanent Thermal)</option>
+                  <option value="Unheated">100% Unheated (Natural Pure)</option>
+                </select>
+              </div>
+              <div>
+                <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Base Valuation (USD) *</label>
+                <input type="number" id="listBasePrice" class="form-control" placeholder="5800" value="" required style="width: 100%; padding: 10px 12px; border: 1px solid var(--border); font-size: 0.85rem;">
+              </div>
+            </div>
+
+            <!-- DYNAMIC COLOR VARIATIONS REPEATER -->
+            <div style="background: #FAF8F5; border: 1px solid var(--border); padding: 1.5rem; margin-bottom: 1.5rem;">
+              <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+                <div>
+                  <h4 style="font-size: 0.85rem; font-family: 'Cinzel', serif; margin: 0; text-transform: uppercase; letter-spacing: 0.08em;">
+                    Multi-Color Saturation Tiers &bull; Individual Pricing
+                  </h4>
+                  <p style="font-size: 0.74rem; color: var(--muted); margin: 2px 0 0;">
+                    Add distinct color variations for this gemstone variety with individual color codes and prices.
+                  </p>
+                </div>
+                <button type="button" class="btn-apple-outline" onclick="addHubColorVariation()" style="padding: 6px 12px; font-size: 0.72rem;">+ Add Color Variation</button>
+              </div>
+
+              <div id="hubColorVariationsContainer">
+                <!-- Injected via JavaScript -->
+              </div>
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+              <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Editorial Description</label>
+              <textarea id="listDesc" rows="3" class="form-control" placeholder="Direct extraction from sovereign Ceylon alluvial gravels. Certified natural permanent thermal protocol with intense saturation." style="width: 100%; padding: 10px 12px; border: 1px solid var(--border); font-size: 0.85rem;"></textarea>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+              <button type="submit" class="btn-apple" style="padding: 12px 28px;">Publish Specimen to Sovereign Vault &rsaquo;</button>
+              <span style="font-size: 0.75rem; color: var(--muted);">Immediate live synchronization with collection</span>
+            </div>
+          </form>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- 3D SECURE 2.0 (3DS2) BANKING CHALLENGE MODAL (ZERO EMOJIS) -->
+  <div id="modal3DS2" class="security-modal-overlay" style="display: none;">
+    <div class="security-modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 16px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-weight: 800; font-size: 1rem; color: #111111;">3D SECURE 2.0</span>
+          <span class="seller-stat-pill" style="font-size: 0.65rem; padding: 2px 6px;">SCA VERIFIED</span>
+        </div>
+        <button type="button" onclick="close3DSModal()" style="background:none; border:none; font-size: 1.2rem; cursor:pointer; color: var(--muted);">&times;</button>
+      </div>
+
+      <div style="text-align: center; margin-bottom: 1.5rem;">
+        <div style="width: 48px; height: 48px; border-radius: 50%; background: #FAF7F2; border: 1px solid var(--gold); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; color: var(--gold-dark); font-size: 1.1rem; font-family: 'Cinzel', serif;">
+          &#9670;
+        </div>
+        <h3 style="font-family: 'Cinzel', serif; font-size: 1.15rem; margin: 0 0 6px;">Issuer Bank Verification</h3>
+        <p style="font-size: 0.78rem; color: var(--muted); margin: 0;">
+          Dewera Merchant Licensing has initiated a secure payment handshake for <strong style="color: var(--text);">$40.00 USD</strong>.
+        </p>
+      </div>
+
+      <div style="background: #FAF7F2; border: 1px solid var(--border); padding: 12px 16px; margin-bottom: 1.2rem; font-size: 0.78rem;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+          <span style="color: var(--muted);">Merchant:</span>
+          <strong>Dewera Haute Gemmologie</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+          <span style="color: var(--muted);">Card:</span>
+          <span id="modalCardMasked">&bull;&bull;&bull;&bull; 4242</span>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: var(--muted);">Subscription Amount:</span>
+          <strong style="color: var(--gold-dark);">$40.00 USD / Month</strong>
+        </div>
+      </div>
+
+      <!-- AUTOMATED 1-CLICK VERIFICATION -->
+      <div style="margin-bottom: 1.2rem;">
+        <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">One-Time Passcode (OTP)</label>
+        <div style="display: flex; gap: 8px;">
+          <input type="text" id="otp3DS2Input" value="849201" maxlength="6" style="flex: 1; padding: 10px; border: 1px solid var(--border); font-family: monospace; font-size: 1.1rem; text-align: center; letter-spacing: 0.2em;">
+          <button type="button" class="btn-apple" onclick="confirm3DS2()" style="padding: 10px 18px; font-size: 0.75rem; background: var(--gold-dark); border-color: var(--gold-dark);">
+            1-Click Authorize &rsaquo;
+          </button>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.72rem; color: var(--muted);">
+        <span>Encrypted with SHA-256</span>
+        <a href="javascript:void(0)" onclick="confirm3DS2()" style="color: var(--gold-dark); text-decoration: underline;">Resend OTP</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT GEMSTONE SPECIMEN MODAL (ZERO EMOJIS, APPLE LUXURY STYLING) -->
+  <div id="modalEditGem" class="security-modal-overlay" style="display: none;">
+    <div class="security-modal-card" style="max-width: 780px; max-height: 90vh; overflow-y: auto; padding: 2.2rem; border-radius: 0;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 20px;">
+        <div>
+          <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--gold-dark); font-weight: 700;">Atelier Specimen Management</div>
+          <h3 style="font-family: 'Cinzel', serif; font-size: 1.25rem; margin: 4px 0 0; color: var(--text);">Edit Gemstone Specimen &bull; <span id="editModalGemId" style="color: var(--muted); font-family: monospace; font-size: 0.95rem;"></span></h3>
+        </div>
+        <button type="button" onclick="closeEditGemModal()" style="background:none; border:none; font-size: 1.5rem; cursor:pointer; color: var(--muted); line-height: 1;">&times;</button>
+      </div>
+
+      <form id="editGemForm" onsubmit="handleSaveGemEdit(event)">
+        <input type="hidden" id="editGemId">
+        
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 1.2rem;">
+          <div>
+            <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Gemstone Title *</label>
+            <input type="text" id="editGemTitle" class="form-control" required style="width: 100%; padding: 10px 12px; border: 1px solid var(--border); font-size: 0.88rem;">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Corundum Variety *</label>
+            <select id="editGemType" class="form-control" required style="width: 100%; padding: 10px 12px; border: 1px solid var(--border); font-size: 0.88rem;">
+              <option value="Blue Sapphire">Blue Sapphire</option>
+              <option value="Padparadscha">Padparadscha Sapphire</option>
+              <option value="Yellow Sapphire">Yellow Sapphire (Pushparaga)</option>
+              <option value="Ruby">Ceylon Star Ruby</option>
+              <option value="Alexandrite">Ceylon Alexandrite</option>
+              <option value="Cat's Eye">Chrysoberyl Cat's Eye</option>
+              <option value="White Sapphire">Ceylon White Sapphire</option>
+              <option value="Pink Sapphire">Ceylon Pink Sapphire</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; margin-bottom: 1.2rem;">
+          <div>
+            <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Weight (Carats) *</label>
+            <input type="number" id="editGemWeight" step="0.01" class="form-control" required style="width: 100%; padding: 10px 12px; border: 1px solid var(--border); font-size: 0.85rem;">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Clarity Grade *</label>
+            <input type="text" id="editGemClarity" class="form-control" required style="width: 100%; padding: 10px 12px; border: 1px solid var(--border); font-size: 0.85rem;">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Enhancement *</label>
+            <select id="editGemTreatment" class="form-control" style="width: 100%; padding: 10px 12px; border: 1px solid var(--border); font-size: 0.85rem;">
+              <option value="Heated">Natural Heated (Permanent Thermal)</option>
+              <option value="Unheated">100% Unheated (Natural Pure)</option>
+            </select>
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Listing Status *</label>
+            <select id="editGemStatus" class="form-control" style="width: 100%; padding: 10px 12px; border: 1px solid var(--border); font-size: 0.85rem;">
+              <option value="available">Available</option>
+              <option value="out-of-stock">Out of Stock</option>
+              <option value="sold">Sold</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 1.2rem;">
+          <div>
+            <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Mining Origin *</label>
+            <input type="text" id="editGemOrigin" class="form-control" required style="width: 100%; padding: 10px 12px; border: 1px solid var(--border); font-size: 0.85rem;">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Base Valuation (USD) *</label>
+            <input type="number" id="editGemPrice" class="form-control" required style="width: 100%; padding: 10px 12px; border: 1px solid var(--border); font-size: 0.85rem;">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Max Valuation Guide (USD)</label>
+            <input type="number" id="editGemPriceMax" class="form-control" style="width: 100%; padding: 10px 12px; border: 1px solid var(--border); font-size: 0.85rem;">
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1.2rem;">
+          <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Certificate Summary / Lab Passport</label>
+          <input type="text" id="editGemCertificate" class="form-control" style="width: 100%; padding: 10px 12px; border: 1px solid var(--border); font-size: 0.85rem;">
+        </div>
+
+        <div style="margin-bottom: 1.4rem;">
+          <label style="display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Editorial Description</label>
+          <textarea id="editGemDescription" rows="3" class="form-control" style="width: 100%; padding: 10px 12px; border: 1px solid var(--border); font-size: 0.85rem; line-height: 1.5;"></textarea>
+        </div>
+
+        <!-- EDIT COLOR VARIATIONS REPEATER -->
+        <div style="background: #FAF8F5; border: 1px solid var(--border); padding: 1.2rem; margin-bottom: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; border-bottom: 1px solid var(--border); padding-bottom: 6px;">
+            <div>
+              <span style="font-size: 0.8rem; font-family: 'Cinzel', serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text);">
+                Color Saturation Tiers &bull; Individual Pricing
+              </span>
+            </div>
+            <button type="button" class="btn-apple-outline" onclick="addEditColorVariation()" style="padding: 5px 12px; font-size: 0.72rem;">+ Add Variation</button>
+          </div>
+          <div id="editColorVariationsContainer">
+            <!-- Dynamic edit variations injected here -->
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid var(--border); padding-top: 1.2rem;">
+          <button type="button" onclick="closeEditGemModal()" class="btn-apple-outline" style="padding: 10px 20px; font-size: 0.8rem;">Cancel</button>
+          <button type="submit" id="btnSaveGemEdit" class="btn-apple" style="padding: 10px 26px; font-size: 0.8rem;">Save Specimen Changes &rsaquo;</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- APPLE FOOTER -->
+  <footer class="footer-dewera">
+    <div class="footer-dewera-inner">
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <img src="images/dewera-logo.png" alt="DEWERA" class="footer-brand-img">
+        <p style="font-size: 0.8rem; color: var(--muted); margin: 6px 0 0;">
+          Pure Loose Ceylon Gemstones &bull; Natural Permanent Thermal Metallurgy &bull; Sovereign Mining Strata
+        </p>
+      </div>
+      <div class="footer-legal">
+        &copy; 2026 Dewera Haute Gemmologie. Multi-Vendor Corundum Network. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    // SELLER HUB STATE (UNAUTHENTICATED BY DEFAULT - ZERO EMOJIS)
+    let currentSeller = null;
+    let currentSellerToken = null;
+
+    let hubColorVariations = [
+      { id: "v1", name: "Cornflower Saturation", code: "#4A7BB0", price: 5400, priceMax: 6200, status: "available" },
+      { id: "v2", name: "Vivid Royal Saturation", code: "#1A2B6D", price: 6800, priceMax: 8500, status: "available" },
+      { id: "v3", name: "Deep Midnight Peacock", code: "#0E1A40", price: 6200, priceMax: 7400, status: "out-of-stock" }
+    ];
+
+    let currentEditGem = null;
+    let editModalColorVariations = [];
+
+    function updatePipelineNavLockState() {
+      const isAuth = Boolean(currentSeller);
+      const stepBtns = [
+        document.getElementById('btnStep2FA'),
+        document.getElementById('btnStepProfile'),
+        document.getElementById('btnStepPayment'),
+        document.getElementById('btnStepHub')
+      ];
+      stepBtns.forEach(btn => {
+        if (btn) {
+          if (isAuth) {
+            btn.classList.remove('locked');
+          } else {
+            btn.classList.add('locked');
+          }
+        }
+      });
+      const signOutBtn = document.getElementById('btnSignOutAtelier');
+      if (signOutBtn) {
+        signOutBtn.style.display = isAuth ? 'inline-block' : 'none';
+      }
+    }
+
+    function checkSellerGovernance() {
+      fetch('/api/settings?_t=' + Date.now())
+        .then(r => r.json())
+        .then(settings => {
+          const enabled = settings && settings.sellerRegistrationEnabled !== false && settings.marketplaceEnabled !== false;
+          const lockView = document.getElementById('governanceLockView');
+          const workflowContainer = document.getElementById('sellerWorkflowContainer');
+          if (!enabled) {
+            if (lockView) lockView.style.display = 'block';
+            if (workflowContainer) workflowContainer.style.display = 'none';
+          } else {
+            if (lockView) lockView.style.display = 'none';
+            if (workflowContainer) workflowContainer.style.display = 'block';
+          }
+        })
+        .catch(() => {});
+    }
+
+    function switchStep(stepId) {
+      if (stepId !== 'stepLogin' && !currentSeller) {
+        alert('Merchant Authentication Required: Please sign in to your verified atelier account.');
+        switchStep('stepLogin');
+        return;
+      }
+
+      // Subscription Security Gate: Block access to stepHub if subscription expired or unpaid
+      if (stepId === 'stepHub' && currentSeller) {
+        const sub = currentSeller.subscription || {};
+        const isSubValid = (sub.status === 'active' || currentSeller.subscriptionActive) &&
+                           sub.validUntil &&
+                           new Date(sub.validUntil).getTime() > Date.now();
+        if (!isSubValid) {
+          alert('Subscription Gate: Active $40.00 USD monthly subscription required to open the atelier vault.');
+          switchStep('stepPayment');
+          return;
+        }
+      }
+
+      document.querySelectorAll('.seller-card').forEach(c => c.style.display = 'none');
+      const target = document.getElementById(stepId);
+      if (target) target.style.display = 'block';
+
+      // Clean breadcrumb control: Only display pipeline during onboarding steps (2FA, Profile, Payment)
+      const nav = document.getElementById('pipelineNavBar');
+      if (nav) {
+        if (stepId === 'stepLogin' || stepId === 'stepHub') {
+          nav.style.display = 'none';
+        } else {
+          nav.style.display = 'flex';
+        }
+      }
+
+      document.querySelectorAll('.pipeline-step-btn').forEach(b => b.classList.remove('active'));
+      const activeBtn = document.querySelector('button[onclick="switchStep(\'' + stepId + '\')"]');
+      if (activeBtn) activeBtn.classList.add('active');
+
+      if (stepId === 'stepHub') {
+        renderSellerInventory();
+        renderHubVariations();
+        checkAndDisplayExpiry();
+      }
+    }
+
+    function toggleAuthTabs(isSignup) {
+      document.getElementById('loginFormContainer').style.display = isSignup ? 'none' : 'block';
+      document.getElementById('regFormContainer').style.display = isSignup ? 'block' : 'none';
+      const btnLogin = document.getElementById('btnTabLogin');
+      const btnReg = document.getElementById('btnTabReg');
+      if (isSignup) {
+        btnReg.style.background = '#111111';
+        btnReg.style.color = '#FAF7F2';
+        btnReg.style.borderColor = '#111111';
+        btnReg.style.fontWeight = '700';
+        btnLogin.style.background = 'transparent';
+        btnLogin.style.color = '#111111';
+        btnLogin.style.borderColor = 'transparent';
+        btnLogin.style.fontWeight = '600';
+      } else {
+        btnLogin.style.background = '#111111';
+        btnLogin.style.color = '#FAF7F2';
+        btnLogin.style.borderColor = '#111111';
+        btnLogin.style.fontWeight = '700';
+        btnReg.style.background = 'transparent';
+        btnReg.style.color = '#111111';
+        btnReg.style.borderColor = 'transparent';
+        btnReg.style.fontWeight = '600';
+      }
+    }
+
+    async function handleLoginSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPass').value.trim();
+      const btn = document.getElementById('btnLoginSubmit');
+      if (btn) btn.textContent = 'Authenticating Atelier...';
+
+      try {
+        const res = await fetch('/api/seller/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          alert('Authentication Failed: ' + (data.error || 'Invalid credentials or atelier not registered.'));
+          return;
+        }
+
+        currentSeller = data.seller;
+        currentSellerToken = data.token;
+        sessionStorage.setItem('dewera_seller_token', data.token);
+        sessionStorage.setItem('dewera_seller_data', JSON.stringify(data.seller));
+
+        updatePipelineNavLockState();
+
+        if (currentSeller.atelierName) {
+          const hTitle = document.getElementById('hubHeaderAtelierTitle');
+          if (hTitle) hTitle.textContent = currentSeller.atelierName;
+          const bBadge = document.getElementById('logoAtelierBadge');
+          if (bBadge) bBadge.textContent = currentSeller.atelierName;
+          const cHld = document.getElementById('cardHolder');
+          if (cHld) cHld.value = currentSeller.atelierName;
+          const pName = document.getElementById('profAtelierName');
+          if (pName) pName.value = currentSeller.atelierName;
+        }
+
+        if (currentSeller.rating) {
+          const rDisp = document.getElementById('hubRatingDisplay');
+          if (rDisp) rDisp.textContent = currentSeller.rating;
+        }
+
+        // 1. Check 2FA First
+        if (!currentSeller.twoFactorVerified) {
+          const nav = document.getElementById('pipelineNavBar');
+          if (nav) nav.style.display = 'flex';
+          switchStep('step2FA');
+          return;
+        }
+
+        // 2. Subscription Expiry Check: If 1-month sub is expired or unpaid, route to Step 4 ($40/Mo) and do not show vault
+        const sub = currentSeller.subscription || {};
+        const isSubValid = (sub.status === 'active' || currentSeller.subscriptionActive) &&
+                           sub.validUntil &&
+                           new Date(sub.validUntil).getTime() > Date.now();
+
+        if (!isSubValid) {
+          // EXPIRED: Route to Payment Renewal Gate
+          switchStep('stepPayment');
+          const renewalNotice = document.getElementById('paymentRenewalWarning');
+          if (renewalNotice) {
+            renewalNotice.style.display = 'block';
+            const expText = document.getElementById('renewalExpiryText');
+            if (expText) {
+              expText.textContent = sub.validUntil ? 
+                `Your 30-day atelier vault subscription expired on ${new Date(sub.validUntil).toLocaleDateString()}. Complete the $40.00 USD monthly renewal below to unlock your vault management and activate public listings.` :
+                'Active $40.00 USD monthly subscription required before opening your atelier vault and publishing gemstone listings. Your atelier profile and gemstone records remain permanently preserved.';
+            }
+          }
+          const btnStepHub = document.getElementById('btnStepHub');
+          if (btnStepHub) {
+            btnStepHub.classList.add('locked');
+            btnStepHub.title = 'Active monthly subscription required';
+          }
+        } else {
+          // ACTIVE: Route directly to Seller Hub & Listings
+          switchStep('stepHub');
+        }
+      } catch (err) {
+        alert('Network Error during atelier authentication: ' + err.message);
+      } finally {
+        if (btn) btn.textContent = 'Sign In to Merchant Atelier ›';
+      }
+    }
+
+    function signOutSeller() {
+      sessionStorage.removeItem('dewera_seller_token');
+      sessionStorage.removeItem('dewera_seller_data');
+      currentSeller = null;
+      currentSellerToken = null;
+      updatePipelineNavLockState();
+      const tbody = document.getElementById('sellerGemsTableBody');
+      if (tbody) tbody.innerHTML = '';
+      const statListings = document.getElementById('statTotalListings');
+      if (statListings) statListings.textContent = '0';
+      switchStep('stepLogin');
+    }
+
+    function handleRegisterSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('regName').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const phone = document.getElementById('regPhone').value.trim();
+
+      currentSeller = { atelierName: name, email, phone };
+
+      fetch('/api/seller/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ atelierName: name, email, phone })
+      })
+      .then(async r => {
+        const res = await r.json();
+        if (!r.ok || !res.success) {
+          alert('SECURITY NOTICE: Registration blocked.\n\n' + (res.error || 'This entity is blacklisted from opening new seller accounts.'));
+          return;
+        }
+        if (res.seller) {
+          currentSeller.id = res.seller.id;
+          if (res.seller.twoFactorSecret) {
+            currentSeller.twoFactorSecret = res.seller.twoFactorSecret;
+            document.getElementById('totpSecretDisplay').textContent = res.seller.twoFactorSecret;
+          }
+        }
+        updatePipelineNavLockState();
+        switchStep('step2FA');
+      })
+      .catch(err => {
+        alert('Registration Network Error: ' + err.message);
+      });
+    }
+
+    function autoVerify2FA() {
+      if (!currentSeller) return;
+      currentSeller.twoFactorVerified = true;
+      if (currentSellerToken) {
+        sessionStorage.setItem('dewera_seller_data', JSON.stringify(currentSeller));
+      }
+      switchStep('stepProfile');
+    }
+
+    function handleManual2FA(e) {
+      e.preventDefault();
+      if (!currentSeller) return;
+      currentSeller.twoFactorVerified = true;
+      if (currentSellerToken) {
+        sessionStorage.setItem('dewera_seller_data', JSON.stringify(currentSeller));
+      }
+      switchStep('stepProfile');
+    }
+
+    function handleLogoUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        document.getElementById('profLogoUrl').value = evt.target.result;
+        document.getElementById('logoPreviewImg').src = evt.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handleProfileSave(e) {
+      e.preventDefault();
+      if (!currentSeller) return;
+      currentSeller.atelierName = document.getElementById('profAtelierName').value.trim();
+      currentSeller.phone = document.getElementById('profPhone').value.trim();
+      currentSeller.logo = document.getElementById('profLogoUrl').value.trim();
+      document.getElementById('logoAtelierBadge').textContent = currentSeller.atelierName;
+      document.getElementById('cardHolder').value = currentSeller.atelierName;
+      document.getElementById('hubHeaderAtelierTitle').textContent = currentSeller.atelierName;
+      updateCardPreview();
+      switchStep('stepPayment');
+    }
+
+    function switchPayTab(tab) {
+      document.getElementById('tabPayCard').classList.remove('active');
+      document.getElementById('tabPayWallet').classList.remove('active');
+      const tabWire = document.getElementById('tabPayWire');
+      if (tabWire) tabWire.classList.remove('active');
+
+      document.getElementById('viewPayCard').style.display = 'none';
+      document.getElementById('viewPayWallet').style.display = 'none';
+      const viewWire = document.getElementById('viewPayWire');
+      if (viewWire) viewWire.style.display = 'none';
+
+      if (tab === 'card') {
+        document.getElementById('tabPayCard').classList.add('active');
+        document.getElementById('viewPayCard').style.display = 'block';
+      } else if (tab === 'wallet') {
+        document.getElementById('tabPayWallet').classList.add('active');
+        document.getElementById('viewPayWallet').style.display = 'block';
+      } else if (tab === 'wire') {
+        if (tabWire) tabWire.classList.add('active');
+        if (viewWire) viewWire.style.display = 'block';
+      }
+    }
+
+    function applyTestCard(type) {
+      const numInput = document.getElementById('cardNumber');
+      const expM = document.getElementById('cardExpMonth');
+      const expY = document.getElementById('cardExpYear');
+      const cvv = document.getElementById('cardCvv');
+
+      if (type === 'visa') {
+        numInput.value = '4242 4242 4242 4242';
+        expM.value = '12';
+        expY.value = '28';
+        cvv.value = '842';
+      } else if (type === 'mc') {
+        numInput.value = '5555 5555 5555 4444';
+        expM.value = '08';
+        expY.value = '27';
+        cvv.value = '919';
+      } else if (type === 'amex') {
+        numInput.value = '3782 822463 10005';
+        expM.value = '11';
+        expY.value = '29';
+        cvv.value = '2005';
+      }
+      formatAndPreviewCard(numInput);
+    }
+
+    function formatAndPreviewCard(input) {
+      let v = input.value.replace(/\D/g, '');
+      let formatted = '';
+      for (let i = 0; i < v.length; i++) {
+        if (i > 0 && i % 4 === 0) formatted += ' ';
+        formatted += v[i];
+      }
+      input.value = formatted;
+      updateCardPreview();
+    }
+
+    function updateCardPreview() {
+      const numVal = document.getElementById('cardNumber').value.trim() || '•••• •••• •••• ••••';
+      const holderVal = (document.getElementById('cardHolder').value.trim() || 'ATELIER CURATOR').toUpperCase();
+      const monthVal = document.getElementById('cardExpMonth').value;
+      const yearVal = document.getElementById('cardExpYear').value;
+
+      document.getElementById('previewCardNumber').textContent = numVal;
+      document.getElementById('previewCardHolder').textContent = holderVal;
+      document.getElementById('previewCardExpiry').textContent = monthVal + '/' + yearVal;
+
+      const raw = numVal.replace(/\D/g, '');
+      const badge = document.getElementById('cardBrandBadge');
+      if (/^4/.test(raw)) badge.textContent = 'VISA';
+      else if (/^5[1-5]|^2[2-7]/.test(raw)) badge.textContent = 'MASTERCARD';
+      else if (/^3[47]/.test(raw)) badge.textContent = 'AMEX';
+      else badge.textContent = 'CARD';
+    }
+
+    let pendingCardPayload = null;
+
+    function handleCardPaymentSubmit(e) {
+      e.preventDefault();
+      if (!currentSeller) return;
+      const rawCard = document.getElementById('cardNumber').value.replace(/\D/g, '');
+      const cardholder = document.getElementById('cardHolder').value.trim();
+      const month = document.getElementById('cardExpMonth').value;
+      const year = document.getElementById('cardExpYear').value;
+      const cvv = document.getElementById('cardCvv').value.trim();
+      const country = document.getElementById('cardCountry').value;
+
+      pendingCardPayload = {
+        sellerId: currentSeller.id,
+        cardNumber: rawCard,
+        expMonth: month,
+        expYear: year,
+        cvv: cvv,
+        cardholderName: cardholder,
+        billingCountry: country
+      };
+
+      document.getElementById('modalCardMasked').textContent = '•••• ' + rawCard.slice(-4);
+      document.getElementById('modal3DS2').style.display = 'flex';
+    }
+
+    function close3DSModal() {
+      document.getElementById('modal3DS2').style.display = 'none';
+    }
+
+    function activateSellerSubscription(methodName) {
+      if (!currentSeller) return;
+      const now = new Date();
+      const validUntil = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString();
+
+      if (!currentSeller.subscription) currentSeller.subscription = {};
+      currentSeller.subscription.status = 'active';
+      currentSeller.subscription.validUntil = validUntil;
+      currentSeller.subscriptionActive = true;
+
+      sessionStorage.setItem('dewera_seller_data', JSON.stringify(currentSeller));
+      updatePipelineNavLockState();
+
+      const renewalWarning = document.getElementById('paymentRenewalWarning');
+      if (renewalWarning) renewalWarning.style.display = 'none';
+
+      const btnStepHub = document.getElementById('btnStepHub');
+      if (btnStepHub) {
+        btnStepHub.classList.remove('locked');
+        btnStepHub.title = '';
+      }
+
+      switchStep('stepHub');
+
+      const toast = document.getElementById('hubSuccessToast');
+      if (toast) {
+        toast.style.display = 'block';
+        const msg = document.getElementById('hubSuccessMsg');
+        if (msg) {
+          msg.textContent = `Subscription activated via ${methodName}. 30 days active vault access granted until ${new Date(validUntil).toLocaleDateString()}.`;
+        }
+        setTimeout(() => { toast.style.display = 'none'; }, 8000);
+      }
+    }
+
+    function confirm3DS2() {
+      close3DSModal();
+      const btn = document.getElementById('btnPaySubmit');
+      if (btn) btn.textContent = 'Securing 3DS2 Settlement...';
+
+      fetch('/api/seller/card-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(pendingCardPayload)
+      })
+      .then(r => r.json())
+      .then(res => {
+        if (res.success && res.receipt) {
+          activateSellerSubscription('Automated Card Payment (Auth: ' + res.receipt.authCode + ')');
+          if (btn) btn.textContent = 'Pay $40.00 USD • Activate 30-Day Slot ›';
+        } else {
+          alert('Card Payment Error: ' + (res.error || 'Verification declined by issuer.'));
+          if (btn) btn.textContent = 'Pay $40.00 USD • Activate 30-Day Slot ›';
+        }
+      })
+      .catch(err => {
+        alert('Payment Network Error: ' + err.message);
+        if (btn) btn.textContent = 'Pay $40.00 USD • Activate 30-Day Slot ›';
+      });
+    }
+
+    function copyWallet(addr, btn) {
+      navigator.clipboard.writeText(addr).then(() => {
+        const orig = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = orig, 1800);
+      });
+    }
+
+    function autoConfirmEscrow() {
+      if (!currentSeller) return;
+      fetch('/api/seller/payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sellerId: currentSeller.id, walletType: 'USDT (TRC-20)', txHash: '0x' + Date.now().toString(16) })
+      }).catch(() => {});
+
+      activateSellerSubscription('Safe Wallet Escrow ($40.00 USD)');
+    }
+
+    function confirmBankWirePayment() {
+      if (!currentSeller) return;
+      const ref = 'WIRE-' + Date.now().toString(36).toUpperCase();
+      activateSellerSubscription('Corporate Bank Depository Wire (' + ref + ')');
+    }
+
+    function handleManualPayment(e) {
+      e.preventDefault();
+      autoConfirmEscrow();
+    }
+
+    function checkAndDisplayExpiry() {
+      if (!currentSeller) return;
+      const expBanner = document.getElementById('hubExpirationBanner');
+      const sanctionBanner = document.getElementById('hubSanctionBanner');
+      const statusDisp = document.getElementById('hubLicenseStatusDisplay');
+
+      fetch('/api/sellers')
+        .then(r => r.json())
+        .then(sellers => {
+          const s = sellers.find(x => x.id === currentSeller.id) || sellers.find(x => x.email === currentSeller.email);
+          if (s) {
+            currentSeller.status = s.status;
+            if (s.atelierName) {
+              document.getElementById('hubHeaderAtelierTitle').textContent = s.atelierName;
+            }
+            if (s.rating) {
+              document.getElementById('hubRatingDisplay').textContent = s.rating + ' (' + (s.reviewsCount || 100) + ' verified reviews)';
+            }
+
+            const isBanned = s.status === 'banned';
+            const isSuspended = s.status === 'suspended';
+
+            // Sanction Transparency Handling
+            if (isBanned || isSuspended) {
+              if (sanctionBanner) sanctionBanner.style.display = 'block';
+              if (expBanner) expBanner.style.display = 'none';
+
+              const sanctionBadge = document.getElementById('sanctionBadgeStatus');
+              if (sanctionBadge) {
+                sanctionBadge.textContent = isBanned ? 'PERMANENTLY BANNED' : 'ACCOUNT SUSPENDED';
+                sanctionBadge.className = isBanned ? 'badge-industrial badge-industrial-danger' : 'badge-industrial badge-industrial-warn';
+              }
+
+              const sanctionTitle = document.getElementById('sanctionNoticeTitle');
+              if (sanctionTitle) {
+                sanctionTitle.textContent = isBanned ? 'Atelier Banned from Dewera Corundum Network' : 'Atelier Temporarily Suspended & Listings Held';
+              }
+
+              const sanctionRecord = s.sanction || {
+                reason: 'Violation of gemological certification bylaws',
+                proof: 'Spectroscopic absorption irregularities detected in vault batch audit.',
+                actionedAt: new Date().toISOString(),
+                actionedBy: 'Executive Governance'
+              };
+
+              const reasonEl = document.getElementById('sanctionReasonDisplay');
+              const officerEl = document.getElementById('sanctionOfficerDisplay');
+              const dateEl = document.getElementById('sanctionDateDisplay');
+              const proofEl = document.getElementById('sanctionProofDisplay');
+
+              if (reasonEl) reasonEl.textContent = sanctionRecord.reason || 'Policy Sanction';
+              if (officerEl) officerEl.textContent = '@' + (sanctionRecord.actionedBy || 'admin');
+              if (dateEl) dateEl.textContent = sanctionRecord.actionedAt ? new Date(sanctionRecord.actionedAt).toLocaleDateString() : 'Active';
+              if (proofEl) proofEl.textContent = sanctionRecord.proof || 'No public proof string logged.';
+
+              // Appeals State inside Sanction Banner
+              const pendingNotice = document.getElementById('appealPendingNotice');
+              const submitForm = document.getElementById('appealSubmitForm');
+              const stmtDisplay = document.getElementById('pendingAppealStatement');
+
+              if (s.appeal && s.appeal.status === 'pending') {
+                if (pendingNotice) pendingNotice.style.display = 'block';
+                if (submitForm) submitForm.style.display = 'none';
+                if (stmtDisplay) stmtDisplay.textContent = `"${s.appeal.statement}" (Submitted ${new Date(s.appeal.submittedAt).toLocaleDateString()})`;
+              } else {
+                if (pendingNotice) pendingNotice.style.display = 'none';
+                if (submitForm) submitForm.style.display = 'block';
+              }
+
+              if (statusDisp) {
+                statusDisp.textContent = isBanned ? 'Banned by Executive' : 'Suspended (Appeal Eligible)';
+                statusDisp.style.color = '#DC2626';
+              }
+              return;
+            }
+
+            // Normal active or expired flow
+            if (sanctionBanner) sanctionBanner.style.display = 'none';
+
+            if (s.subscription) {
+              const validDate = s.subscription.validUntil ? new Date(s.subscription.validUntil) : null;
+              const now = new Date();
+              const isExpired = validDate && validDate < now;
+
+              if (isExpired || s.status === 'expired' || s.subscription.status === 'expired') {
+                if (expBanner) expBanner.style.display = 'block';
+                if (statusDisp) {
+                  statusDisp.textContent = 'Expired (Preserved in Vault)';
+                  statusDisp.style.color = '#B45309';
+                }
+              } else {
+                if (expBanner) expBanner.style.display = 'none';
+                if (statusDisp) {
+                  const daysLeft = validDate ? Math.max(1, Math.ceil((validDate - now) / (1000 * 60 * 60 * 24))) : 30;
+                  statusDisp.textContent = 'Active (' + daysLeft + ' Days Left)';
+                  statusDisp.style.color = '#047857';
+                }
+              }
+            }
+          }
+        })
+        .catch(() => {});
+    }
+
+    async function handleSellerAppealSubmit(e) {
+      e.preventDefault();
+      if (!currentSeller) return;
+      const stmt = document.getElementById('appealStatementInput').value.trim();
+      const doc = document.getElementById('appealDocumentInput').value.trim();
+
+      if (!stmt) {
+        alert('Please provide a defense statement explaining your case or rectification.');
+        return;
+      }
+
+      const btn = document.getElementById('btnSubmitAppeal');
+      if (btn) btn.textContent = 'Registering Appeal...';
+
+      try {
+        const res = await fetch('/api/seller/appeal', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sellerId: currentSeller.id,
+            statement: stmt,
+            documentUrl: doc
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('Formal Reinstatement Appeal registered successfully! It is now queued for senior review at the Appeals & Incident Desk.');
+          checkAndDisplayExpiry();
+        } else {
+          alert('Appeal Submission Error: ' + (data.error || 'Failed'));
+        }
+      } catch(err) {
+        alert('Network Error: ' + err.message);
+      } finally {
+        if (btn) btn.textContent = 'Submit Formal Appeal ›';
+      }
+    }
+
+    function showHubView(view) {
+      document.getElementById('hubInventoryView').style.display = (view === 'inventory') ? 'block' : 'none';
+      document.getElementById('hubCreateView').style.display = (view === 'create') ? 'block' : 'none';
+      if (view === 'inventory') renderSellerInventory();
+      if (view === 'create') renderHubVariations();
+    }
+
+    /* MULTI-TENANT ISOLATED INVENTORY TABLE & LISTING EDITOR */
+    function renderSellerInventory() {
+      const tbody = document.getElementById('sellerGemsTableBody');
+      if (!tbody) return;
+
+      if (!currentSeller) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:36px; color:var(--muted); font-size:0.85rem;">Please authenticate your merchant atelier to view your vault listings.</td></tr>';
+        const statListings = document.getElementById('statTotalListings');
+        if (statListings) statListings.textContent = '0';
+        return;
+      }
+
+      const allGems = getPublicGems();
+      const sellerId = currentSeller.id || currentSeller.sellerId;
+      // Strict multi-tenant isolation: Only gems belonging to this seller, excluding sovereign Dewera gems
+      const sellerGems = allGems.filter(g => (g.sellerId === sellerId) && !g.isDewera && g.sellerId !== 'dewera');
+
+      const statListings = document.getElementById('statTotalListings');
+      if (statListings) statListings.textContent = sellerGems.length;
+
+      if (sellerGems.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:40px 20px; color:var(--muted); font-size:0.88rem;">' +
+          '<div>No gemstone specimens currently listed under this atelier.</div>' +
+          '<div style="margin-top:10px;"><button type="button" class="btn-apple" onclick="showHubView(\'create\')" style="padding:7px 18px; font-size:0.75rem;">+ Create Your First Listing &rsaquo;</button></div>' +
+          '</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = sellerGems.map(g => {
+        const isOos = g.status === 'out-of-stock' || g.status === 'out_of_stock';
+        const isSold = g.status === 'sold';
+        const statusBadge = isOos 
+          ? '<span style="display:inline-block; padding:4px 10px; border-radius:0; font-size:0.72rem; font-weight:700; color:#B45309; background:#FFFBEB; letter-spacing:0.04em;">Out of Stock</span>'
+          : (isSold ? '<span style="display:inline-block; padding:4px 10px; border-radius:0; font-size:0.72rem; font-weight:700; color:#DC2626; background:#FEF2F2; letter-spacing:0.04em;">Sold</span>' 
+                    : '<span style="display:inline-block; padding:4px 10px; border-radius:0; font-size:0.72rem; font-weight:700; color:#047857; background:#ECFDF5; letter-spacing:0.04em;">Available</span>');
+        
+        const varCount = (g.colorVariations && g.colorVariations.length) ? g.colorVariations.length : 1;
+        const imgUrl = (g.images && g.images[0]) ? (g.images[0].endsWith('.jpg') ? g.images[0].replace(/\.jpg$/, '.png') : g.images[0]) : 'images/dewera-gem-1.png';
+
+        return '<tr>' +
+          '<td>' +
+            '<img src="' + imgUrl + '" alt="' + g.name + '" class="gem-thumb-cell">' +
+          '</td>' +
+          '<td>' +
+            '<div style="font-family:\'Cinzel\', serif; font-weight:700; color:var(--text); font-size:0.92rem;">' + g.name + '</div>' +
+            '<div style="font-size:0.72rem; color:var(--muted); margin-top:3px;">' + (g.origin || 'Ceylon') + '</div>' +
+          '</td>' +
+          '<td>' + (g.type || g.variety || 'Sapphire') + '</td>' +
+          '<td><strong>' + (g.weight || g.weight_carats || '0.0') + ' ct</strong></td>' +
+          '<td><span style="font-family:\'Cinzel\', serif; font-weight:700; color:var(--gold-dark);">' + formatGemPrice(g) + '</span></td>' +
+          '<td>' +
+            '<span style="display:inline-block; padding:3px 10px; background:#FAF7F2; border:1px solid var(--border); font-size:0.72rem; font-weight:600; color:var(--text);">' + varCount + ' Variations</span>' +
+          '</td>' +
+          '<td>' + statusBadge + '</td>' +
+          '<td style="text-align: right;">' +
+            '<div class="table-actions-row">' +
+              '<a href="gem.html?id=' + g.id + '" target="_blank" class="table-action-pill">Examine &rsaquo;</a>' +
+              '<button type="button" onclick="openEditGemModal(\'' + g.id + '\')" class="table-action-pill" style="border-color:var(--gold-dark); color:var(--gold-dark);">Edit Specimen &rsaquo;</button>' +
+              '<button type="button" onclick="toggleSellerGemStock(\'' + g.id + '\')" class="table-action-pill">Toggle Stock</button>' +
+            '</div>' +
+          '</td>' +
+        '</tr>';
+      }).join('');
+    }
+
+    async function toggleSellerGemStock(id) {
+      const allGems = getPublicGems();
+      const gem = allGems.find(g => g.id === id);
+      if (!gem) return;
+      const newStatus = (gem.status === 'available') ? 'out-of-stock' : 'available';
+
+      try {
+        const res = await fetch('/api/gems/update', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-seller-token': currentSellerToken || (currentSeller && currentSeller.id)
+          },
+          body: JSON.stringify({ id, status: newStatus })
+        });
+        const data = await res.json();
+        if (data.success) {
+          gem.status = newStatus;
+          if (Array.isArray(_storeGemsCache)) {
+            const idx = _storeGemsCache.findIndex(x => x.id === id);
+            if (idx !== -1) _storeGemsCache[idx].status = newStatus;
+          }
+          try {
+            localStorage.setItem('dewera_gems', JSON.stringify(allGems));
+          } catch(e) {}
+          renderSellerInventory();
+        } else {
+          alert('Status Update Error: ' + (data.error || 'Failed'));
+        }
+      } catch (err) {
+        alert('Network Error: ' + err.message);
+      }
+    }
+
+    /* EDIT GEMSTONE MODAL WORKFLOW */
+    function openEditGemModal(gemId) {
+      const allGems = getPublicGems();
+      currentEditGem = allGems.find(g => g.id === gemId);
+      if (!currentEditGem) {
+        alert('Gemstone specimen not found.');
+        return;
+      }
+
+      document.getElementById('editModalGemId').textContent = currentEditGem.id;
+      document.getElementById('editGemId').value = currentEditGem.id;
+      document.getElementById('editGemTitle').value = currentEditGem.name || '';
+      document.getElementById('editGemType').value = currentEditGem.type || currentEditGem.variety || 'Blue Sapphire';
+      document.getElementById('editGemWeight').value = currentEditGem.weight || currentEditGem.weight_carats || '';
+      document.getElementById('editGemClarity').value = currentEditGem.clarity || 'Eye Clean';
+      document.getElementById('editGemTreatment').value = currentEditGem.treatment || 'Heated';
+      document.getElementById('editGemOrigin').value = currentEditGem.origin || 'Ratnapura, Sri Lanka';
+      document.getElementById('editGemPrice').value = currentEditGem.price || '';
+      document.getElementById('editGemPriceMax').value = currentEditGem.priceMax || '';
+      document.getElementById('editGemStatus').value = currentEditGem.status || 'available';
+      document.getElementById('editGemCertificate').value = currentEditGem.certificate || currentEditGem.certificate_summary || '';
+      document.getElementById('editGemDescription').value = currentEditGem.description || '';
+
+      if (Array.isArray(currentEditGem.colorVariations) && currentEditGem.colorVariations.length > 0) {
+        editModalColorVariations = JSON.parse(JSON.stringify(currentEditGem.colorVariations));
+      } else {
+        editModalColorVariations = [
+          {
+            id: 'var-1',
+            name: currentEditGem.color || 'Standard Saturation',
+            code: currentEditGem.gradientFrom || '#1A2B6D',
+            price: currentEditGem.price || 5000,
+            priceMax: currentEditGem.priceMax || 6000,
+            status: currentEditGem.status || 'available'
+          }
+        ];
+      }
+      renderEditModalVariations();
+
+      document.getElementById('modalEditGem').style.display = 'flex';
+    }
+
+    function closeEditGemModal() {
+      document.getElementById('modalEditGem').style.display = 'none';
+      currentEditGem = null;
+    }
+
+    function addEditColorVariation() {
+      const id = 'v' + (editModalColorVariations.length + 1);
+      editModalColorVariations.push({
+        id,
+        name: 'Custom Saturation',
+        code: '#2A4D69',
+        price: currentEditGem ? currentEditGem.price : 5000,
+        priceMax: currentEditGem ? (currentEditGem.priceMax || currentEditGem.price * 1.2) : 6000,
+        status: 'available'
+      });
+      renderEditModalVariations();
+    }
+
+    function removeEditColorVariation(idx) {
+      if (editModalColorVariations.length <= 1) return;
+      editModalColorVariations.splice(idx, 1);
+      renderEditModalVariations();
+    }
+
+    function renderEditModalVariations() {
+      const container = document.getElementById('editColorVariationsContainer');
+      if (!container) return;
+
+      container.innerHTML = editModalColorVariations.map((v, i) => {
+        return '<div class="color-row-item">' +
+          '<div>' +
+            '<input type="text" class="form-control" value="' + (v.name || '') + '" onchange="editModalColorVariations[' + i + '].name = this.value" placeholder="e.g. Royal Blue" style="width: 100%; padding: 8px 10px; border: 1px solid var(--border); font-size: 0.8rem;">' +
+          '</div>' +
+          '<div style="display: flex; gap: 6px; align-items: center;">' +
+            '<input type="color" value="' + (v.code || '#1A2B6D') + '" onchange="editModalColorVariations[' + i + '].code = this.value; this.nextElementSibling.value = this.value;" style="width: 32px; height: 32px; padding: 0; border: 1px solid var(--border); cursor: pointer; border-radius: 0;">' +
+            '<input type="text" value="' + (v.code || '#1A2B6D') + '" onchange="editModalColorVariations[' + i + '].code = this.value; this.previousElementSibling.value = this.value;" style="width: 70px; padding: 6px 8px; border: 1px solid var(--border); font-size: 0.75rem; font-family: monospace;">' +
+          '</div>' +
+          '<div style="display: flex; gap: 6px; align-items: center;">' +
+            '<input type="number" value="' + (v.price || '') + '" onchange="editModalColorVariations[' + i + '].price = Number(this.value)" placeholder="Base $" style="width: 50%; padding: 8px 10px; border: 1px solid var(--border); font-size: 0.8rem;">' +
+            '<input type="number" value="' + (v.priceMax || '') + '" onchange="editModalColorVariations[' + i + '].priceMax = Number(this.value)" placeholder="Max $" style="width: 50%; padding: 8px 10px; border: 1px solid var(--border); font-size: 0.8rem;">' +
+          '</div>' +
+          '<div>' +
+            '<select onchange="editModalColorVariations[' + i + '].status = this.value" style="width: 100%; padding: 8px; border: 1px solid var(--border); font-size: 0.78rem;">' +
+              '<option value="available" ' + (v.status === 'available' ? 'selected' : '') + '>Available</option>' +
+              '<option value="out-of-stock" ' + (v.status === 'out-of-stock' ? 'selected' : '') + '>Pit Sourcing</option>' +
+            '</select>' +
+          '</div>' +
+          '<div style="text-align: right;">' +
+            '<button type="button" onclick="removeEditColorVariation(' + i + ')" style="background: none; border: none; color: #DC2626; font-size: 1.1rem; cursor: pointer;">&times;</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    async function handleSaveGemEdit(e) {
+      e.preventDefault();
+      if (!currentEditGem) return;
+
+      const id = document.getElementById('editGemId').value;
+      const name = document.getElementById('editGemTitle').value.trim();
+      const type = document.getElementById('editGemType').value;
+      const weight = parseFloat(document.getElementById('editGemWeight').value) || currentEditGem.weight;
+      const clarity = document.getElementById('editGemClarity').value.trim();
+      const treatment = document.getElementById('editGemTreatment').value;
+      const origin = document.getElementById('editGemOrigin').value.trim();
+      const price = parseInt(document.getElementById('editGemPrice').value, 10) || currentEditGem.price;
+      const priceMaxVal = document.getElementById('editGemPriceMax').value.trim();
+      const priceMax = priceMaxVal ? parseInt(priceMaxVal, 10) : null;
+      const status = document.getElementById('editGemStatus').value;
+      const certificate = document.getElementById('editGemCertificate').value.trim();
+      const description = document.getElementById('editGemDescription').value.trim();
+
+      const btn = document.getElementById('btnSaveGemEdit');
+      if (btn) btn.textContent = 'Saving Changes...';
+
+      const payload = {
+        id,
+        name,
+        type,
+        variety: type,
+        weight,
+        clarity,
+        treatment,
+        origin,
+        price,
+        priceMax,
+        status,
+        certificate,
+        description,
+        colorVariations: editModalColorVariations
+      };
+
+      try {
+        const res = await fetch('/api/gems/update', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-seller-token': currentSellerToken || (currentSeller && currentSeller.id)
+          },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          alert('Save Error: ' + (data.error || 'Failed to update listing.'));
+          return;
+        }
+
+        // Update in memory
+        Object.assign(currentEditGem, payload);
+        if (Array.isArray(_storeGemsCache)) {
+          const idx = _storeGemsCache.findIndex(x => x.id === id);
+          if (idx !== -1) Object.assign(_storeGemsCache[idx], payload);
+        }
+        try {
+          localStorage.setItem('dewera_gems', JSON.stringify(getPublicGems()));
+        } catch(e) {}
+
+        closeEditGemModal();
+        renderSellerInventory();
+
+        const toast = document.getElementById('hubSuccessToast');
+        if (toast) {
+          toast.style.display = 'block';
+          const msg = document.getElementById('hubSuccessMsg');
+          if (msg) msg.textContent = 'Listing "' + name + '" (' + id + ') updated successfully with verified specifications.';
+          setTimeout(() => { toast.style.display = 'none'; }, 6000);
+        }
+      } catch (err) {
+        alert('Network Error: ' + err.message);
+      } finally {
+        if (btn) btn.textContent = 'Save Specimen Changes ›';
+      }
+    }
+
+    function addHubColorVariation() {
+      const id = "v" + (hubColorVariations.length + 1);
+      hubColorVariations.push({
+        id,
+        name: "Custom Saturation",
+        code: "#2A4D69",
+        price: 5000,
+        priceMax: 6500,
+        status: "available"
+      });
+      renderHubVariations();
+    }
+
+    function removeHubColorVariation(idx) {
+      if (hubColorVariations.length <= 1) return;
+      hubColorVariations.splice(idx, 1);
+      renderHubVariations();
+    }
+
+    function renderHubVariations() {
+      const container = document.getElementById('hubColorVariationsContainer');
+      if (!container) return;
+
+      container.innerHTML = hubColorVariations.map((v, i) => {
+        return '<div class="color-row-item">' +
+          '<div>' +
+            '<input type="text" class="form-control" value="' + v.name + '" onchange="hubColorVariations[' + i + '].name = this.value" placeholder="e.g. Royal Blue" style="width: 100%; padding: 8px 10px; border: 1px solid var(--border); font-size: 0.8rem;">' +
+          '</div>' +
+          '<div style="display: flex; gap: 6px; align-items: center;">' +
+            '<input type="color" value="' + v.code + '" onchange="hubColorVariations[' + i + '].code = this.value; this.nextElementSibling.value = this.value;" style="width: 32px; height: 32px; padding: 0; border: 1px solid var(--border); cursor: pointer; border-radius: 0;">' +
+            '<input type="text" value="' + v.code + '" onchange="hubColorVariations[' + i + '].code = this.value; this.previousElementSibling.value = this.value;" style="width: 70px; padding: 6px 8px; border: 1px solid var(--border); font-size: 0.75rem; font-family: monospace;">' +
+          '</div>' +
+          '<div style="display: flex; gap: 6px; align-items: center;">' +
+            '<input type="number" value="' + v.price + '" onchange="hubColorVariations[' + i + '].price = Number(this.value)" placeholder="Base $" style="width: 50%; padding: 8px 10px; border: 1px solid var(--border); font-size: 0.8rem;">' +
+            '<input type="number" value="' + (v.priceMax || '') + '" onchange="hubColorVariations[' + i + '].priceMax = Number(this.value)" placeholder="Max $" style="width: 50%; padding: 8px 10px; border: 1px solid var(--border); font-size: 0.8rem;">' +
+          '</div>' +
+          '<div>' +
+            '<select onchange="hubColorVariations[' + i + '].status = this.value" style="width: 100%; padding: 8px; border: 1px solid var(--border); font-size: 0.78rem;">' +
+              '<option value="available" ' + (v.status === 'available' ? 'selected' : '') + '>Available</option>' +
+              '<option value="out-of-stock" ' + (v.status === 'out-of-stock' ? 'selected' : '') + '>Pit Sourcing</option>' +
+            '</select>' +
+          '</div>' +
+          '<div style="text-align: right;">' +
+            '<button type="button" onclick="removeHubColorVariation(' + i + ')" style="background: none; border: none; color: #DC2626; font-size: 1.1rem; cursor: pointer;">&times;</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function applyGemPreset(type) {
+      if (type === 'blue_sapphire') {
+        document.getElementById('listTitle').value = 'Ceylon Royal Blue Sapphire (Elahera Extraction)';
+        document.getElementById('listType').value = 'Blue Sapphire';
+        document.getElementById('listWeight').value = '3.85';
+        document.getElementById('listBasePrice').value = '6800';
+        hubColorVariations = [
+          { id: "v1", name: "Cornflower Saturation", code: "#4A7BB0", price: 5400, priceMax: 6200, status: "available" },
+          { id: "v2", name: "Vivid Royal Saturation", code: "#1A2B6D", price: 6800, priceMax: 8500, status: "available" },
+          { id: "v3", name: "Deep Midnight Peacock", code: "#0E1A40", price: 6200, priceMax: 7400, status: "out-of-stock" }
+        ];
+      } else if (type === 'padparadscha') {
+        document.getElementById('listTitle').value = 'Ceylon Imperial Padparadscha Sapphire';
+        document.getElementById('listType').value = 'Padparadscha';
+        document.getElementById('listWeight').value = '2.45';
+        document.getElementById('listBasePrice').value = '11500';
+        hubColorVariations = [
+          { id: "v1", name: "Lotus Blossom Salmon", code: "#F28C82", price: 11500, priceMax: 14000, status: "available" },
+          { id: "v2", name: "Sunset Orange Fire", code: "#E8713C", price: 9800, priceMax: 12000, status: "available" }
+        ];
+      } else if (type === 'yellow_sapphire') {
+        document.getElementById('listTitle').value = 'Ceylon Canary Yellow Pushparaga Sapphire';
+        document.getElementById('listType').value = 'Yellow Sapphire';
+        document.getElementById('listWeight').value = '4.20';
+        document.getElementById('listBasePrice').value = '4800';
+        hubColorVariations = [
+          { id: "v1", name: "Golden Canary Saturation", code: "#E8B923", price: 4800, priceMax: 5600, status: "available" },
+          { id: "v2", name: "Champagne Pushparaga", code: "#C9A96E", price: 4200, priceMax: 4900, status: "available" }
+        ];
+      }
+      renderHubVariations();
+    }
+
+    async function handlePublishListing(e) {
+      e.preventDefault();
+      if (!currentSeller) {
+        alert('Please sign in to publish listings.');
+        return;
+      }
+      if (currentSeller.status === 'banned' || currentSeller.status === 'suspended') {
+        alert('Action Prohibited: Your atelier is currently under compliance sanction (' + currentSeller.status.toUpperCase() + '). New gemstone listings cannot be published until your appeal is adjudicated and approved by Senior Governance.');
+        return;
+      }
+      const title = document.getElementById('listTitle').value.trim();
+      const type = document.getElementById('listType').value;
+      const weight = parseFloat(document.getElementById('listWeight').value) || 3.0;
+      const clarity = document.getElementById('listClarity').value.trim();
+      const treatment = document.getElementById('listTreatment').value;
+      const basePrice = parseInt(document.getElementById('listBasePrice').value, 10) || 5000;
+      const desc = document.getElementById('listDesc').value.trim();
+
+      const newGem = {
+        id: "gem-" + Date.now().toString(36),
+        name: title,
+        type: type,
+        variety: type,
+        treatment: treatment,
+        origin: "Elahera, Sri Lanka (Ceylon)",
+        weight: weight,
+        color: hubColorVariations[0] ? hubColorVariations[0].name : "Ceylon Blue",
+        clarity: clarity,
+        price: basePrice,
+        priceType: "range",
+        priceMax: Math.round(basePrice * 1.25),
+        status: "available",
+        images: ["images/dewera-gem-1.png"],
+        description: desc,
+        certificate: "Certified Natural Ceylon",
+        sellerId: currentSeller.id,
+        sellerName: currentSeller.atelierName,
+        sellerRating: currentSeller.rating || 4.98,
+        colorVariations: JSON.parse(JSON.stringify(hubColorVariations)),
+        createdAt: new Date().toISOString()
+      };
+
+      try {
+        const res = await fetch('/api/gems', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'x-seller-token': currentSellerToken || currentSeller.id
+          },
+          body: JSON.stringify(newGem)
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          alert('Publishing Error: ' + (data.error || 'Failed to publish listing.'));
+          return;
+        }
+
+        if (Array.isArray(_storeGemsCache)) {
+          _storeGemsCache.unshift(data.gem || newGem);
+        }
+        try {
+          const allGems = getPublicGems();
+          allGems.unshift(data.gem || newGem);
+          localStorage.setItem('dewera_gems', JSON.stringify(allGems));
+        } catch(e) {}
+
+        alert('Gemstone Specimen Published! It is now live in the sovereign collection vault.');
+        showHubView('inventory');
+      } catch (err) {
+        alert('Network Error: ' + err.message);
+      }
+    }
+
+    function initSellerPortal() {
+      checkSellerGovernance();
+      updateCardPreview();
+
+      const token = sessionStorage.getItem('dewera_seller_token');
+      const sellerJson = sessionStorage.getItem('dewera_seller_data');
+      if (token && sellerJson) {
+        try {
+          currentSeller = JSON.parse(sellerJson);
+          currentSellerToken = token;
+          updatePipelineNavLockState();
+
+          if (currentSeller.atelierName) {
+            const hTitle = document.getElementById('hubHeaderAtelierTitle');
+            if (hTitle) hTitle.textContent = currentSeller.atelierName;
+            const bBadge = document.getElementById('logoAtelierBadge');
+            if (bBadge) bBadge.textContent = currentSeller.atelierName;
+            const cHld = document.getElementById('cardHolder');
+            if (cHld) cHld.value = currentSeller.atelierName;
+            const pName = document.getElementById('profAtelierName');
+            if (pName) pName.value = currentSeller.atelierName;
+          }
+
+          if (currentSeller.rating) {
+            const rDisp = document.getElementById('hubRatingDisplay');
+            if (rDisp) rDisp.textContent = currentSeller.rating;
+          }
+
+          if (currentSeller.twoFactorVerified) {
+            const sub = currentSeller.subscription || {};
+            const isSubValid = (sub.status === 'active' || currentSeller.subscriptionActive) &&
+                               sub.validUntil &&
+                               new Date(sub.validUntil).getTime() > Date.now();
+            if (isSubValid) {
+              switchStep('stepHub');
+            } else {
+              switchStep('stepPayment');
+              const renewalNotice = document.getElementById('paymentRenewalWarning');
+              if (renewalNotice) {
+                renewalNotice.style.display = 'block';
+                const expText = document.getElementById('renewalExpiryText');
+                if (expText && sub.validUntil) {
+                  expText.textContent = `Your 30-day atelier vault subscription expired on ${new Date(sub.validUntil).toLocaleDateString()}. Complete the $40.00 USD monthly renewal below to unlock your vault management and activate public listings.`;
+                }
+              }
+            }
+          } else {
+            switchStep('step2FA');
+          }
+          return;
+        } catch (e) {
+          currentSeller = null;
+          currentSellerToken = null;
+        }
+      }
+
+      // Load corporate bank account details from platform settings
+      fetch('/api/settings?_t=' + Date.now())
+        .then(r => r.json())
+        .then(st => {
+          if (st && st.bankAccount) {
+            const b = st.bankAccount;
+            const bName = document.getElementById('wireBankName');
+            const aName = document.getElementById('wireAccountName');
+            const aNum = document.getElementById('wireAccountNumber');
+            const sw = document.getElementById('wireSwiftCode');
+            const br = document.getElementById('wireBranch');
+            const cur = document.getElementById('wireCurrency');
+            const inst = document.getElementById('wireInstructions');
+            if (bName && b.bankName) bName.textContent = b.bankName;
+            if (aName && b.accountName) aName.textContent = b.accountName;
+            if (aNum && b.accountNumber) aNum.textContent = b.accountNumber;
+            if (sw && b.swiftCode) sw.textContent = b.swiftCode;
+            if (br && b.branch) br.textContent = b.branch;
+            if (cur && b.currency) cur.textContent = b.currency;
+            if (inst && b.instructions) inst.textContent = b.instructions;
+          }
+        })
+        .catch(() => {});
+
+      // Not authenticated on initial arrival
+      currentSeller = null;
+      currentSellerToken = null;
+      updatePipelineNavLockState();
+      switchStep('stepLogin');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initSellerPortal();
+    });
+  </script>
+</body>
+</html>

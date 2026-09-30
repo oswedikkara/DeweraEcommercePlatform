@@ -1,0 +1,2326 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg: #FAF7F2;               /* Champagne luxury parchment */
+  --bg-tile: #F4EFEB;          /* Rich silk cashmere */
+  --bg-card: #FFFFFF;          /* Pure alabaster white */
+  --text: #111111;             /* Deep onyx */
+  --text-serif: #1A1A1A;
+  --muted: #736B63;            /* Warm editorial taupe */
+  --gold: #C9A96E;             /* Haute joaillerie gold */
+  --gold-dark: #8F7443;
+  --gold-light: #E8D8BA;
+  --border: rgba(201, 169, 110, 0.25); /* Subtle gilded hairline */
+  --border-strong: #E2D9CC;
+  --apple-blue: #0071E3;
+  --apple-blue-hover: #0077ED;
+  --ease-apple: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+h1,h2,h3 {
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text);
+  line-height: 1.15;
+}
+
+.font-editorial {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+a { text-decoration: none; color: inherit; }
+img { max-width: 100%; display: block; }
+
+/* ZERO BORDER RADIUS RULE */
+.bento-card,
+.apple-gem-card,
+.gem-card,
+.gem-card-img,
+.hero-device-card,
+.detail-gallery,
+.form-card,
+.stat-card,
+.cat-swatch,
+.gem-swatch,
+.apple-gem-visual-wrap,
+.form-input,
+.form-select,
+.form-textarea,
+.form-control {
+  border-radius: 0px !important;
+}
+
+/* Universal Form Input Boundaries & Safety (Zero Horizontal Overflow) */
+textarea,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+select {
+  box-sizing: border-box !important;
+  max-width: 100% !important;
+}
+
+textarea {
+  resize: vertical !important;
+}
+
+/* ========================================================
+   WORLD'S BEST FROSTED HAUTE JOAILLERIE NAV
+======================================================== */
+.apple-nav, nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: rgba(250, 247, 242, 0.92);
+  backdrop-filter: saturate(180%) blur(24px);
+  -webkit-backdrop-filter: saturate(180%) blur(24px);
+  border-bottom: 1px solid var(--border);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  padding: 0 2.5rem;
+}
+.apple-nav-inner, nav .container {
+  max-width: 1240px;
+  margin: 0 auto;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.apple-nav-logo, .nav-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-decoration: none;
+  background: transparent !important;
+  line-height: 1;
+}
+.nav-brand-img {
+  height: 28px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  background: transparent !important;
+  transition: transform 0.25s var(--ease-apple);
+}
+.nav-brand-img:hover {
+  transform: scale(1.02);
+}
+.nav-brand-sub {
+  display: none !important;
+}
+.footer-brand-img {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+  display: inline-block;
+  background: transparent !important;
+  transition: transform 0.25s var(--ease-apple);
+}
+.footer-brand-img:hover {
+  transform: scale(1.03);
+}
+.footer-brand-sub {
+  display: none !important;
+}
+.apple-nav-logo span:first-child {
+  font-family: 'Cinzel', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  color: var(--text);
+}
+.apple-nav-logo span:last-child {
+  font-size: 0.55rem;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--gold-dark);
+  font-weight: 600;
+  margin-left: 4px;
+}
+.apple-nav-links, .nav-links {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  gap: 2.2rem;
+}
+.apple-nav-link, .nav-links a {
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #333333;
+  font-weight: 500;
+  transition: color 0.25s var(--ease-apple);
+}
+.apple-nav-link:hover, .nav-links a:hover { color: var(--gold-dark); }
+.apple-nav-pill, .nav-enquire {
+  background: var(--text) !important;
+  color: #FAF7F2 !important;
+  padding: 6px 18px !important;
+  border-radius: 0px !important;
+  font-size: 0.7rem !important;
+  letter-spacing: 0.15em !important;
+  text-transform: uppercase !important;
+  font-weight: 600 !important;
+  transition: all 0.25s var(--ease-apple) !important;
+}
+.apple-nav-pill:hover, .nav-enquire:hover {
+  background: var(--gold-dark) !important;
+  transform: scale(1.03);
+}
+
+/* VAULT NAV MEGA-MENU FLYOUT */
+.nav-vault-item {
+  position: static;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+.nav-vault-trigger {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+/* APPLE EDITORIAL FLYOUT (Matching Apple.com Desktop Menu Screenshot) */
+.nav-vault-flyout {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: rgba(250, 248, 245, 0.98);
+  backdrop-filter: saturate(180%) blur(28px);
+  -webkit-backdrop-filter: saturate(180%) blur(28px);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 30px 60px rgba(17, 17, 17, 0.08);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: opacity 0.28s var(--ease-apple), transform 0.28s var(--ease-apple), visibility 0.28s;
+  z-index: 9999;
+  padding: 44px 2rem 54px;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+.nav-vault-flyout::before {
+  content: '';
+  position: absolute;
+  top: -12px;
+  left: 0;
+  right: 0;
+  height: 14px;
+}
+.nav-vault-item:hover .nav-vault-flyout,
+.nav-vault-flyout:hover {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* APPLE-GRADE FULL-PAGE BACKDROP BLUR SCRIM (media_1789989440762.png) */
+.nav-backdrop-scrim {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(10, 10, 12, 0.45);
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  z-index: 995;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.32s cubic-bezier(0.25, 0.1, 0.25, 1), visibility 0.32s;
+}
+
+body.nav-flyout-active .nav-backdrop-scrim {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.apple-flyout-container {
+  max-width: 1080px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 280px 220px 260px;
+  gap: 50px;
+  justify-content: flex-start;
+  text-align: left;
+}
+.apple-flyout-col {
+  display: flex;
+  flex-direction: column;
+}
+.apple-flyout-heading {
+  font-size: 0.72rem;
+  color: #86868b;
+  margin-bottom: 14px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.apple-flyout-big-link {
+  display: block;
+  font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.32;
+  color: #1d1d1f;
+  text-decoration: none;
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+  transition: color 0.2s var(--ease-apple);
+}
+.apple-flyout-big-link:hover {
+  color: var(--gold-dark);
+}
+.apple-flyout-sublinks {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid rgba(201, 169, 110, 0.2);
+  padding-top: 14px;
+}
+.apple-flyout-sublink {
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: #333336;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.apple-flyout-sublink:hover {
+  color: var(--gold-dark);
+}
+.apple-flyout-link {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1d1d1f;
+  line-height: 1.35;
+  text-decoration: none;
+  margin-bottom: 11px;
+  transition: color 0.2s var(--ease-apple);
+}
+.apple-flyout-link:hover {
+  color: var(--gold-dark);
+}
+
+/* GEM PRICE BADGES */
+.gem-card-price {
+  font-family: 'Cinzel', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--gold-dark);
+  letter-spacing: 0.02em;
+  margin-top: 4px;
+  margin-bottom: 6px;
+}
+.gem-card-price-old {
+  text-decoration: line-through;
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-right: 6px;
+  font-weight: 400;
+}
+
+/* SIMPLE MINIMAL FOOTER */
+.footer-simple-nav {
+  display: flex;
+  gap: 2.5rem;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+.footer-simple-link {
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #333333;
+  text-decoration: none;
+  transition: color 0.25s var(--ease-apple);
+}
+.footer-simple-link:hover {
+  color: var(--gold-dark);
+}
+
+/* ========================================================
+   APPLE-GRADE LUXURY BUTTONS (Zero Border-Radius)
+======================================================== */
+.btn-apple {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--text);
+  color: #FAF7F2 !important;
+  font-size: 0.82rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 10px 22px;
+  border-radius: 0px !important;
+  cursor: pointer;
+  transition: all 0.25s var(--ease-apple);
+  border: 1px solid var(--text);
+}
+.btn-apple:hover {
+  background: var(--gold-dark);
+  border-color: var(--gold-dark);
+  transform: scale(1.02);
+}
+.btn-apple:active { transform: scale(0.97); }
+
+.btn-apple-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--text) !important;
+  border: 1px solid rgba(17, 17, 17, 0.4);
+  font-size: 0.82rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 10px 22px;
+  border-radius: 0px !important;
+  cursor: pointer;
+  transition: all 0.25s var(--ease-apple);
+}
+.btn-apple-outline:hover {
+  border-color: var(--gold-dark);
+  color: var(--gold-dark) !important;
+  background: rgba(201, 169, 110, 0.08);
+  transform: scale(1.02);
+}
+
+.apple-link {
+  color: var(--gold-dark);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.25rem;
+  font-style: italic;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: gap 0.2s ease;
+}
+.apple-link:hover { text-decoration: underline; gap: 0.55rem; }
+
+/* ========================================================
+   EDITORIAL HERO SECTION (World's Best Presentation)
+======================================================== */
+.hero-apple, .hero {
+  padding-top: 120px;
+  padding-bottom: 70px;
+  background: var(--bg);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero-badge-tag {
+  font-size: 0.7rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--gold-dark);
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+.hero-headline {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(3rem, 6.5vw, 5.5rem);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+  line-height: 1.05;
+}
+.hero-subhead {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: clamp(1.6rem, 3.2vw, 2.6rem);
+  font-weight: 400;
+  color: #4A4036;
+  margin-bottom: 1rem;
+}
+.hero-details {
+  font-size: 0.92rem;
+  color: var(--muted);
+  max-width: 650px;
+  margin: 0 auto 2.2rem;
+  line-height: 1.7;
+}
+.hero-cta-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+  margin-bottom: 3.5rem;
+}
+.hero-media-wrap {
+  max-width: 1380px;
+  width: calc(100% - 32px);
+  margin: 0 auto;
+  padding: 0;
+  box-sizing: border-box;
+}
+.hero-device-card {
+  border-radius: 0px !important;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  box-shadow: 0 20px 60px rgba(17, 17, 17, 0.06);
+  aspect-ratio: 16/9;
+  max-height: 520px;
+  margin: 0 auto;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hero-device-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s var(--ease-apple);
+}
+.hero-device-card:hover img {
+  transform: scale(1.03);
+}
+
+/* ========================================================
+   APPLE BENTO TILES (Screenshot 2: Sharp Rectangular Grid)
+======================================================== */
+.bento-section {
+  padding: 16px;
+  background: var(--bg);
+}
+.bento-grid {
+  max-width: 1380px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.bento-card {
+  border-radius: 0px !important;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+  transition: transform 0.4s var(--ease-apple), box-shadow 0.4s var(--ease-apple);
+}
+.bento-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(17,17,17,0.05);
+}
+
+/* 2-Column Bento Alignment */
+.bento-card-2col {
+  padding: 50px 40px 0;
+  min-height: 585px;
+}
+.bento-card-2col .bento-card-tag {
+  font-size: 0.68rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold-dark);
+  font-weight: 600;
+  min-height: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+.bento-card-2col .bento-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1.8rem, 2.8vw, 2.4rem);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  min-height: 2.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.4rem;
+}
+.bento-card-2col .bento-sub {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 1.05rem;
+  color: #554D46;
+  max-width: 440px;
+  min-height: 2.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  line-height: 1.4;
+}
+.bento-card-2col .bento-cta {
+  min-height: 36px;
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+.bento-card-2col .bento-visual {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+}
+.bento-card-2col .bento-visual img {
+  max-height: 270px;
+  width: auto;
+  object-fit: contain;
+  transition: transform 0.6s var(--ease-apple);
+}
+.bento-card-2col:hover .bento-visual img {
+  transform: scale(1.05);
+}
+
+/* 3-Column Bento Alignment (Pixel-Perfect Horizontal Baselines) */
+.bento-grid-3 {
+  max-width: 1380px;
+  margin: 16px auto 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.bento-card-3col {
+  padding: 40px 24px 0;
+  min-height: 545px;
+}
+.bento-card-3col .bento-card-tag {
+  font-size: 0.64rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--gold-dark);
+  font-weight: 600;
+  min-height: 1.1rem;
+  margin-bottom: 0.4rem;
+}
+.bento-card-3col .bento-title-3col {
+  font-family: 'Cinzel', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  min-height: 2.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.bento-card-3col .bento-sub-3col {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 0.95rem;
+  color: #554D46;
+  min-height: 2.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin: 0.2rem auto 0.8rem;
+  line-height: 1.35;
+  max-width: 320px;
+}
+.bento-card-3col .bento-cta-3col {
+  min-height: 34px;
+  display: flex;
+  gap: 0.9rem;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.2rem;
+  width: 100%;
+}
+.bento-card-3col .bento-visual-3col {
+  width: 100%;
+  height: 240px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  margin-top: auto;
+}
+.bento-card-3col .bento-visual-3col img {
+  max-height: 200px;
+  width: auto;
+  object-fit: contain;
+  transition: transform 0.6s var(--ease-apple);
+}
+.bento-card-3col:hover .bento-visual-3col img {
+  transform: scale(1.06);
+}
+
+/* Bento Card Seller Accreditation Bar (Highest Rated Showcase) */
+.bento-seller-bar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  background: rgba(250, 248, 245, 0.95);
+  border: 1px solid rgba(201, 169, 110, 0.28);
+  padding: 5px 12px;
+  margin-bottom: 0.8rem;
+  border-radius: 0px !important;
+  text-decoration: none;
+  transition: all 0.3s var(--ease-apple);
+  box-sizing: border-box;
+  max-width: 92%;
+}
+.bento-seller-bar:hover {
+  background: rgba(201, 169, 110, 0.1);
+  border-color: var(--gold);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+.bento-seller-bar-logo {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+  flex-shrink: 0;
+  border-radius: 0px !important;
+  display: block;
+}
+.bento-seller-bar-name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bento-seller-bar-sep {
+  color: rgba(201, 169, 110, 0.6);
+  font-size: 0.65rem;
+}
+.bento-seller-bar-rating {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--gold-dark);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+.bento-seller-bar-reviews {
+  font-size: 0.58rem;
+  color: var(--muted);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* 3-Column Bento Seller Bar Compact Fit */
+.bento-card-3col .bento-seller-bar {
+  padding: 4px 10px;
+  gap: 6px;
+  margin-bottom: 0.65rem;
+  max-width: 95%;
+}
+.bento-card-3col .bento-seller-bar-logo {
+  width: 13px;
+  height: 13px;
+}
+.bento-card-3col .bento-seller-bar-name {
+  font-size: 0.58rem;
+  letter-spacing: 0.06em;
+}
+.bento-card-3col .bento-seller-bar-rating {
+  font-size: 0.58rem;
+}
+.bento-card-3col .bento-seller-bar-reviews {
+  font-size: 0.54rem;
+}
+
+/* Compact, Non-Oversized Card Buttons */
+.btn-apple-sm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--text);
+  color: #FAF7F2 !important;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 6px 14px;
+  border: 1px solid var(--text);
+  cursor: pointer;
+  transition: all 0.25s var(--ease-apple);
+  text-decoration: none;
+}
+.btn-apple-sm:hover {
+  background: var(--gold-dark);
+  border-color: var(--gold-dark);
+  transform: scale(1.02);
+}
+.btn-apple-outline-sm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--text) !important;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 6px 14px;
+  border: 1px solid rgba(17, 17, 17, 0.4);
+  cursor: pointer;
+  transition: all 0.25s var(--ease-apple);
+  text-decoration: none;
+}
+.btn-apple-outline-sm:hover {
+  border-color: var(--gold-dark);
+  color: var(--gold-dark) !important;
+  background: rgba(201, 169, 110, 0.08);
+}
+.link-apple-sm {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--gold-dark) !important;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+.link-apple-sm:hover {
+  color: var(--text) !important;
+  text-decoration: underline;
+}
+
+/* Out of Stock Status Styling */
+.apple-outofstock-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background: rgba(50, 46, 42, 0.92);
+  color: #FAF7F2;
+  font-size: 0.64rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 4px 10px;
+  z-index: 2;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.badge-out-of-stock {
+  background: #5A524C !important;
+  color: #FAF7F2 !important;
+}
+
+/* ========================================================
+   GEMSTONE LISTINGS / CARDS (Zero Border Radius + Luxury Editorial)
+======================================================== */
+.gems-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 24px;
+  align-items: stretch;
+}
+.apple-gem-card, .gem-card {
+  border-radius: 0px !important;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 28px 20px 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.4s var(--ease-apple), box-shadow 0.4s var(--ease-apple);
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.apple-gem-card:hover, .gem-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 48px rgba(17,17,17,0.06);
+}
+.apple-gem-card-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+}
+.apple-gem-badge-top {
+  font-size: 0.64rem;
+  color: var(--gold-dark);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  min-height: 1.1rem;
+  line-height: 1.1rem;
+}
+.apple-gem-card-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  line-height: 1.25;
+  color: var(--text);
+  margin: 0 0 0.3rem;
+  min-height: 3.8rem;
+  max-height: 3.8rem;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+}
+.apple-gem-card-sub {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 1.15rem;
+  color: var(--muted);
+  margin-top: 0.35rem;
+  min-height: 1.5rem;
+}
+.apple-gem-visual-wrap, .gem-card-img {
+  border-radius: 0px !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  height: 220px;
+  width: 100%;
+  position: relative;
+  margin: 0 0 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  flex-shrink: 0;
+}
+.apple-gem-visual-wrap img, .gem-card-img img {
+  max-width: 82%;
+  max-height: 180px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.07));
+  transition: transform 0.6s var(--ease-apple), filter 0.6s var(--ease-apple);
+  user-select: none;
+}
+.apple-gem-card:hover .apple-gem-visual-wrap img {
+  transform: scale(1.06);
+  filter: drop-shadow(0 18px 36px rgba(0, 0, 0, 0.12));
+}
+.apple-gem-card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-grow: 1;
+  justify-content: flex-start;
+  width: 100%;
+}
+.apple-gem-card-tagline {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 1.05rem;
+  color: #554D46;
+  margin: 0 0 0.5rem;
+  line-height: 1.35;
+  min-height: 1.5rem;
+  max-height: 1.5rem;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+}
+.apple-gem-card-specs {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 500;
+  margin: 0 0 0.6rem;
+  min-height: 2.2rem;
+  max-height: 2.2rem;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.25;
+  width: 100%;
+}
+.card-badge-slot {
+  height: 34px;
+  min-height: 34px;
+  max-height: 34px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 0 0.7rem;
+  box-sizing: border-box;
+}
+.gem-card-price {
+  font-family: 'Cinzel', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--gold-dark);
+  letter-spacing: 0.02em;
+  min-height: 48px;
+  max-height: 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0 0 0.8rem;
+  width: 100%;
+}
+.apple-gem-card-actions {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  width: 100%;
+  padding-top: 4px;
+}
+.vault-btn-examine {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--text);
+  color: #FAF7F2 !important;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 8px 20px;
+  border-radius: 0px !important;
+  border: 1px solid var(--text);
+  transition: all 0.25s var(--ease-apple);
+  text-decoration: none;
+}
+.vault-btn-examine:hover {
+  background: var(--gold-dark);
+  border-color: var(--gold-dark);
+  transform: scale(1.02);
+}
+.vault-link-order {
+  font-size: 0.75rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--gold-dark);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.vault-link-order:hover {
+  color: var(--text);
+  transform: translateX(3px);
+}
+.vault-link-acquired {
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  opacity: 0.55;
+  font-weight: 600;
+}
+.apple-gem-card-actions .btn-apple,
+.apple-gem-card-actions .btn-apple-outline {
+  flex: 1;
+  height: 31px;
+  padding: 0 8px;
+  font-size: 0.63rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  font-weight: 600;
+  border-radius: 0px !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: nowrap;
+}
+.apple-sold-badge, .gem-sold-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(250, 247, 242, 0.85);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 2.2rem;
+  color: var(--text);
+  z-index: 4;
+}
+.apple-discount-pill, .gem-card-discount {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: var(--gold-dark);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 0px !important;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+  z-index: 5;
+}
+
+/* ========================================================
+   FILTER NAVIGATION & REFINED ATELIER CONTROLS
+======================================================== */
+.pill-filter-bar, .filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 1.5rem;
+}
+.pill-filter-btn, .filter-btn {
+  background: #FAF8F5;
+  border: 1px solid var(--border);
+  color: #5A524C;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 0px !important;
+  cursor: pointer;
+  transition: all 0.2s var(--ease-apple);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  height: 38px;
+  box-sizing: border-box;
+  user-select: none;
+}
+.pill-filter-btn:hover, .filter-btn:hover {
+  background: #FFFFFF;
+  border-color: var(--gold-dark);
+  color: var(--text);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(17,17,17,0.04);
+}
+.pill-filter-btn.active, .filter-btn.active {
+  background: #1C1917 !important;
+  color: #E8D5B0 !important;
+  border-color: var(--gold) !important;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+}
+
+/* ========================================================
+   PRODUCT DETAIL PAGE (Haute Joaillerie Spec Sheet)
+======================================================== */
+.detail-hero, .gem-detail {
+  padding: 130px 2rem 70px;
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+.detail-gallery {
+  border-radius: 0px !important;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  background: radial-gradient(circle at center, #FFFFFF 55%, #F7F4EE 100%);
+  aspect-ratio: 1;
+  position: sticky;
+  top: 78px;
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.6rem 2rem 3.4rem;
+  box-shadow: 0 20px 50px rgba(17,17,17,0.04);
+  max-height: calc(100vh - 130px);
+  max-width: min(100%, calc(100vh - 130px));
+  box-sizing: border-box;
+  margin-bottom: 2.5rem;
+}
+.detail-gallery img {
+  max-width: 76%;
+  max-height: 76%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 14px 28px rgba(0,0,0,0.10));
+  transition: transform 0.6s var(--ease-apple);
+  display: block;
+  margin: auto;
+}
+.detail-gallery:hover img {
+  transform: scale(1.05);
+}
+.gallery-cassette-pill {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+  white-space: nowrap;
+  text-align: center;
+  font-size: 0.62rem;
+  color: var(--gold-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-weight: 600;
+  background: rgba(250, 248, 245, 0.92);
+  border: 1px solid rgba(201, 169, 110, 0.3);
+  padding: 4px 14px;
+  border-radius: 0px !important;
+  box-sizing: border-box;
+  z-index: 6;
+}
+.gallery-dots {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+.gallery-dot {
+  width: 14px;
+  height: 3px;
+  border-radius: 0px !important;
+  background: rgba(255,255,255,0.4);
+  cursor: pointer;
+  transition: all 0.25s var(--ease-apple);
+}
+.gallery-dot.active {
+  background: #FFFFFF;
+  width: 28px;
+  border-radius: 0px !important;
+}
+
+/* 4 C's Gemological Executive Summary Card (Sotheby's / Haute Joaillerie Standard) */
+.gem-executive-specs-card {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin: 1.4rem 0;
+  box-sizing: border-box;
+}
+@media (max-width: 680px) {
+  .gem-executive-specs-card {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+.gem-exec-col {
+  background: #FAF8F5;
+  padding: 14px 10px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.gem-exec-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.gem-exec-val {
+  font-family: 'Cinzel', serif;
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.02em;
+  line-height: 1.25;
+}
+.gem-exec-sub {
+  font-size: 0.62rem;
+  color: var(--gold-dark);
+  margin-top: 3px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+/* Seller Trust Card & Metric Badges (Haute Joaillerie Atelier Rating Baseline) */
+.seller-trust-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 1.2rem;
+  text-align: center;
+}
+@media (max-width: 640px) {
+  .seller-trust-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+.seller-trust-stat-box {
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  padding: 10px 8px;
+  border-radius: 0px !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 58px;
+  box-sizing: border-box;
+}
+.seller-trust-stat-val {
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.seller-trust-stat-lbl {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-top: 3px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* Sovereign Custody 3-Column Stats Grid */
+.sovereign-trust-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  font-size: 0.74rem;
+}
+@media (max-width: 640px) {
+  .sovereign-trust-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.spec-sheet-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 1.6rem 2rem;
+  margin: 2rem 0;
+}
+.spec-sheet-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(201, 169, 110, 0.2);
+  font-size: 0.92rem;
+}
+.spec-sheet-row:last-child { border-bottom: none; }
+.spec-sheet-label { color: var(--muted); font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; }
+.spec-sheet-val { font-weight: 600; color: var(--text); }
+
+/* ========================================================
+   APPLE-GRADE INSIDE ORDERING EXPERIENCE (Image 2)
+======================================================== */
+.dossier-subnav {
+  border: none !important;
+  border-bottom: none !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  padding: 16px 2rem 0;
+  margin-bottom: 0;
+  position: relative !important;
+  top: auto !important;
+  z-index: 10;
+}
+.dossier-subnav-inner {
+  max-width: 1380px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.dossier-subnav-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.dossier-subnav-status {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+  flex-wrap: wrap;
+}
+.dossier-subnav-pill {
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #2D6A4F;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.dossier-config-group {
+  margin: 1.8rem 0;
+}
+.dossier-config-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text);
+  margin-bottom: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.dossier-config-label span {
+  font-size: 0.72rem;
+  color: var(--gold-dark);
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 500;
+}
+.dossier-config-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 640px) {
+  .dossier-config-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.dossier-config-card {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  padding: 16px 18px;
+  cursor: pointer;
+  transition: all 0.25s var(--ease-apple);
+  border-radius: 0px !important;
+  text-align: left;
+}
+.dossier-config-card:hover {
+  border-color: var(--gold-dark);
+}
+.dossier-config-card.selected {
+  border-color: var(--text);
+  background: #FFFFFF;
+  box-shadow: 0 4px 18px rgba(17,17,17,0.06);
+}
+.dossier-config-card-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.dossier-config-card-sub {
+  font-size: 0.74rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+/* ========================================================
+   WHY THIS GEMSTONE IS EXTRAORDINARY (Image 3)
+======================================================== */
+.why-special-section {
+  padding: 100px 2rem;
+  background: #FAF7F2;
+  border-top: 1px solid var(--border);
+}
+.why-special-header {
+  max-width: 1380px;
+  margin: 0 auto 3.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+.why-special-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  max-width: 1380px;
+  margin: 0 auto;
+}
+@media (max-width: 1100px) {
+  .why-special-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 640px) {
+  .why-special-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.why-special-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 0px !important;
+  padding: 38px 28px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.4s var(--ease-apple), box-shadow 0.4s var(--ease-apple);
+}
+.why-special-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px rgba(17,17,17,0.05);
+}
+.why-special-cat {
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold-dark);
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+}
+.why-special-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.22rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+  margin-bottom: 1rem;
+}
+.why-special-desc {
+  font-size: 0.88rem;
+  color: #5A524A;
+  line-height: 1.65;
+  margin-top: auto;
+}
+
+/* ========================================================
+   PAGE HEADERS & SECTIONS
+======================================================== */
+.page-header {
+  padding: 130px 2rem 60px;
+  background: var(--bg);
+  text-align: center;
+}
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+.section { padding: 70px 0; }
+.section-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold-dark);
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+}
+.section-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(2.4rem, 4.5vw, 3.8rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.8rem;
+}
+.section-divider {
+  width: 44px;
+  height: 2px;
+  background: var(--gold);
+  margin: 1.5rem 0 2rem;
+}
+.section-divider.center { margin: 1.5rem auto 2rem; }
+.section-text {
+  font-size: 1.1rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+/* ========================================================
+   HAUTE JOAILLERIE FOOTER
+======================================================== */
+.apple-footer, footer {
+  background: #F2ECE4;
+  color: #615951;
+  font-size: 0.8rem;
+  padding: 60px 2rem 36px;
+  border-top: 1px solid var(--border);
+}
+.apple-footer-inner, footer .container {
+  max-width: 1160px;
+  margin: 0 auto;
+}
+.apple-footer-notes {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1.8rem;
+  margin-bottom: 2.5rem;
+  line-height: 1.7;
+}
+.apple-footer-nav {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2.5rem;
+  margin-bottom: 3rem;
+}
+.apple-footer-col-title {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  color: var(--text);
+  margin-bottom: 1rem;
+}
+.apple-footer-col a {
+  display: block;
+  margin-bottom: 0.6rem;
+  color: #736B63;
+  transition: color 0.2s;
+}
+.apple-footer-col a:hover { color: var(--gold-dark); }
+
+@media (max-width: 900px) {
+  .bento-grid, .bento-grid-3, .detail-hero, .gem-detail { grid-template-columns: 1fr; }
+  .apple-footer-nav { grid-template-columns: 1fr 1fr; }
+  .hero-headline { font-size: 2.8rem; }
+}
+
+/* ========================================================
+   LUXURY FORM CONTROLS & ORDER DOSSIER
+======================================================== */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+.form-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text);
+  margin-bottom: 0.6rem;
+}
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  height: 50px;
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 0px !important;
+  padding: 0 16px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: var(--text);
+  outline: none;
+  transition: all 0.25s var(--ease-apple);
+  box-sizing: border-box;
+}
+.form-textarea {
+  height: auto;
+  padding: 14px 16px;
+  resize: vertical;
+  line-height: 1.6;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--gold-dark);
+  box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.15);
+  background: #FFFFFF;
+}
+.form-input::placeholder, .form-textarea::placeholder {
+  color: #A0988F;
+  font-size: 0.88rem;
+}
+
+/* ORDER / ACQUISITION SPLIT LAYOUT (Both cards same size and aligned) */
+.order-dossier-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  max-width: 1240px;
+  margin: 0 auto;
+  align-items: stretch;
+}
+.order-dossier-grid > aside,
+.order-dossier-grid > section {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+  flex: 1;
+}
+.order-gem-preview-card,
+.order-form-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 0px !important;
+  padding: 44px 38px;
+  box-shadow: 0 16px 40px rgba(17,17,17,0.04);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  flex: 1;
+}
+.order-gem-preview-card {
+  text-align: center;
+}
+.order-gem-visual {
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1.5rem 0;
+}
+.order-gem-visual img {
+  max-height: 190px;
+  max-width: 85%;
+  object-fit: contain;
+  filter: drop-shadow(0 14px 28px rgba(0,0,0,0.1));
+  transition: transform 0.6s var(--ease-apple);
+}
+.order-gem-preview-card:hover .order-gem-visual img {
+  transform: scale(1.05);
+}
+.order-assurances {
+  border-top: 1px solid rgba(201, 169, 110, 0.2);
+  margin-top: 1.8rem;
+  padding-top: 1.4rem;
+  text-align: left;
+}
+.assurance-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+}
+.assurance-icon {
+  color: var(--gold-dark);
+  font-size: 0.95rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* THE DEWERA STANDARD / 4 PILLARS */
+.pillars-section {
+  padding: 100px 2rem;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+}
+.pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  max-width: 1380px;
+  margin: 0 auto;
+}
+.pillar-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0px !important;
+  padding: 44px 30px;
+  transition: transform 0.4s var(--ease-apple), box-shadow 0.4s var(--ease-apple);
+  display: flex;
+  flex-direction: column;
+}
+.pillar-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(17,17,17,0.05);
+}
+.pillar-number {
+  font-family: 'Cinzel', serif;
+  font-size: 1.8rem;
+  color: var(--gold-dark);
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+}
+.pillar-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  margin-bottom: 0.8rem;
+  line-height: 1.3;
+}
+.pillar-desc {
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+/* ATELIER SERVICES & BESPOKE MOUNTINGS */
+.atelier-section {
+  padding: 110px 2rem;
+  background: #F5EFEB;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.atelier-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  max-width: 1380px;
+  margin: 0 auto;
+}
+.atelier-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 0px !important;
+  padding: 48px 36px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.4s var(--ease-apple), box-shadow 0.4s var(--ease-apple);
+}
+.atelier-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 45px rgba(17,17,17,0.06);
+}
+.atelier-tag {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold-dark);
+  margin-bottom: 0.8rem;
+}
+.atelier-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 1rem;
+  line-height: 1.25;
+}
+.atelier-desc {
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 2rem;
+}
+
+/* CLIENT ADVISORY & FAQS */
+.faq-section {
+  padding: 100px 2rem;
+  background: var(--bg);
+  max-width: 1080px;
+  margin: 0 auto;
+}
+.faq-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 3rem;
+}
+.faq-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0px !important;
+  padding: 26px 32px;
+  cursor: pointer;
+  transition: background 0.3s var(--ease-apple), border-color 0.3s;
+}
+.faq-item:hover {
+  border-color: var(--gold-dark);
+}
+.faq-question {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.faq-icon {
+  font-size: 1.4rem;
+  color: var(--gold-dark);
+  transition: transform 0.3s ease;
+  line-height: 1;
+}
+.faq-item.active .faq-icon {
+  transform: rotate(45deg);
+}
+.faq-answer {
+  display: none;
+  font-size: 0.92rem;
+  color: var(--muted);
+  line-height: 1.75;
+  margin-top: 1.2rem;
+  border-top: 1px solid rgba(201, 169, 110, 0.15);
+  padding-top: 1.2rem;
+}
+.faq-item.active .faq-answer {
+  display: block;
+}
+
+@media (max-width: 1024px) {
+  .order-dossier-grid { grid-template-columns: 1fr; }
+  .order-gem-preview-card { position: static; max-width: 500px; margin: 0 auto; }
+  .pillars-grid { grid-template-columns: 1fr 1fr; }
+  .atelier-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .form-row { grid-template-columns: 1fr; }
+  .pillars-grid { grid-template-columns: 1fr; }
+}
+
+/* ========================================================
+   SOVEREIGN HERO SHOWCASE (Apple Multi-Trillion-Dollar Presentation)
+======================================================== */
+.hero-showcase-card {
+  border-radius: 0px !important;
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  box-shadow: 0 24px 70px rgba(17, 17, 17, 0.05);
+  margin: 0 auto;
+  padding: 44px 48px;
+  position: relative;
+  text-align: left;
+  width: 100%;
+  box-sizing: border-box;
+}
+.hero-showcase-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(201, 169, 110, 0.2);
+  padding-bottom: 1rem;
+  margin-bottom: 2.2rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--gold-dark);
+}
+.hero-showcase-body {
+  display: grid;
+  grid-template-columns: 280px 1fr 280px;
+  gap: 32px;
+  align-items: center;
+}
+.hero-feature-callout {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+.hero-feature-item h4 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.hero-feature-item p {
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.hero-center-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-height: 360px;
+}
+.hero-center-stage img {
+  max-height: 340px;
+  max-width: 90%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 20px 45px rgba(0, 0, 0, 0.12));
+  transition: transform 0.6s var(--ease-apple);
+}
+.hero-center-stage:hover img {
+  transform: scale(1.06);
+}
+.hero-telemetry-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  border-top: 1px solid rgba(201, 169, 110, 0.2);
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  text-align: center;
+}
+.telemetry-item-val {
+  font-family: 'Cinzel', serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.telemetry-item-lbl {
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold-dark);
+  margin-top: 3px;
+}
+@media (max-width: 1024px) {
+  .hero-showcase-body {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .hero-feature-item {
+    text-align: center;
+  }
+  .hero-feature-item h4 {
+    justify-content: center;
+  }
+  .hero-telemetry-bar {
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+}
+@media (max-width: 768px) {
+  .hero-showcase-card {
+    padding: 28px 20px;
+  }
+  .hero-showcase-topbar {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+}
+
+/* ========================================================
+   INDUSTRIAL DEVICE OPTIMIZATION SUITE
+   Certified across: Mobile (320px-480px), Phablets (481px-767px),
+   Tablets (768px-1024px), Laptops (1025px-1440px), 4K (1441px+)
+   Zero horizontal overflow • Safe-area notches • 44px touch targets
+======================================================== */
+
+/* 1. Safe Area Insets & Viewport Ergonomics */
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+}
+
+html, body {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden !important;
+  touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
+}
+
+button, a, input, select, textarea, .pill-filter-btn {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 2. Responsive Navigation & Mobile App Bar */
+@media (max-width: 900px) {
+  .apple-nav, nav {
+    padding-left: max(1.2rem, var(--safe-left));
+    padding-right: max(1.2rem, var(--safe-right));
+  }
+  .apple-nav-links {
+    gap: 1.2rem;
+  }
+  .nav-brand-img {
+    height: 25px;
+  }
+}
+
+@media (max-width: 640px) {
+  .apple-nav, nav {
+    height: 52px;
+    padding-left: max(0.85rem, var(--safe-left));
+    padding-right: max(0.85rem, var(--safe-right));
+  }
+  .apple-nav-links {
+    gap: 0.65rem;
+  }
+  .apple-nav-link {
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+  }
+  .apple-nav-pill {
+    padding: 5px 12px !important;
+    font-size: 0.62rem !important;
+    letter-spacing: 0.08em !important;
+  }
+  .nav-brand-img {
+    height: 22px;
+  }
+  .nav-vault-flyout {
+    position: fixed;
+    top: 52px;
+    left: 0;
+    right: 0;
+    max-height: 80vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .apple-flyout-container {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 1.5rem 1rem;
+  }
+}
+
+/* 3. Form Input Optimization (Eliminates iOS Safari 100% Zoom Bug) */
+@media (max-width: 768px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="password"],
+  input[type="number"],
+  select,
+  textarea {
+    font-size: 16px !important; /* Critical iOS Safari standard */
+    min-height: 44px; /* Apple Human Interface Guideline minimum */
+  }
+}
+
+/* 4. Responsive Catalog & Grid Scaling */
+@media (max-width: 640px) {
+  .gems-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px;
+  }
+  .apple-gem-card, .gem-card {
+    padding: 22px 16px 18px;
+    max-width: 100%;
+  }
+  .apple-gem-visual-wrap {
+    height: 180px;
+  }
+  .apple-gem-visual-wrap img {
+    max-height: 150px;
+  }
+  .pill-filter-bar {
+    gap: 4px;
+  }
+  .pill-filter-btn {
+    padding: 6px 12px;
+    font-size: 0.64rem;
+    height: 36px;
+    min-width: 44px;
+  }
+  #gemSearch {
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+  #gemSortSelect {
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .gems-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 18px;
+  }
+}
+
+/* 5. Responsive Specimen Dossier (gem.html) */
+@media (max-width: 960px) {
+  .detail-hero, .gem-detail {
+    grid-template-columns: 1fr !important;
+    gap: 2rem;
+    padding: 80px 1.5rem 50px !important;
+  }
+  .detail-gallery {
+    position: relative !important;
+    top: 0 !important;
+    max-width: 480px;
+    margin: 0 auto;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .detail-hero, .gem-detail {
+    padding: 70px 1rem 30px !important;
+  }
+  .gem-executive-specs-card {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .gem-exec-col {
+    padding: 10px 6px;
+  }
+  .gem-exec-val {
+    font-size: 0.95rem;
+  }
+  .dossier-config-grid {
+    grid-template-columns: 1fr !important;
+  }
+  #orderActionContainer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+  #orderActionContainer a,
+  #orderActionContainer button {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+    box-sizing: border-box;
+  }
+}
+
+/* 6. Responsive Contact & Inquiry Page (contact.html) */
+@media (max-width: 960px) {
+  .order-dossier-grid {
+    grid-template-columns: 1fr !important;
+    gap: 2rem;
+  }
+  .order-gem-preview-card {
+    position: static !important;
+    max-width: 100% !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .order-form-card {
+    padding: 22px 16px !important;
+  }
+  #activeGemPreviewCard {
+    padding: 14px 12px !important;
+  }
+  #activeGemPreviewCard > div:nth-child(2) {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  #previewVariationButtons button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* 7. Ultra-Wide & 4K Displays (Clean Constraints) */
+@media (min-width: 1600px) {
+  .apple-nav-inner, nav .container,
+  .hero-showcase-card,
+  .bento-grid,
+  .bento-grid-3,
+  .gems-grid {
+    max-width: 1440px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* ========================================================
+   STANDARD HAUTE JOAILLERIE ATELIER BUTTONS
+======================================================== */
+.btn-apple, .btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: #111111;
+  color: #FAF7F2 !important;
+  border: 1px solid #111111;
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 10px 22px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+  font-family: inherit;
+  border-radius: 0px !important;
+  text-decoration: none;
+}
+.btn-apple:hover, .btn-primary:hover {
+  background: var(--gold-dark);
+  border-color: var(--gold-dark);
+  color: #FAF7F2 !important;
+}
+
+.btn-apple-outline, .btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: transparent;
+  color: #111111 !important;
+  border: 1px solid rgba(201, 169, 110, 0.5);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 10px 22px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+  font-family: inherit;
+  border-radius: 0px !important;
+  text-decoration: none;
+}
+.btn-apple-outline:hover, .btn-outline:hover {
+  background: var(--bg);
+  border-color: #111111;
+  color: #111111 !important;
+}
+.btn-apple-outline.tab-active, .btn-apple-outline.active {
+  background: #111111 !important;
+  color: #FAF7F2 !important;
+  border-color: #111111 !important;
+}

@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Add Gemstone ? Dewera Admin</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="admin-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-header" style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px;">
+        <img src="images/dewera-logo.png" alt="DEWERA" style="height: 15px; width: auto; display: block; background: transparent;">
+        <div class="sidebar-sub" style="font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.15em;">Admin Terminal</div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="sidebar-link">
+          <span>Overview</span>
+        </a>
+        <a href="gems.html" class="sidebar-link">
+          <span>Gem Listings</span>
+        </a>
+        <a href="new.html" class="sidebar-link active">
+          <span>+ Add New Gem</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button onclick="logout()" class="btn-logout">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
+          </svg>
+          Exit Terminal
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN AREA -->
+    <div class="admin-main">
+      <header class="top-header">
+        <span style="font-size: 0.75rem; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase;">Product Studio</span>
+        <a href="gems.html" class="btn-apple-outline" style="padding: 0.35rem 1rem; font-size: 0.75rem;">&larr; Return to Listings</a>
+      </header>
+
+      <main class="admin-content">
+        <div style="margin-bottom: 2rem;">
+          <p style="font-size: 0.75rem; color: var(--muted); font-weight: 500;">Vault Acquisitions</p>
+          <h1 style="font-size: 2.2rem; font-weight: 700; letter-spacing: -0.02em; margin-top: 0.2rem;">Add New Gemstone</h1>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1.8fr 1.2fr; gap: 2.5rem; align-items: start;">
+          
+          <!-- LEFT FORM -->
+          <div class="form-card">
+            <form id="gemForm" onsubmit="handleFormSubmit(event)">
+              
+              <!-- DRAG AND DROP PHOTOS -->
+              <div class="form-group" style="margin-bottom: 1.8rem;">
+                <label class="form-label" style="font-size: 0.8rem; font-weight: 600; color: var(--text);">Product Imagery (Select or Drop Multiple Photos)</label>
+                <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+                  <div class="dropzone-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                    </svg>
+                  </div>
+                  <div class="dropzone-title">Drop gemstone photos here</div>
+                  <div class="dropzone-sub">Supports PNG, JPG, WEBP &bull; Select single or multiple images</div>
+                  <input type="file" id="fileInput" multiple accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
+                </div>
+
+                <!-- PHOTO THUMBNAIL STRIP -->
+                <div class="photo-strip" id="photoStrip"></div>
+              </div>
+
+              <!-- BASIC INFO -->
+              <div class="form-group">
+                <label class="form-label">Gemstone Title *</label>
+                <input type="text" id="name" class="form-control" required placeholder="e.g. Ceylon Royal Blue Sapphire" oninput="updatePreview()">
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Mineral Variety *</label>
+                  <select id="type" class="form-control" required onchange="updatePreview()">
+                    <option value="Ruby">Ruby</option>
+                    <option value="Blue Sapphire">Blue Sapphire</option>
+                    <option value="Padparadscha">Padparadscha</option>
+                    <option value="Alexandrite">Alexandrite</option>
+                    <option value="Emerald">Emerald</option>
+                    <option value="Yellow Sapphire">Yellow Sapphire</option>
+                    <option value="Spinel">Spinel</option>
+                    <option value="Tsavorite">Tsavorite</option>
+                    <option value="Tanzanite">Tanzanite</option>
+                    <option value="Imperial Topaz">Imperial Topaz</option>
+                    <option value="Other">Other Variety</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Treatment *</label>
+                  <select id="treatment" class="form-control" onchange="updatePreview()">
+                    <option value="Heated">Heated (Traditional Thermal)</option>
+                    <option value="Unheated">Unheated</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Geographic Provenance / Origin *</label>
+                  <input type="text" id="origin" class="form-control" required placeholder="e.g. Ratnapura, Sri Lanka (Ceylon)" oninput="updatePreview()">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Carat Weight (ct) *</label>
+                  <input type="number" step="0.01" id="weight" class="form-control" required placeholder="3.75" oninput="updatePreview()">
+                </div>
+              </div>
+
+              <!-- PRICING -->
+              <div class="form-row-3">
+                <div class="form-group">
+                  <label class="form-label">Price Valuation Model</label>
+                  <select id="priceType" class="form-control" onchange="toggleNewPriceFields()">
+                    <option value="range">Indicative Market Range (Min - Max)</option>
+                    <option value="starting_from">Starting From (From $X)</option>
+                    <option value="fixed">Fixed Valuation</option>
+                    <option value="consultation">Valuation on Request / Consultation</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Base / Min Price (USD) *</label>
+                  <input type="number" id="price" class="form-control" required placeholder="6200" oninput="recalcAndPreview()">
+                </div>
+                <div class="form-group" id="priceMaxGroup">
+                  <label class="form-label">Max Guide Price (USD)</label>
+                  <input type="number" id="priceMax" class="form-control" placeholder="e.g. 8500" oninput="updatePreview()">
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Discount % (Optional)</label>
+                  <input type="number" min="0" max="90" id="discount" class="form-control" placeholder="e.g. 15" oninput="recalcAndPreview()">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Effective Sale Price (USD)</label>
+                  <input type="number" id="salePrice" class="form-control" readonly style="background:#F2F2F7; color: var(--apple-blue); font-weight: 600;" placeholder="Calculated">
+                </div>
+              </div>
+
+              <div class="form-group" style="margin-bottom: 1.2rem;">
+                <label class="form-label">Market Valuation Notice / Gemmological Note</label>
+                <input type="text" id="marketNote" class="form-control" placeholder="e.g. Corundum prices adjust dynamically based on color saturation and international index.">
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Color Hue & Saturation</label>
+                  <input type="text" id="color" class="form-control" placeholder="e.g. Vivid Royal Blue" oninput="updatePreview()">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Clarity Grade</label>
+                  <select id="clarity" class="form-control">
+                    <option value="Eye Clean">Eye Clean</option>
+                    <option value="VVS">VVS</option>
+                    <option value="VS">VS</option>
+                    <option value="SI">SI</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Initial Status</label>
+                  <select id="status" class="form-control" onchange="updatePreview()">
+                    <option value="available">Available</option>
+                    <option value="out-of-stock">Out of Stock</option>
+                    <option value="sold">Sold (Acquired)</option>
+                    <option value="hidden">Hidden from Store</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Certificate Authority & Seal</label>
+                  <input type="text" id="certificate" class="form-control" placeholder="e.g. GRS #2026-GEM002">
+                </div>
+              </div>
+
+              <!-- GRADIENT FALLBACK -->
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Atmosphere Gradient Start</label>
+                  <input type="color" id="gradFrom" value="#1A2B6D" class="form-control" style="height: 42px; padding: 2px;" oninput="updatePreview()">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Atmosphere Gradient End</label>
+                  <input type="color" id="gradTo" value="#2E4699" class="form-control" style="height: 42px; padding: 2px;" oninput="updatePreview()">
+                </div>
+              </div>
+
+              <!-- COLOR VARIATIONS & INDIVIDUAL PRICES (Gem Specialist Repeater) -->
+              <div style="background: #F9FAFB; border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 1.2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                  <div>
+                    <div style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text);">
+                      Color Variations &amp; Individual Color Codes &amp; Prices
+                    </div>
+                    <div style="font-size: 0.75rem; color: var(--muted); margin-top: 2px;">
+                      Configure multiple saturation types (e.g. Cornflower, Royal Blue) with individual hex codes, prices, and stock status.
+                    </div>
+                  </div>
+                  <button type="button" class="btn btn-outline btn-sm" onclick="addNewVariationRow()" style="font-size: 0.75rem; padding: 4px 10px;">
+                    + Add Color Variation
+                  </button>
+                </div>
+
+                <div id="newVariationsList">
+                  <!-- Populated via JavaScript -->
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Editorial Description & Geology</label>
+                <textarea id="description" class="form-control" rows="4" placeholder="Detail the optical fire, crystallization history, and lab findings..."></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Editorial Tagline (Storefront Card 1-Liner)</label>
+                <input type="text" id="tagline" class="form-control" placeholder="e.g. The Sovereign Imperial Corundum of Ratnapura." oninput="updatePreview()">
+              </div>
+
+              <!-- SPECIAL HIGHLIGHTS (Image 3 Feature Cards) -->
+              <div style="border-top: 1px solid var(--border); margin: 1.5rem 0 1rem; padding-top: 1.2rem;">
+                <div style="font-size: 0.85rem; font-weight: 700; color: var(--text); margin-bottom: 0.3rem; text-transform: uppercase; letter-spacing: 0.1em;">
+                  Why This Gemstone Is Extraordinary (Feature Cards)
+                </div>
+                <p style="font-size: 0.74rem; color: var(--muted); margin-bottom: 1rem; line-height: 1.4;">
+                  Configure the 3 feature cards displayed on the gemstone's inside dossier page.
+                </p>
+
+                <!-- Feature 1 -->
+                <div style="background: #FAF8F5; border: 1px solid var(--border); padding: 12px; margin-bottom: 10px;">
+                  <div style="font-size: 0.72rem; font-weight: 700; color: var(--gold-dark); text-transform: uppercase; margin-bottom: 6px;">Feature 1</div>
+                  <div class="form-row" style="margin-bottom: 6px;">
+                    <input type="text" id="h1Cat" class="form-control" placeholder="Category (e.g. Alluvial Provenance)" style="font-size: 0.8rem;">
+                    <input type="text" id="h1Title" class="form-control" placeholder="Headline (e.g. Ratnapura Riverbed Extraction)" style="font-size: 0.8rem;">
+                  </div>
+                  <textarea id="h1Desc" class="form-control" rows="2" placeholder="Description of this feature..." style="font-size: 0.8rem;"></textarea>
+                </div>
+
+                <!-- Feature 2 -->
+                <div style="background: #FAF8F5; border: 1px solid var(--border); padding: 12px; margin-bottom: 10px;">
+                  <div style="font-size: 0.72rem; font-weight: 700; color: var(--gold-dark); text-transform: uppercase; margin-bottom: 6px;">Feature 2</div>
+                  <div class="form-row" style="margin-bottom: 6px;">
+                    <input type="text" id="h2Cat" class="form-control" placeholder="Category (e.g. Optical Purity)" style="font-size: 0.8rem;">
+                    <input type="text" id="h2Title" class="form-control" placeholder="Headline (e.g. Velvety Royal Saturation)" style="font-size: 0.8rem;">
+                  </div>
+                  <textarea id="h2Desc" class="form-control" rows="2" placeholder="Description of this feature..." style="font-size: 0.8rem;"></textarea>
+                </div>
+
+                <!-- Feature 3 -->
+                <div style="background: #FAF8F5; border: 1px solid var(--border); padding: 12px; margin-bottom: 10px;">
+                  <div style="font-size: 0.72rem; font-weight: 700; color: var(--gold-dark); text-transform: uppercase; margin-bottom: 6px;">Feature 3</div>
+                  <div class="form-row" style="margin-bottom: 6px;">
+                    <input type="text" id="h3Cat" class="form-control" placeholder="Category (e.g. Swisslab Passport)" style="font-size: 0.8rem;">
+                    <input type="text" id="h3Title" class="form-control" placeholder="Headline (e.g. GRS Swiss Certified Rarity)" style="font-size: 0.8rem;">
+                  </div>
+                  <textarea id="h3Desc" class="form-control" rows="2" placeholder="Description of this feature..." style="font-size: 0.8rem;"></textarea>
+                </div>
+              </div>
+
+              <div style="margin-top: 2rem;">
+                <button type="submit" class="btn-apple" style="width: 100%; padding: 0.9rem; font-size: 0.95rem;">Publish Gemstone Listing</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- RIGHT APPLE CARD PREVIEW -->
+          <div>
+            <div class="preview-apple-card" style="border-radius: 0px !important; background: #FFFFFF; border: 1px solid var(--border); box-shadow: 0 16px 40px rgba(0,0,0,0.04); padding: 2rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; border-bottom: 1px solid rgba(0,0,0,0.06); padding-bottom: 0.8rem;">
+                <span style="font-size: 0.72rem; color: #86868B; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em;">Customer Storefront Preview</span>
+                <span class="badge badge-available" id="previewBadge">AVAILABLE</span>
+              </div>
+
+              <!-- EXACT STOREFRONT APPLE CARD -->
+              <div class="apple-gem-card" style="border: 1px solid rgba(201, 169, 110, 0.25); background: #FAF8F5; padding: 32px 20px 24px; text-align: center; border-radius: 0px !important; min-height: 480px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div class="apple-gem-visual-wrap" id="cardPreview" style="border: none !important; background: transparent !important; height: 210px; width: 100%; position: relative; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; overflow: visible;">
+                  <img id="previewImg" src="images/sapphire.png" style="max-width: 85%; max-height: 190px; width: auto; height: auto; object-fit: contain; filter: drop-shadow(0 12px 24px rgba(0,0,0,0.08));">
+                  <div id="soldOverlayPreview" style="position: absolute; inset: 0; background: rgba(250, 247, 242, 0.85); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 2rem; color: #111; z-index: 4;">Sold</div>
+                  <div id="discBadgePreview" style="position: absolute; top: 8px; left: 8px; background: #8B7355; color: white; padding: 3px 10px; border-radius: 0px; font-size: 0.68rem; font-weight: 600; z-index: 5; display: none;">-15%</div>
+                </div>
+
+                <div class="apple-gem-card-body">
+                  <div class="apple-gem-badge-top" id="previewTreatmentOrigin" style="font-size: 0.65rem; color: #8B7355; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.4rem;">HEATED &bull; RATNAPURA, SRI LANKA (CEYLON)</div>
+                  <h3 class="apple-gem-card-title" id="previewName" style="font-family: 'Cinzel', serif; font-size: 1.2rem; font-weight: 700; min-height: 3.2rem; display: flex; align-items: center; justify-content: center; margin: 0; line-height: 1.25;">Ceylon Royal Blue Sapphire</h3>
+                  <p class="apple-gem-card-tagline" id="previewTagline" style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.05rem; color: #554D46; margin: 0 0 0.8rem; line-height: 1.4;">The Sovereign Imperial Corundum of Ratnapura.</p>
+                  <div class="apple-gem-card-specs" id="previewMeta" style="font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 500; margin-bottom: 1.2rem;">3.78 Carats &bull; Eye Clean &bull; Heated</div>
+                  <div class="apple-gem-card-actions" style="display: flex; gap: 1rem; align-items: center; justify-content: center;">
+                    <div class="vault-btn-examine" style="pointer-events: none;">Examine</div>
+                    <div class="vault-link-order" style="pointer-events: none;">Contact to Order &rsaquo;</div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="margin-top: 1.2rem; font-size: 0.75rem; color: var(--muted); line-height: 1.6; border-top: 1px solid var(--border); padding-top: 1rem;">
+                <p style="color: var(--gold-dark); font-weight: 600;">Studio Isolation Engine</p>
+                <p style="margin-top: 0.2rem;">Drop any gemstone photo: backgrounds are automatically eliminated, edges smoothed, and a diffuse ground shadow is generated.</p>
+                <p style="margin-top: 0.4rem;"><strong>Images loaded:</strong> <span id="imgCountText">0 photos selected</span></p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+  <script>
+    checkAuth();
+
+    let uploadedImages = [];
+
+    // Drag and drop setup
+    const dropzone = document.getElementById('dropzone');
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.add('dragover');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.remove('dragover');
+      });
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      const files = e.dataTransfer.files;
+      if (files && files.length > 0) {
+        processFiles(Array.from(files));
+      }
+    });
+
+    function handleFileSelect(e) {
+      const files = e.target.files;
+      if (files && files.length > 0) {
+        processFiles(Array.from(files));
+      }
+    }
+
+    async function processFiles(files) {
+      showToast('Auto-isolating & cleaning ' + files.length + ' gemstone image(s)...');
+      for (const file of files) {
+        if (!file.type.startsWith('image/')) continue;
+        try {
+          const dataUrl = await processImageFile(file);
+          uploadedImages.push(dataUrl);
+        } catch (err) {
+          console.error(err);
+        }
+      }
+      renderPhotoStrip();
+      updatePreview();
+      showToast('Gemstone isolated and studio-centered.');
+    }
+
+    function removePhoto(index) {
+      uploadedImages.splice(index, 1);
+      renderPhotoStrip();
+      updatePreview();
+    }
+
+    function renderPhotoStrip() {
+      const strip = document.getElementById('photoStrip');
+      const count = document.getElementById('imgCountText');
+      count.textContent = uploadedImages.length + ' photo(s) attached';
+
+      strip.innerHTML = uploadedImages.map((src, i) => {
+        return '<div class="photo-thumb-card">' +
+          '<img src="' + src + '">' +
+          (i === 0 ? '<span class="badge-primary-img">Cover</span>' : '') +
+          '<button type="button" class="remove-btn" onclick="removePhoto(' + i + ')">&times;</button>' +
+        '</div>';
+      }).join('');
+    }
+
+    function recalcAndPreview() {
+      const price = parseFloat(document.getElementById('price').value) || 0;
+      const discount = parseFloat(document.getElementById('discount').value) || 0;
+      const saleInput = document.getElementById('salePrice');
+      if (discount > 0 && price > 0) {
+        saleInput.value = Math.round(price * (1 - discount / 100));
+      } else {
+        saleInput.value = '';
+      }
+      updatePreview();
+    }
+
+    function updatePreview() {
+      const name = document.getElementById('name').value || 'Ceylon Royal Blue Sapphire';
+      const type = document.getElementById('type').value || 'Blue Sapphire';
+      const weight = document.getElementById('weight').value || '3.78';
+      const treatment = document.getElementById('treatment').value || 'Heated';
+      const origin = document.getElementById('origin').value || 'Ratnapura, Sri Lanka (Ceylon)';
+      const status = document.getElementById('status').value;
+      const discount = parseFloat(document.getElementById('discount').value) || 0;
+
+      const tagline = document.getElementById('tagline').value.trim() || 'The Sovereign Imperial Corundum of Ratnapura.';
+      document.getElementById('previewTagline').textContent = tagline;
+      document.getElementById('previewTreatmentOrigin').textContent = treatment.toUpperCase() + ' \u2022 ' + origin.toUpperCase();
+      document.getElementById('previewName').textContent = name;
+      document.getElementById('previewMeta').textContent = weight + ' Carats \u2022 ' + (document.getElementById('clarity').value || 'Eye Clean') + ' \u2022 ' + treatment;
+
+      const previewImg = document.getElementById('previewImg');
+      if (uploadedImages.length > 0) {
+        previewImg.src = uploadedImages[0];
+        previewImg.style.display = 'block';
+      } else {
+        previewImg.src = 'images/sapphire.png';
+        previewImg.style.display = 'block';
+      }
+
+      const discBadge = document.getElementById('discBadgePreview');
+      if (discount > 0) {
+        discBadge.style.display = 'block';
+        discBadge.textContent = '-' + discount + '%';
+      } else {
+        discBadge.style.display = 'none';
+      }
+
+      document.getElementById('soldOverlayPreview').style.display = (status === 'sold') ? 'flex' : 'none';
+      
+      const badge = document.getElementById('previewBadge');
+      badge.textContent = status.toUpperCase().replace('-', ' ');
+      badge.className = 'badge ' + (status === 'available' ? 'badge-available' : (status === 'sold' ? 'badge-sold' : (status === 'out-of-stock' ? 'badge-out-of-stock' : 'badge-hidden')));
+    }
+
+    function toggleNewPriceFields() {
+      const type = document.getElementById('priceType') ? document.getElementById('priceType').value : 'range';
+      const maxGroup = document.getElementById('priceMaxGroup');
+      if (maxGroup) {
+        maxGroup.style.display = (type === 'range') ? 'block' : 'none';
+      }
+      updatePreview();
+    }
+
+    let newColorVariations = [
+      { id: 'v1', name: 'Primary Saturation', code: '#1A2B6D', price: 6200, priceMax: 7800, status: 'available', desc: 'Standard Ceylon saturation grade.' }
+    ];
+
+    function renderNewVariations() {
+      const list = document.getElementById('newVariationsList');
+      if (!list) return;
+
+      if (!newColorVariations || newColorVariations.length === 0) {
+        list.innerHTML = '<div style="font-size: 0.78rem; color: var(--muted); padding: 8px; text-align: center;">No color variations added. Click "+ Add Color Variation" to configure multiple colors for this gem.</div>';
+        return;
+      }
+
+      list.innerHTML = newColorVariations.map((v, i) => {
+        return '<div style="display: grid; grid-template-columns: 2fr 110px 1.5fr 1.5fr 36px; gap: 8px; align-items: center; background: #FFFFFF; border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; margin-bottom: 6px;">' +
+          '<div>' +
+            '<input type="text" class="form-control" value="' + (v.name || '') + '" placeholder="Color Name (e.g. Cornflower)" onchange="updateNewVarField(' + i + ', \'name\', this.value)" style="font-size: 0.78rem; padding: 6px 8px;">' +
+          '</div>' +
+          '<div style="display: flex; align-items: center; gap: 4px;">' +
+            '<input type="color" value="' + (v.code || '#1A2B6D') + '" onchange="updateNewVarCode(' + i + ', this.value)" style="width: 32px; height: 32px; padding: 1px; border: 1px solid var(--border); border-radius: 4px; cursor: pointer;">' +
+            '<input type="text" class="form-control" value="' + (v.code || '#1A2B6D') + '" onchange="updateNewVarCode(' + i + ', this.value)" style="font-size: 0.72rem; padding: 4px 6px; width: 62px; font-family: monospace;">' +
+          '</div>' +
+          '<div>' +
+            '<input type="number" class="form-control" value="' + (v.price || '') + '" placeholder="Price USD" onchange="updateNewVarField(' + i + ', \'price\', Number(this.value))" style="font-size: 0.78rem; padding: 6px 8px;">' +
+          '</div>' +
+          '<div>' +
+            '<select class="form-control" onchange="updateNewVarField(' + i + ', \'status\', this.value)" style="font-size: 0.75rem; padding: 6px 6px;">' +
+              '<option value="available"' + (v.status === 'available' ? ' selected' : '') + '>Available</option>' +
+              '<option value="out-of-stock"' + (v.status === 'out-of-stock' ? ' selected' : '') + '>Out of Stock</option>' +
+            '</select>' +
+          '</div>' +
+          '<div style="text-align: right;">' +
+            '<button type="button" class="btn-del" onclick="removeNewVariationRow(' + i + ')" style="padding: 4px 8px; font-size: 0.8rem; border-radius: 4px; border: 1px solid #FCA5A5; background: #FEF2F2; color: #DC2626; cursor: pointer;">&times;</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function addNewVariationRow() {
+      newColorVariations.push({
+        id: 'v-' + Date.now().toString(36),
+        name: 'New Color Saturation',
+        code: '#1A2B6D',
+        price: 5000,
+        priceMax: 6500,
+        status: 'available',
+        desc: 'Artisanal Ceylon saturation grade.'
+      });
+      renderNewVariations();
+    }
+
+    function removeNewVariationRow(idx) {
+      newColorVariations.splice(idx, 1);
+      renderNewVariations();
+    }
+
+    function updateNewVarField(idx, field, val) {
+      if (newColorVariations[idx]) {
+        newColorVariations[idx][field] = val;
+      }
+    }
+
+    function updateNewVarCode(idx, hex) {
+      if (newColorVariations[idx]) {
+        newColorVariations[idx].code = hex;
+        renderNewVariations();
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      checkAuth();
+      const role = getStaffRole();
+      if (role !== 'super_admin') {
+        alert('Access Denied: Gem acquisition terminal is reserved exclusively for Head Administrator.');
+        window.location.href = 'gems.html';
+        return;
+      }
+      renderNewVariations();
+    });
+
+    async function handleFormSubmit(e) {
+      e.preventDefault();
+      const price = parseFloat(document.getElementById('price').value) || 0;
+      const priceMax = parseFloat(document.getElementById('priceMax').value) || null;
+      const priceType = document.getElementById('priceType').value;
+      const marketNote = document.getElementById('marketNote').value.trim();
+      const discount = parseFloat(document.getElementById('discount').value) || null;
+      const salePrice = discount ? Math.round(price * (1 - discount / 100)) : null;
+
+      const highlights = [];
+      const h1Title = document.getElementById('h1Title').value.trim();
+      if (h1Title) {
+        highlights.push({
+          category: document.getElementById('h1Cat').value.trim() || 'Provenance',
+          title: h1Title,
+          description: document.getElementById('h1Desc').value.trim()
+        });
+      }
+      const h2Title = document.getElementById('h2Title').value.trim();
+      if (h2Title) {
+        highlights.push({
+          category: document.getElementById('h2Cat').value.trim() || 'Optical Quality',
+          title: h2Title,
+          description: document.getElementById('h2Desc').value.trim()
+        });
+      }
+      const h3Title = document.getElementById('h3Title').value.trim();
+      if (h3Title) {
+        highlights.push({
+          category: document.getElementById('h3Cat').value.trim() || 'Certification',
+          title: h3Title,
+          description: document.getElementById('h3Desc').value.trim()
+        });
+      }
+
+      const gemData = {
+        sellerId: 'dewera',
+        sellerName: 'House of Dewera',
+        isDewera: true,
+        name: document.getElementById('name').value.trim(),
+        type: document.getElementById('type').value.trim(),
+        treatment: document.getElementById('treatment').value,
+        origin: document.getElementById('origin').value.trim(),
+        weight: parseFloat(document.getElementById('weight').value) || 0,
+        price,
+        priceMax,
+        priceType,
+        marketNote,
+        discount,
+        salePrice,
+        color: document.getElementById('color').value.trim() || 'Vivid',
+        clarity: document.getElementById('clarity').value,
+        status: document.getElementById('status').value,
+        certificate: document.getElementById('certificate').value.trim() || 'Certified Natural Ceylon • Lab Dossier upon Private Inquiry',
+        gradientFrom: document.getElementById('gradFrom').value,
+        gradientTo: document.getElementById('gradTo').value,
+        description: document.getElementById('description').value.trim() || 'Certified natural heated gemstone of exceptional optical fire.',
+        tagline: document.getElementById('tagline').value.trim() || (document.getElementById('name').value.trim() + ' of exceptional crystalline quality.'),
+        colorVariations: newColorVariations,
+        highlights: highlights.length > 0 ? highlights : [
+          {
+            category: 'Ceylon Provenance',
+            title: 'Artisanal Alluvial Origin',
+            description: 'Mined from the legendary gem gravels of Sri Lanka using traditional, non-destructive ecological methods.'
+          },
+          {
+            category: 'Thermal Integrity',
+            title: 'Permanent Natural Heat Only',
+            description: 'Stable thermal enhancement with zero chemical diffusion, glass filling, or artificial polymer treatments.'
+          },
+          {
+            category: 'Independent Seal',
+            title: 'Independently Certified',
+            description: 'Accompanied by a recognized gemological laboratory passport confirming natural species and Ceylon origin.'
+          }
+        ],
+        images: uploadedImages
+      };
+
+      await addGem(gemData);
+      showToast('Gemstone published to catalog!');
+      setTimeout(() => {
+        window.location.href = 'gems.html';
+      }, 600);
+    }
+  </script>
+</body>
+</html>
