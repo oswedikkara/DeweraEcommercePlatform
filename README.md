@@ -1,4 +1,4 @@
-# Dewera — Haute Gemmologie Ceylon Natural Heated
+# Dewera — Haute Gemmologie Ceylon Natural & Heated
 
 > Sovereign Ceylon Gemstone Vault & Multi-Vendor Atelier Marketplace
 
