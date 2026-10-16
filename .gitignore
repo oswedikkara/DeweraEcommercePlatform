@@ -26,3 +26,14 @@ logs/
 # IDE Configuration
 .vscode/
 .idea/
+
+# Local business records and QA artifacts
+data/*.db
+data/staff.json
+data/sellers.json
+data/settings.json
+data/blacklist.json
+store/gems.json
+admin/gems.json
+scratch/
+.codex/

@@ -4,23 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Manage Listings ? Dewera Admin</title>
-  <link rel="stylesheet" href="style.css">
-</head>
+  <link rel="stylesheet" href="style.css"><link rel="stylesheet" href="management.css">
+<script src="controls.js" defer></script><link rel="stylesheet" href="controls.css"></head>
 <body>
 
   <div class="admin-layout">
     <aside class="sidebar">
       <div class="sidebar-header" style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px;">
         <img src="images/dewera-logo.png" alt="DEWERA" style="height: 15px; width: auto; display: block; background: transparent;">
-        <div class="sidebar-sub" style="font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.15em;">Admin Terminal</div>
+        <div class="sidebar-sub" style="font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.15em;">House Management</div>
       </div>
 
-      <nav class="sidebar-nav">
+      <nav class="sidebar-nav"><a class="sidebar-link" href="settings.html">House settings &amp; access</a><a class="sidebar-link" href="content.html">Site content &amp; branding</a><a class="sidebar-link" href="dashboard.html?view=enquiries">Client enquiries</a>
         <a href="dashboard.html" class="sidebar-link">
           <span>Overview</span>
         </a>
         <a href="gems.html" class="sidebar-link active">
-          <span>Gem Listings</span>
+          <span>Gemstone inventory</span>
         </a>
         <a href="new.html" class="sidebar-link" id="sidebarAddNewGem">
           <span>+ Add New Gem</span>
@@ -32,7 +32,7 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
           </svg>
-          Exit Terminal
+          Sign out
         </button>
       </div>
     </aside>
@@ -50,35 +50,6 @@
         <div style="margin-bottom: 1.5rem;">
           <p style="font-size: 0.75rem; color: var(--muted); font-weight: 500;">Inventory Controller</p>
           <h1 style="font-size: 2.2rem; font-weight: 700; letter-spacing: -0.02em; margin-top: 0.2rem;">Gemstone Listings</h1>
-        </div>
-
-        <!-- STORE CONCIERGE & WHATSAPP CONFIGURATION -->
-        <div style="background: #FFFFFF; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1.25rem 1.5rem; margin-bottom: 1.8rem; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
-            <div>
-              <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--apple-blue); font-weight: 600;">Storefront Inquiries & Concierge Channels</div>
-              <div style="font-size: 1.05rem; font-weight: 700; margin-top: 2px;">
-                Email: <span id="currentEmailDisplay" style="color: #0071E3; font-family: monospace;">deweragems@gmail.com</span> &bull; 
-                WhatsApp: <span id="currentWaDisplay" style="color: #107C41; font-family: monospace;">+94770000000</span>
-              </div>
-              <div style="font-size: 0.76rem; color: var(--muted); margin-top: 3px;">
-                Changes apply instantly across every page of Dewera (Contact page, navigation bar, mailto links, and WhatsApp concierge).
-              </div>
-            </div>
-            <div style="font-size: 0.72rem; color: var(--muted); background: #F5F5F7; padding: 4px 10px; border-radius: 6px;">
-              Config synced with <code style="background: transparent;">store/config.json</code>
-            </div>
-          </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <div style="display: flex; gap: 0.6rem; align-items: center;">
-              <input type="email" id="adminEmailInput" class="form-control" placeholder="deweragems@gmail.com" style="flex: 1; padding: 0.45rem 0.8rem; font-size: 0.85rem;" value="deweragems@gmail.com">
-              <button type="button" class="btn-apple" onclick="saveBusinessEmail()" style="padding: 0.45rem 1rem; font-size: 0.8rem; white-space: nowrap;">Update Email</button>
-            </div>
-            <div style="display: flex; gap: 0.6rem; align-items: center;">
-              <input type="text" id="adminWaInput" class="form-control" placeholder="+94770000000" style="flex: 1; padding: 0.45rem 0.8rem; font-size: 0.85rem;" value="+94770000000">
-              <button type="button" class="btn-apple" onclick="saveWaNumber()" style="padding: 0.45rem 1rem; font-size: 0.8rem; white-space: nowrap;">Update WhatsApp</button>
-            </div>
-          </div>
         </div>
 
         <!-- VAULT SEPARATION TABS -->
@@ -383,7 +354,7 @@
         if (vaultContainer) {
           const banner = document.createElement('div');
           banner.style.cssText = 'width: 100%; padding: 10px 14px; background: #FEF3C7; border: 1px solid #FDE68A; border-radius: 6px; font-size: 0.75rem; color: #92400E; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;';
-          banner.innerHTML = '<span>Confidentiality Protocol: House of Dewera Sovereign inventory is strictly isolated to Head Administrator clearance. Staff terminals manage verified marketplace seller ateliers.</span><span style="font-size:0.65rem; background:#B45309; color:#FFFFFF; padding:2px 8px; border-radius:4px; text-transform:uppercase;">RBAC Protected</span>';
+          banner.innerHTML = '<span>Confidentiality Protocol: House of Dewera Sovereign inventory is strictly isolated to Head Administrator clearance. Contact the head administrator for inventory access.</span><span style="font-size:0.65rem; background:#B45309; color:#FFFFFF; padding:2px 8px; border-radius:4px; text-transform:uppercase;">RBAC Protected</span>';
           vaultContainer.parentNode.insertBefore(banner, vaultContainer);
         }
 
@@ -590,30 +561,33 @@
           return;
         }
       }
-      await updateGemStatus(id, newStatus);
+      try { await updateGemStatus(id, newStatus); } catch (error) { alert(error.message); renderTable(); return; }
       showToast('Status updated to: ' + newStatus.toUpperCase());
       renderTable();
     }
 
     async function toggleOosStatus(id) {
-      const next = toggleOutOfStock(id);
+      let next;
+      try { next = await toggleOutOfStock(id); } catch (error) { alert(error.message); renderTable(); return; }
       showToast('Inventory updated: ' + (next === 'out-of-stock' ? 'OUT OF STOCK' : 'AVAILABLE'));
       renderTable();
     }
 
     async function toggleSoldStatus(id) {
-      const newStatus = toggleSold(id);
+      let newStatus;
+      try { newStatus = await toggleSold(id); } catch (error) { alert(error.message); renderTable(); return; }
       showToast('Gem updated: ' + newStatus.toUpperCase());
       renderTable();
     }
 
     async function toggleHiddenStatus(id) {
-      const newStatus = toggleHidden(id);
+      let newStatus;
+      try { newStatus = await toggleHidden(id); } catch (error) { alert(error.message); renderTable(); return; }
       showToast('Listing updated: ' + newStatus.toUpperCase());
       renderTable();
     }
 
-    function handleDelete(id, name) {
+    async function handleDelete(id, name) {
       const gem = getGems().find(g => g.id === id);
       if (gem) {
         const isDewera = !gem.sellerId || gem.sellerId === 'dewera' || gem.isDewera;
@@ -623,7 +597,7 @@
         }
       }
       if (confirm('Permanently delete "' + name + '" from vault inventory?')) {
-        deleteGem(id);
+        try { await deleteGem(id); } catch (error) { alert(error.message); return; }
         showToast('Gemstone removed.');
         renderTable();
       }
@@ -647,11 +621,11 @@
       document.getElementById('discountModal').style.display = 'none';
     }
 
-    function saveQuickDiscount(e) {
+    async function saveQuickDiscount(e) {
       e.preventDefault();
       const id = document.getElementById('discGemId').value;
       const pct = document.getElementById('discPercent').value;
-      applyDiscount(id, pct);
+      try { await applyDiscount(id, pct); } catch (error) { alert(error.message); return; }
       closeDiscountModal();
       showToast('Discount updated.');
       renderTable();
@@ -865,7 +839,7 @@
         images: editUploadedImages
       };
 
-      await updateGem(id, updatedData);
+      try { await updateGem(id, updatedData); } catch (error) { alert(error.message); return; }
       closeModal();
       showToast('Gemstone updated & synchronized across store.');
       renderTable();

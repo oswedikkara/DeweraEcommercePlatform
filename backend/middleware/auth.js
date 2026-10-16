@@ -5,13 +5,14 @@
  */
 
 const { getDb } = require('../database/db');
+const Access = require('../services/AdminAccessService');
 
 // In-memory token store (fast cache)
 const activeStaffSessions = new Map();
 const activeSellerSessions = new Map();
 
 function registerStaffSession(token, sessionData) {
-  const expiresAt = Date.now() + 24 * 60 * 60 * 1000;
+  const expiresAt = Date.now() + 8 * 60 * 60 * 1000;
   activeStaffSessions.set(token, {
     ...sessionData,
     expiresAt
@@ -23,7 +24,7 @@ function registerStaffSession(token, sessionData) {
       INSERT OR REPLACE INTO staff_sessions (token, staff_id, username, role, name, expires_at)
       VALUES (?, ?, ?, ?, ?, ?)
     `).run(
-      token,
+      Access.digest(token),
       sessionData.staffId || sessionData.id || 'staff',
       sessionData.username,
       sessionData.role,
@@ -36,7 +37,7 @@ function registerStaffSession(token, sessionData) {
 }
 
 function registerSellerSession(token, sessionData) {
-  const expiresAt = Date.now() + 24 * 60 * 60 * 1000;
+  const expiresAt = Date.now() + 8 * 60 * 60 * 1000;
   activeSellerSessions.set(token, {
     ...sessionData,
     expiresAt
@@ -73,105 +74,20 @@ function extractToken(req) {
 
 function getStaffSession(req) {
   const token = extractToken(req);
-  if (!token) return null;
-
-  // 1. Fast in-memory cache lookup
-  const sess = activeStaffSessions.get(token);
-  if (sess && sess.expiresAt > Date.now()) {
-    return sess;
-  }
-
-  // 2. Persistent SQLite database lookup across server restarts
-  try {
-    const db = getDb();
-    const row = db.prepare('SELECT * FROM staff_sessions WHERE token = ? AND expires_at > ?').get(token, Date.now());
-    if (row) {
-      const restored = {
-        staffId: row.staff_id,
-        username: row.username,
-        role: row.role,
-        name: row.name,
-        expiresAt: row.expires_at
-      };
-      activeStaffSessions.set(token, restored);
-      return restored;
-    }
-  } catch (err) {
-    // Continue to fallback if table not yet queried
-  }
-
-  // 3. Fallback: If token directly matches a seeded staff username (headadmin, admin, moderator)
-  const clean = token.toLowerCase().trim();
-  if (clean === 'headadmin' || clean === 'admin' || clean === 'moderator') {
-    try {
-      const db = getDb();
-      const user = db.prepare('SELECT * FROM users WHERE LOWER(username) = LOWER(?)').get(clean);
-      if (user) {
-        const fallback = {
-          staffId: user.id,
-          username: user.username,
-          role: user.role,
-          name: user.name,
-          expiresAt: Date.now() + 24 * 60 * 60 * 1000
-        };
-        activeStaffSessions.set(token, fallback);
-        return fallback;
-      }
-    } catch (err) {}
-  }
-
-  return null;
+  if (!token || !token.startsWith('tok_email_')) return null;
+  const valid = session => session && session.expiresAt > Date.now() && Access.isAllowed(session.username);
+  const cached = activeStaffSessions.get(token);
+  if (valid(cached)) return {...cached,email:cached.username,isOwner:Access.isOwner(cached.username)};
+  activeStaffSessions.delete(token);
+  const row = getDb().prepare('SELECT * FROM staff_sessions WHERE token = ? AND expires_at > ?').get(Access.digest(token),Date.now());
+  if (!row) return null;
+  const session = {staffId:row.staff_id,username:row.username,email:row.username,role:'super_admin',name:row.name,expiresAt:row.expires_at,isOwner:Access.isOwner(row.username)};
+  if (!valid(session)) return null;
+  activeStaffSessions.set(token,session);
+  return session;
 }
 
-function getSellerSession(req) {
-  const token = extractToken(req);
-  if (!token) return null;
-
-  // 1. Fast in-memory cache lookup
-  const sess = activeSellerSessions.get(token);
-  if (sess && sess.expiresAt > Date.now()) {
-    return sess;
-  }
-
-  // 2. Persistent SQLite database lookup across server restarts
-  try {
-    const db = getDb();
-    const row = db.prepare('SELECT * FROM seller_sessions WHERE token = ? AND expires_at > ?').get(token, Date.now());
-    if (row) {
-      const restored = {
-        sellerId: row.seller_id,
-        id: row.seller_id,
-        email: row.email,
-        atelierName: row.atelier_name,
-        role: row.role || 'seller',
-        expiresAt: row.expires_at
-      };
-      activeSellerSessions.set(token, restored);
-      return restored;
-    }
-  } catch (err) {}
-
-  // 3. Fallback: If token directly matches a registered seller ID or email
-  try {
-    const db = getDb();
-    const clean = token.toLowerCase().trim();
-    const seller = db.prepare('SELECT * FROM seller_profiles WHERE LOWER(id) = ? OR LOWER(email) = ?').get(clean, clean);
-    if (seller) {
-      const fallback = {
-        sellerId: seller.id,
-        id: seller.id,
-        email: seller.email,
-        atelierName: seller.atelier_name,
-        role: 'seller',
-        expiresAt: Date.now() + 24 * 60 * 60 * 1000
-      };
-      activeSellerSessions.set(token, fallback);
-      return fallback;
-    }
-  } catch (err) {}
-
-  return null;
-}
+function getSellerSession() { return null; }
 
 function getAuthenticatedUser(req) {
   const staff = getStaffSession(req);
@@ -181,7 +97,10 @@ function getAuthenticatedUser(req) {
   return null;
 }
 
+function revokeStaffSession(token) { activeStaffSessions.delete(token); }
+
 module.exports = {
+  revokeStaffSession,
   extractToken,
   registerStaffSession,
   registerSellerSession,

@@ -1,0 +1,45 @@
+/* A single typeface and bespoke menus throughout the Dewera experience. */
+:root{--dewera-font:"Helvetica Neue",Helvetica,Arial,sans-serif}
+body,body *,body *::before,body *::after{font-family:var(--dewera-font)!important;font-style:normal!important}
+h1,h2,h3,.brand,.console-brand{font-weight:500!important}
+.refined-select{position:relative;min-width:0;width:100%;font-family:var(--dewera-font);text-align:left}
+select.refined-select-native{position:absolute!important;width:1px!important;height:1px!important;min-height:0!important;margin:0!important;padding:0!important;opacity:0!important;pointer-events:none!important;clip-path:inset(50%);overflow:hidden;border:0!important}
+.refined-select-trigger{width:100%;display:flex;align-items:center;justify-content:space-between;gap:18px;text-align:left;min-height:49px;padding:13px 15px;background:#fbfaf4;border:1px solid #d8d4c4;border-radius:6px;box-shadow:none;color:#4f5e46;font-size:14px;line-height:1.6;cursor:pointer;letter-spacing:0;text-transform:none;font-weight:400;transition:border-color .2s,background .2s}
+.refined-select-trigger>span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.refined-select-trigger:hover{border-color:#a6b197;background:#fafbf5}
+.refined-select-trigger:focus:not(:focus-visible){outline:none;box-shadow:none}
+.refined-select-trigger:focus-visible{outline:2px solid #9cab8c;outline-offset:3px}
+.refined-select-trigger:disabled{opacity:.55;cursor:not-allowed}
+.refined-select-chevron{flex:0 0 7px;width:7px;height:7px;border-right:1px solid #7e8c70;border-bottom:1px solid #7e8c70;transform:translateY(-2px) rotate(45deg);transition:transform .2s;margin-right:3px}
+.refined-select.is-open{z-index:40}.refined-select.is-open .refined-select-chevron{transform:translateY(2px) rotate(225deg)}
+.refined-select.is-open .refined-select-trigger{border-color:#9eac8e;background:#fafbf4}
+.refined-select-options{position:absolute;left:0;right:0;top:calc(100% + 7px);z-index:80;max-height:260px;overflow:auto;overscroll-behavior:contain;background:#fcfcf7;border:1px solid #d8dfcb;border-radius:9px;box-shadow:0 12px 35px #263e321c;padding:6px;scrollbar-width:thin;scrollbar-color:#c1cbb4 #fcfcf7}
+.refined-select-options[hidden]{display:none!important}.refined-select.opens-up .refined-select-options{top:auto;bottom:calc(100% + 7px)}
+.refined-select-option{position:relative;border-radius:5px;padding:12px 30px 12px 12px;min-height:43px;font-size:13px;line-height:1.6;font-weight:400;letter-spacing:0;color:#5a6d4d;cursor:pointer;white-space:normal}
+.refined-select-option[aria-selected=true]{background:#e9eedf;color:#345632}.refined-select-option[aria-selected=true]:after{content:"";position:absolute;right:14px;top:17px;width:7px;height:4px;border-left:1px solid #5c7851;border-bottom:1px solid #5c7851;transform:rotate(-45deg)}
+.refined-select-option.is-highlighted{background:#eff3e8}.refined-select-option[aria-selected=true].is-highlighted{background:#e3ead7}
+.refined-select-option[aria-disabled=true]{opacity:.45;cursor:default}.refined-select-option[hidden]{display:none}.refined-select-error{display:block;color:#a75e51;font-size:11px;margin-top:8px;line-height:1.6}.refined-select-error[hidden]{display:none}
+.toolbar>.refined-select{width:auto;min-width:170px;flex:0 1 220px}.toolbar .refined-select-trigger{min-height:48px;font-size:13px}
+.enquiry-actions .refined-select{width:135px}.enquiry-actions .refined-select-trigger{min-height:39px;padding:9px 12px;font-size:12px}.enquiry-actions label{flex-wrap:wrap}
+.admin-layout .refined-select-trigger,.management .refined-select-trigger{border-radius:6px!important;min-height:44px;font-size:13px}
+.form-row>.refined-select{min-width:0}.private-request-form .refined-select-trigger{font-size:13px}
+@media(max-width:640px){.refined-select-trigger,.private-request-form .refined-select-trigger{font-size:16px;min-height:49px;padding:13px 12px}.refined-select-option{font-size:15px;min-height:47px;padding:12px 30px 12px 12px}.toolbar>.refined-select{flex:1;min-width:0}.toolbar .refined-select-trigger{font-size:12px;gap:10px}.refined-select-options{max-height:240px}.enquiry-actions .refined-select-trigger{font-size:16px}.admin-layout .refined-select-trigger,.management .refined-select-trigger{font-size:16px}.maison-hero h1{font-size:43px;line-height:1.12}.client-salon-intro h1{font-size:37px}.private-request-form .request-heading h2{font-size:30px}}
+@media(prefers-reduced-motion:reduce){.refined-select-trigger,.refined-select-chevron{transition:none}}
+/* Quiet typography and controls: one modern family, no boxed focus halo. */
+:root{--dewera-font:"Segoe UI","Helvetica Neue",Arial,sans-serif}
+h1,h2,h3{font-weight:400!important;letter-spacing:-.035em}
+.refined-select-trigger,.private-request-form .refined-select-trigger,.management .refined-select-trigger,.admin-layout .refined-select-trigger{border:0!important;border-bottom:1px solid #bdc7b1!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;padding-left:0;padding-right:5px;font-weight:400;color:#40533d;outline:none!important}
+.refined-select-trigger:hover,.refined-select.is-open .refined-select-trigger{border-bottom-color:#6d8462!important;background:transparent!important;box-shadow:none!important}
+.refined-select-trigger:focus-visible{box-shadow:0 2px 0 #6d8462!important;outline:none!important}
+.refined-select-options{padding:6px;background:#fcfcf8;border:1px solid #e1e5d8;border-radius:8px;box-shadow:0 8px 22px #263e3212;top:calc(100% + 5px)}
+.refined-select-option{border-radius:4px;color:#68725c;font-size:14px;padding-top:13px;padding-bottom:13px}
+.refined-select-option[aria-selected=true],.refined-select-option[aria-selected=true].is-highlighted{background:#f0f2e9;color:#334f32}
+.refined-select-option.is-highlighted{background:#f6f7f0}.refined-select-option[aria-selected=true]:after{border-color:#73876a}
+.details-heading,summary{font-weight:500}
+summary{display:flex;align-items:center;justify-content:space-between;gap:25px;list-style:none;padding:10px 0;font-size:14px!important;color:#485c43;cursor:pointer;line-height:1.6}
+summary::-webkit-details-marker{display:none}summary::marker{content:""}summary::after{content:"+";font-size:23px;font-weight:300;line-height:1;width:25px;flex-shrink:0;text-align:center;color:#7b8c6e}
+details[open]>summary::after{content:"−"}details{padding:10px 0;border-bottom-color:#dedfd3}
+details>p{margin:10px 0 16px!important;font-size:14px!important;line-height:1.95!important;color:#7e8575!important;max-width:65ch}
+summary:focus-visible{outline:none!important;box-shadow:0 2px 0 #8e9e80}
+.gem-description{font-size:14px;line-height:1.9;color:#7b8470;margin:22px 0 15px;max-width:60ch}
+@media(max-width:640px){.refined-select-option{font-size:15px}summary{font-size:13px!important}details>p{font-size:13px!important}.maison-hero h1{font-size:44px;line-height:1.1}.client-salon-intro h1{font-size:39px}.gem-description{font-size:13px}}

@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Add Gemstone ? Dewera Admin</title>
-  <link rel="stylesheet" href="style.css">
-</head>
+  <link rel="stylesheet" href="style.css"><link rel="stylesheet" href="management.css">
+<script src="controls.js" defer></script><link rel="stylesheet" href="controls.css"></head>
 <body>
 
   <div class="admin-layout">
@@ -13,15 +13,15 @@
     <aside class="sidebar">
       <div class="sidebar-header" style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px;">
         <img src="images/dewera-logo.png" alt="DEWERA" style="height: 15px; width: auto; display: block; background: transparent;">
-        <div class="sidebar-sub" style="font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.15em;">Admin Terminal</div>
+        <div class="sidebar-sub" style="font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.15em;">House Management</div>
       </div>
 
-      <nav class="sidebar-nav">
+      <nav class="sidebar-nav"><a class="sidebar-link" href="settings.html">House settings &amp; access</a><a class="sidebar-link" href="content.html">Site content &amp; branding</a><a class="sidebar-link" href="dashboard.html?view=enquiries">Client enquiries</a>
         <a href="dashboard.html" class="sidebar-link">
           <span>Overview</span>
         </a>
         <a href="gems.html" class="sidebar-link">
-          <span>Gem Listings</span>
+          <span>Gemstone inventory</span>
         </a>
         <a href="new.html" class="sidebar-link active">
           <span>+ Add New Gem</span>
@@ -33,7 +33,7 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
           </svg>
-          Exit Terminal
+          Sign out
         </button>
       </div>
     </aside>
@@ -60,7 +60,7 @@
               <!-- DRAG AND DROP PHOTOS -->
               <div class="form-group" style="margin-bottom: 1.8rem;">
                 <label class="form-label" style="font-size: 0.8rem; font-weight: 600; color: var(--text);">Product Imagery (Select or Drop Multiple Photos)</label>
-                <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+                <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="Upload gemstone images" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();document.getElementById('fileInput').click();}" onclick="document.getElementById('fileInput').click()">
                   <div class="dropzone-icon">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
@@ -585,33 +585,19 @@
         color: document.getElementById('color').value.trim() || 'Vivid',
         clarity: document.getElementById('clarity').value,
         status: document.getElementById('status').value,
-        certificate: document.getElementById('certificate').value.trim() || 'Certified Natural Ceylon • Lab Dossier upon Private Inquiry',
+        certificate: document.getElementById('certificate').value.trim(),
         gradientFrom: document.getElementById('gradFrom').value,
         gradientTo: document.getElementById('gradTo').value,
-        description: document.getElementById('description').value.trim() || 'Certified natural heated gemstone of exceptional optical fire.',
+        description: document.getElementById('description').value.trim(),
         tagline: document.getElementById('tagline').value.trim() || (document.getElementById('name').value.trim() + ' of exceptional crystalline quality.'),
         colorVariations: newColorVariations,
-        highlights: highlights.length > 0 ? highlights : [
-          {
-            category: 'Ceylon Provenance',
-            title: 'Artisanal Alluvial Origin',
-            description: 'Mined from the legendary gem gravels of Sri Lanka using traditional, non-destructive ecological methods.'
-          },
-          {
-            category: 'Thermal Integrity',
-            title: 'Permanent Natural Heat Only',
-            description: 'Stable thermal enhancement with zero chemical diffusion, glass filling, or artificial polymer treatments.'
-          },
-          {
-            category: 'Independent Seal',
-            title: 'Independently Certified',
-            description: 'Accompanied by a recognized gemological laboratory passport confirming natural species and Ceylon origin.'
-          }
-        ],
+        highlights,
         images: uploadedImages
       };
 
-      await addGem(gemData);
+      const saveButton = document.querySelector('#gemForm button[type=submit]');
+      if (saveButton) saveButton.disabled = true;
+      try { await addGem(gemData); } catch (error) { alert(error.message); return; } finally { if (saveButton) saveButton.disabled = false; }
       showToast('Gemstone published to catalog!');
       setTimeout(() => {
         window.location.href = 'gems.html';

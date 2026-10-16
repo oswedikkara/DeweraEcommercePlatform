@@ -17,10 +17,18 @@ function getStaffUser() {
 function checkAuth() {
   if (!getStaffToken()) {
     window.location.href = 'index.html';
+    return;
   }
+  staffFetch('/api/auth/session').then(response=>{
+    if(response.status===401){
+      ['token','role','username','name','isOwner'].forEach(key=>sessionStorage.removeItem('dewera_staff_'+key));
+      window.location.href='index.html';
+    }
+  }).catch(()=>{});
 }
 
-function logout() {
+async function logout() {
+  try { await staffFetch('/api/auth/logout', {method:'POST', signal:AbortSignal.timeout(5000)}); } catch {}
   _cachedGems = null;
   sessionStorage.removeItem('dewera_staff_token');
   sessionStorage.removeItem('dewera_staff_role');
@@ -105,191 +113,87 @@ async function syncGemsFromServer(onSyncComplete) {
   return getGems();
 }
 
+async function persistInventory(endpoint, payload) {
+  const res = await staffFetch(endpoint, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
+  let result;
+  try { result = await res.json(); } catch { throw new Error('The server returned an unreadable response. Please try again.'); }
+  if (!res.ok || !result.success) throw new Error(result.error || 'Inventory could not be saved.');
+  return result;
+}
+function rememberInventory(gems) {
+  _cachedGems = gems;
+  try { localStorage.setItem('dewera_gems', JSON.stringify(gems)); } catch {}
+}
 async function saveGems(gems) {
-  const role = getStaffRole();
-  let fullCatalog = gems;
-  if (role !== 'super_admin') {
-    // Preserve existing Dewera sovereign gems in background storage
-    try {
-      const existing = JSON.parse(localStorage.getItem('dewera_gems') || '[]');
-      const deweraGems = existing.filter(g => !g.sellerId || g.sellerId === 'dewera' || g.isDewera);
-      fullCatalog = [...deweraGems, ...gems];
-    } catch(e) {
-      fullCatalog = gems;
-    }
-    _cachedGems = gems.filter(g => g.sellerId && g.sellerId !== 'dewera' && !g.isDewera);
-  } else {
-    _cachedGems = gems;
+  const res = await staffFetch('/api/gems');
+  if (!res.ok) throw new Error('Unable to verify the current inventory. Please sign in again.');
+  const existing = await res.json();
+  const ids = new Set(existing.map(g => g.id));
+  let saved = 0;
+  for (const gem of gems) {
+    try { await persistInventory(ids.has(gem.id) ? '/api/gems/update' : '/api/gems', gem); saved++; }
+    catch (error) { await syncGemsFromServer(); throw new Error(saved + ' of ' + gems.length + ' records saved. ' + error.message); }
   }
-
-  try {
-    localStorage.setItem('dewera_gems', JSON.stringify(fullCatalog));
-  } catch (e) {
-    console.error('LocalStorage error', e);
-  }
-
-  // Persist to server /api/gems with staff authentication token
-  try {
-    await staffFetch('/api/gems', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(fullCatalog)
-    });
-  } catch (e) {
-    // If running on admin port 3001, also try port 3000
-    try {
-      await staffFetch('http://localhost:3000/api/gems', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(fullCatalog)
-      });
-    } catch(err) {}
-  }
+  await syncGemsFromServer();
 }
-
 async function addGem(gemData) {
-  const role = getStaffRole();
-  const isDewera = !gemData.sellerId || gemData.sellerId === 'dewera' || gemData.isDewera;
-  if (isDewera && role !== 'super_admin') {
-    alert('Access Denied: Dewera sovereign acquisitions require Head Administrator clearance.');
-    return null;
-  }
-
-  const gems = getGems();
-  const id = 'gem-' + Date.now().toString(36);
-  const newGem = {
-    ...gemData,
-    id,
-    status: gemData.status || 'available',
-    priceType: gemData.priceType || 'range',
-    images: gemData.images || [],
-    createdAt: new Date().toISOString()
-  };
-  gems.unshift(newGem);
-  await saveGems(gems);
-  return newGem;
+  const result = await persistInventory('/api/gems', {...gemData, sellerId:'dewera', isDewera:true});
+  rememberInventory([result.gem, ...getGems().filter(g => g.id !== result.gem.id)]);
+  return result.gem;
 }
-
 async function updateGem(id, partial) {
-  const role = getStaffRole();
-  const gems = getGems();
-  const idx = gems.findIndex(g => g.id === id);
-  if (idx !== -1) {
-    const isDewera = !gems[idx].sellerId || gems[idx].sellerId === 'dewera' || gems[idx].isDewera;
-    if (isDewera && role !== 'super_admin') {
-      alert('Access Denied: Dewera sovereign inventory requires Head Administrator clearance.');
-      return null;
-    }
-
-    gems[idx] = { ...gems[idx], ...partial, updatedAt: new Date().toISOString() };
-    await saveGems(gems);
-    
-    // Also send single update endpoint with staff credentials
-    try {
-      await staffFetch('/api/gems/update', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, ...partial })
-      });
-    } catch(e) {}
-    
-    return gems[idx];
-  }
-  return null;
+  const result = await persistInventory('/api/gems/update', {id, ...partial});
+  rememberInventory(getGems().map(g => g.id === id ? result.gem : g));
+  return result.gem;
+}
+async function updateGemStatus(id, status) {
+  const gem = await updateGem(id, {status});
+  return gem.status;
+}
+async function deleteGem(id) {
+  await persistInventory('/api/gems/delete', {id});
+  rememberInventory(getGems().filter(g => g.id !== id));
 }
 
-async function updateGemStatus(id, newStatus) {
-  const role = getStaffRole();
-  const gems = getGems();
-  const gem = gems.find(g => g.id === id);
-  if (gem) {
-    const isDewera = !gem.sellerId || gem.sellerId === 'dewera' || gem.isDewera;
-    if (isDewera && role !== 'super_admin') {
-      alert('Access Denied: Dewera sovereign inventory requires Head Administrator clearance.');
-      return null;
-    }
-
-    gem.status = newStatus;
-    gem.updatedAt = new Date().toISOString();
-    await saveGems(gems);
-
-    try {
-      await staffFetch('/api/gems/status', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, status: newStatus })
-      });
-    } catch(e) {}
-
-    return gem.status;
-  }
-  return null;
-}
-
-function deleteGem(id) {
-  const role = getStaffRole();
-  let gems = getGems();
-  const gem = gems.find(g => g.id === id);
-  if (gem) {
-    const isDewera = !gem.sellerId || gem.sellerId === 'dewera' || gem.isDewera;
-    if (isDewera && role !== 'super_admin') {
-      alert('Access Denied: Dewera sovereign inventory requires Head Administrator clearance.');
-      return;
-    }
-  }
-  gems = gems.filter(g => g.id !== id);
-  saveGems(gems);
-}
-
-function toggleOutOfStock(id) {
+async function toggleOutOfStock(id) {
   const gems = getGems();
   const gem = gems.find(g => g.id === id);
   if (gem) {
     const isOos = gem.status === 'out-of-stock' || gem.status === 'out_of_stock';
     const nextStatus = isOos ? 'available' : 'out-of-stock';
-    updateGemStatus(id, nextStatus);
+    await updateGemStatus(id, nextStatus);
     return nextStatus;
   }
   return null;
 }
 
-function toggleSold(id) {
+async function toggleSold(id) {
   const gems = getGems();
   const gem = gems.find(g => g.id === id);
   if (gem) {
     const nextStatus = gem.status === 'sold' ? 'available' : 'sold';
-    updateGemStatus(id, nextStatus);
+    await updateGemStatus(id, nextStatus);
     return nextStatus;
   }
   return null;
 }
 
-function toggleHidden(id) {
+async function toggleHidden(id) {
   const gems = getGems();
   const gem = gems.find(g => g.id === id);
   if (gem) {
     const nextStatus = gem.status === 'hidden' ? 'available' : 'hidden';
-    updateGemStatus(id, nextStatus);
+    await updateGemStatus(id, nextStatus);
     return nextStatus;
   }
   return null;
 }
 
-function applyDiscount(id, percent) {
-  const gems = getGems();
-  const gem = gems.find(g => g.id === id);
-  if (gem) {
-    if (!percent || percent <= 0) {
-      gem.discount = null;
-      gem.salePrice = null;
-    } else {
-      gem.discount = Math.min(90, Math.max(1, parseInt(percent)));
-      gem.salePrice = Math.round(gem.price * (1 - gem.discount / 100));
-    }
-    saveGems(gems);
-    return gem;
-  }
-  return null;
+async function applyDiscount(id, percent) {
+  const gem = getGems().find(g => g.id === id);
+  if (!gem) throw new Error('Gemstone not found. Refresh the inventory and try again.');
+  const discount = !percent || Number(percent) <= 0 ? 0 : Math.min(90, Math.max(1, parseInt(percent, 10)));
+  return updateGem(id, {discount, salePrice:discount ? Math.round(gem.price * (1 - discount / 100)) : null});
 }
 
 function showToast(msg) {
@@ -524,18 +428,18 @@ function importJSON(event) {
   const file = event.target.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = function(e) {
+  reader.onload = async function(e) {
     try {
       const parsed = JSON.parse(e.target.result);
       if (Array.isArray(parsed)) {
-        saveGems(parsed);
+        await saveGems(parsed);
         showToast('Imported ' + parsed.length + ' gemstones.');
         setTimeout(() => location.reload(), 600);
       } else {
         alert('Invalid JSON: Expected an array of gemstones.');
       }
     } catch (err) {
-      alert('Failed to parse JSON file.');
+      alert(err.message || 'Unable to import the inventory file.');
     }
   };
   reader.readAsText(file);

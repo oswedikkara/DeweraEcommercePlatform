@@ -21,30 +21,7 @@ class ConfigService {
   static getAllSettings() {
     const db = getDb();
     const rows = db.prepare('SELECT key, value_json FROM platform_settings').all();
-    const settings = {
-      marketplaceEnabled: true,
-      maintenanceMode: false,
-      sellerRegistrationEnabled: true,
-      sellerMonthlyFeeUsd: 40,
-      deweraEmail: 'concierge@dewera.com',
-      deweraWhatsApp: '+94771234567',
-      deweraPhone: '+94112345678',
-      safeWallets: {
-        usdtTrc20: 'TYDzsxd54kE31x845c0882nLK98F4V11eX',
-        usdtErc20: '0x71C8363837937A71bF85786A7283B4652F942460',
-        usdcErc20: '0x71C8363837937A71bF85786A7283B4652F942460',
-        btc: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh'
-      },
-      bankAccount: {
-        bankName: 'Commercial Bank of Ceylon',
-        accountName: 'House of Dewera (Pvt) Ltd',
-        accountNumber: '100029384756',
-        branch: 'Colombo Elite / Ratnapura Branch',
-        swiftCode: 'COMBCEKL',
-        currency: 'USD / LKR',
-        instructions: 'Include your Atelier ID or Gemstone Reference in the wire transfer memo.'
-      }
-    };
+    const settings={marketplaceEnabled:false,maintenanceMode:false,sellerRegistrationEnabled:false,deweraEmail:'deweragems@gmail.com',deweraWhatsApp:'+94771210101'};
     for (const r of rows) {
       try {
         settings[r.key] = JSON.parse(r.value_json);
@@ -52,6 +29,8 @@ class ConfigService {
         settings[r.key] = r.value_json;
       }
     }
+    settings.marketplaceEnabled = false;
+    settings.sellerRegistrationEnabled = false;
     return settings;
   }
 
@@ -81,7 +60,7 @@ class ConfigService {
   }
 
   static isMarketplaceEnabled() {
-    return Boolean(this.getSetting('marketplaceEnabled', true));
+    return false; // Dewera operates as a direct store, never a seller marketplace.
   }
 
   static isMaintenanceModeEnabled() {

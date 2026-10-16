@@ -4,7 +4,7 @@
  * Zero emoji constraint strictly adhered to.
  */
 
-const { parse: parseUrl } = require('url');
+
 const crypto = require('crypto');
 const path = require('path');
 const fs = require('fs');
@@ -22,10 +22,7 @@ const { validateImageBuffer } = require('../middleware/upload');
 
 function sendJson(res, statusCode, data) {
   res.writeHead(statusCode, {
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS, DELETE',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-staff-token, x-seller-token'
+    'Content-Type': 'application/json'
   });
   res.end(JSON.stringify(data));
 }
@@ -54,315 +51,49 @@ function parseJsonBody(req) {
  * Handles marketplace API requests. Returns true if request was handled.
  */
 async function handleApiRequest(req, res) {
-  const parsed = parseUrl(req.url, true);
+  const requestUrl=new URL(req.url,'http://localhost');
+  const parsed={pathname:requestUrl.pathname,query:Object.fromEntries(requestUrl.searchParams)};
   const pathname = parsed.pathname;
   const method = req.method;
+  if (await require('./admin-auth').handle(req,res,pathname)) return true;
+  if (pathname === '/api/contact' && method === 'GET') { sendJson(res,200,require('../services/ContactService').details()); return true; }
+  if (pathname === '/api/config') { sendJson(res,410,{success:false,error:'Use Contact & maintenance in the management workspace.'}); return true; }
+
+  if (/^\/api\/(payments?|checkout|wallets?|escrow)(?:\/|$)/.test(pathname)) { sendJson(res,410,{success:false,error:'Dewera is enquiry-only. Online payments are not offered.'}); return true; }
+  if (await require('./content').handleContent(req, res, pathname)) return true;
+
+  // Retire third-party seller access on both store and administration servers.
+  if (/^\/api\/sellers?(?:\/|$)/.test(pathname) || req.headers['x-seller-token'] || /^Bearer tok_seller_/i.test(req.headers.authorization || '')) {
+    sendJson(res, 410, { success: false, error: 'The external seller service has been retired.' });
+    return true;
+  }
+
 
   // Global Maintenance Mode Guard (Public requests blocked, staff bypassed)
   if (pathname.startsWith('/api/') && !pathname.startsWith('/api/staff') && !pathname.startsWith('/api/settings')) {
     if (ConfigService.isMaintenanceModeEnabled()) {
       const staff = getStaffSession(req);
-      if (!staff) {
+      const preview = method === 'GET' && /^\/api\/gems(?:\/|$)/.test(pathname) && require('../services/PreviewService').valid(parsed.query.preview);
+      if (!staff && !preview) {
         sendJson(res, 503, {
           success: false,
-          error: 'Dewera marketplace is currently undergoing scheduled platform maintenance. Please inspect back shortly.'
+          error: 'The Dewera store is temporarily unavailable. Please contact the team for assistance.'
         });
         return true;
       }
     }
   }
 
-  // 1. Staff Authentication: POST /api/staff/login
-  if (pathname === '/api/staff/login' && method === 'POST') {
-    try {
-      const { username, password } = await parseJsonBody(req);
-      if (!username || !password) {
-        sendJson(res, 400, { success: false, error: 'Username and passcode are required.' });
-        return true;
-      }
-      const db = getDb();
-      const staff = db.prepare('SELECT * FROM users WHERE LOWER(username) = LOWER(?)').get(username.trim());
-      if (!staff) {
-        sendJson(res, 401, { success: false, error: 'Invalid terminal credentials.' });
-        return true;
-      }
-      const computedHash = crypto.createHash('sha256').update((staff.salt || '') + password).digest('hex');
-      if (computedHash !== staff.password_hash) {
-        sendJson(res, 401, { success: false, error: 'Invalid terminal credentials.' });
-        return true;
-      }
-      const token = 'tok_staff_' + crypto.randomBytes(32).toString('hex');
-      const sessionData = {
-        staffId: staff.id,
-        username: staff.username,
-        role: staff.role,
-        name: staff.name
-      };
-      registerStaffSession(token, sessionData);
-      AuditService.log({
-        actorId: staff.id,
-        actorRole: staff.role,
-        eventType: 'STAFF_LOGIN_SUCCESS',
-        entityType: 'users',
-        entityId: staff.id
-      });
-      sendJson(res, 200, {
-        success: true,
-        token,
-        user: sessionData
-      });
-    } catch (err) {
-      sendJson(res, 400, { success: false, error: err.message });
-    }
-    return true;
-  }
-
-  // 2. Staff Management: GET /api/staff
-  if (pathname === '/api/staff' && method === 'GET') {
-    const staff = getStaffSession(req);
-    if (!staff) {
-      sendJson(res, 401, { success: false, error: 'Unauthorized staff session.' });
-      return true;
-    }
-    const db = getDb();
-    const rows = db.prepare('SELECT id, username, role, name, created_at, created_by FROM users ORDER BY created_at ASC').all();
-    const sanitized = rows.map(s => ({
-      id: s.id,
-      username: s.username,
-      role: s.role,
-      name: s.name,
-      createdAt: s.created_at,
-      createdBy: s.created_by
-    }));
-    sendJson(res, 200, sanitized);
-    return true;
-  }
-
-  // 3. Staff Creation: POST /api/staff/create
-  if (pathname === '/api/staff/create' && method === 'POST') {
-    const sess = getStaffSession(req);
-    if (!sess) {
-      sendJson(res, 401, { success: false, error: 'Unauthorized staff session.' });
-      return true;
-    }
-    if (sess.role !== 'super_admin' && sess.role !== 'admin') {
-      sendJson(res, 403, { success: false, error: 'Access denied: Insufficient privileges.' });
-      return true;
-    }
-    try {
-      const { username, password, role, name } = await parseJsonBody(req);
-      if (!username || !password || !role) {
-        sendJson(res, 400, { success: false, error: 'Username, password, and role are required.' });
-        return true;
-      }
-      const cleanUsername = username.trim().toLowerCase();
-      if (cleanUsername.length < 3 || password.length < 4) {
-        sendJson(res, 400, { success: false, error: 'Username must be at least 3 chars and password at least 4 chars.' });
-        return true;
-      }
-      if (!['admin', 'moderator'].includes(role)) {
-        sendJson(res, 400, { success: false, error: 'Role must be admin or moderator.' });
-        return true;
-      }
-      const db = getDb();
-      const existing = db.prepare('SELECT id FROM users WHERE LOWER(username) = LOWER(?)').get(cleanUsername);
-      if (existing) {
-        sendJson(res, 400, { success: false, error: 'Username already in use.' });
-        return true;
-      }
-      const salt = 'salt_' + crypto.randomBytes(8).toString('hex');
-      const passwordHash = crypto.createHash('sha256').update(salt + password).digest('hex');
-      const newId = 'staff-' + Date.now().toString(36);
-      const staffName = name || (role === 'admin' ? 'Senior Governance Admin' : 'Compliance Moderator');
-
-      db.prepare(`
-        INSERT INTO users (id, username, role, name, salt, password_hash, created_by, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-      `).run(newId, cleanUsername, role, staffName, salt, passwordHash, sess.username);
-
-      syncStaffToJson();
-
-      AuditService.log({
-        actorId: sess.staffId,
-        actorRole: sess.role,
-        eventType: 'STAFF_PROVISIONED',
-        entityType: 'users',
-        entityId: newId,
-        newValue: { username: cleanUsername, role }
-      });
-
-      sendJson(res, 200, {
-        success: true,
-        staff: {
-          id: newId,
-          username: cleanUsername,
-          role,
-          name: staffName,
-          createdBy: sess.username
-        }
-      });
-    } catch (err) {
-      sendJson(res, 400, { success: false, error: err.message });
-    }
-    return true;
-  }
-
-  // 3b. Staff Revocation / Deletion: POST /api/staff/delete (Super Admin & Admin)
-  if (pathname === '/api/staff/delete' && method === 'POST') {
-    const sess = getStaffSession(req);
-    if (!sess) {
-      sendJson(res, 401, { success: false, error: 'Unauthorized staff session.' });
-      return true;
-    }
-    if (sess.role !== 'super_admin' && sess.role !== 'admin') {
-      sendJson(res, 403, { success: false, error: 'Access denied: Administrator clearance required to revoke staff accounts.' });
-      return true;
-    }
-    try {
-      const { staffId, id, username } = await parseJsonBody(req);
-      const targetId = staffId || id;
-      const db = getDb();
-      const target = db.prepare('SELECT * FROM users WHERE id = ? OR LOWER(username) = LOWER(?)').get(targetId || '', username || '');
-      if (!target) {
-        sendJson(res, 404, { success: false, error: 'Staff account not found.' });
-        return true;
-      }
-      if (target.role === 'super_admin') {
-        sendJson(res, 403, { success: false, error: 'Sovereign Head Administrator account cannot be revoked.' });
-        return true;
-      }
-      db.prepare('DELETE FROM users WHERE id = ?').run(target.id);
-      try {
-        db.prepare('DELETE FROM staff_sessions WHERE staff_id = ?').run(target.id);
-      } catch(e) {}
-      syncStaffToJson();
-
-      AuditService.log({
-        actorId: sess.staffId,
-        actorRole: sess.role,
-        eventType: 'STAFF_REVOKED',
-        entityType: 'users',
-        entityId: target.id,
-        newValue: { username: target.username, role: target.role }
-      });
-
-      sendJson(res, 200, { success: true, message: `Staff member @${target.username} revoked.` });
-    } catch (err) {
-      sendJson(res, 400, { success: false, error: err.message });
-    }
-    return true;
-  }
-
-  // 3c. Staff Update / Edit: POST /api/staff/update (Super Admin & Admin)
-  if (pathname === '/api/staff/update' && method === 'POST') {
-    const sess = getStaffSession(req);
-    if (!sess) {
-      sendJson(res, 401, { success: false, error: 'Unauthorized staff session.' });
-      return true;
-    }
-    if (sess.role !== 'super_admin' && sess.role !== 'admin') {
-      sendJson(res, 403, { success: false, error: 'Access denied: Administrator clearance required to edit staff accounts.' });
-      return true;
-    }
-    try {
-      const { staffId, id, name, role, password } = await parseJsonBody(req);
-      const targetId = staffId || id;
-      const db = getDb();
-      const target = db.prepare('SELECT * FROM users WHERE id = ?').get(targetId || '');
-      if (!target) {
-        sendJson(res, 404, { success: false, error: 'Staff account not found.' });
-        return true;
-      }
-      if (target.role === 'super_admin' && sess.role !== 'super_admin') {
-        sendJson(res, 403, { success: false, error: 'Cannot modify Sovereign Head Administrator account.' });
-        return true;
-      }
-
-      const updatedName = (name !== undefined && name.trim()) ? name.trim() : target.name;
-      const updatedRole = (role && ['admin', 'moderator'].includes(role)) ? role : target.role;
-
-      if (password && password.trim().length >= 4) {
-        const salt = 'salt_' + crypto.randomBytes(8).toString('hex');
-        const passwordHash = crypto.createHash('sha256').update(salt + password.trim()).digest('hex');
-        db.prepare(`
-          UPDATE users SET name = ?, role = ?, salt = ?, password_hash = ?, updated_at = CURRENT_TIMESTAMP
-          WHERE id = ?
-        `).run(updatedName, updatedRole, salt, passwordHash, target.id);
-      } else {
-        db.prepare(`
-          UPDATE users SET name = ?, role = ?, updated_at = CURRENT_TIMESTAMP
-          WHERE id = ?
-        `).run(updatedName, updatedRole, target.id);
-      }
-
-      syncStaffToJson();
-
-      AuditService.log({
-        actorId: sess.staffId,
-        actorRole: sess.role,
-        eventType: 'STAFF_UPDATED',
-        entityType: 'users',
-        entityId: target.id,
-        newValue: { name: updatedName, role: updatedRole }
-      });
-
-      sendJson(res, 200, {
-        success: true,
-        staff: {
-          id: target.id,
-          username: target.username,
-          name: updatedName,
-          role: updatedRole
-        }
-      });
-    } catch (err) {
-      sendJson(res, 400, { success: false, error: err.message });
-    }
-    return true;
-  }
+  if(pathname==='/api/staff'){sendJson(res,410,{success:false,error:'Use approved-email access management.'});return true;}
 
   // 4. Platform Settings: GET /api/settings
   if (pathname === '/api/settings' && method === 'GET') {
     const settings = ConfigService.getAllSettings();
-    sendJson(res, 200, settings);
+    sendJson(res, 200, getStaffSession(req) ? settings : {maintenanceMode:settings.maintenanceMode,marketplaceEnabled:false,sellerRegistrationEnabled:false});
     return true;
   }
 
-  // 5. Platform Settings Update: POST /api/settings
-  if (pathname === '/api/settings' && method === 'POST') {
-    const staff = getStaffSession(req);
-    if (!staff) {
-      sendJson(res, 401, { success: false, error: 'Unauthorized staff session.' });
-      return true;
-    }
-    try {
-      const body = await parseJsonBody(req);
-      if (body.marketplaceEnabled !== undefined && staff.role !== 'super_admin' && staff.role !== 'admin') {
-        sendJson(res, 403, { success: false, error: 'Access denied: Administrator clearance required to toggle Marketplace Visibility.' });
-        return true;
-      }
-      if (body.maintenanceMode !== undefined && staff.role !== 'super_admin' && staff.role !== 'admin') {
-        sendJson(res, 403, { success: false, error: 'Access denied: Only Administrators can toggle Maintenance mode.' });
-        return true;
-      }
-      if (body.sellerRegistrationEnabled !== undefined && staff.role !== 'super_admin' && staff.role !== 'admin') {
-        sendJson(res, 403, { success: false, error: 'Access denied: Only Administrators can toggle Seller Registration.' });
-        return true;
-      }
-      const updated = ConfigService.updateMultipleSettings(body, staff.username);
-      AuditService.log({
-        actorId: staff.staffId,
-        actorRole: staff.role,
-        eventType: 'SETTINGS_UPDATED',
-        entityType: 'platform_settings',
-        newValue: body
-      });
-      sendJson(res, 200, { success: true, settings: updated });
-    } catch (err) {
-      sendJson(res, 400, { success: false, error: err.message });
-    }
-    return true;
-  }
+  if(pathname==='/api/settings'&&method==='POST'){sendJson(res,410,{success:false,error:'Use the validated admin settings endpoint.'});return true;}
 
   // 6. Gemstone Listings: GET /api/gems
   if (pathname === '/api/gems' && method === 'GET') {
@@ -457,10 +188,10 @@ async function handleApiRequest(req, res) {
   if ((pathname === '/api/inquiries' || pathname === '/api/enquire') && method === 'POST') {
     try {
       const body = await parseJsonBody(req);
-      const customerName = body.customerName || body.name || 'Valued Client';
-      const customerEmail = body.customerEmail || body.email || 'client@dewera.vault';
+      const customerName = body.customerName || body.name || '';
+      const customerEmail = body.customerEmail || body.email || '';
       const customerPhone = body.customerPhone || body.phone || '';
-      const listingId = body.listingId || body.gemId || body.gemInterest || 'gem-dewera-01';
+      const listingId = body.listingId || body.gemId || body.gemInterest || null;
       const variationId = body.variationId || null;
       const colorVariation = body.colorVariation || body.color || null;
       const message = body.message || body.custodyPreference || '';
@@ -652,127 +383,7 @@ async function handleApiRequest(req, res) {
     return true;
   }
 
-  // 19. Seller Registration & Slot Payment
-  if ((pathname === '/api/sellers/register' || pathname === '/api/seller/register') && method === 'POST') {
-    try {
-      const body = await parseJsonBody(req);
-      const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-      const result = SellerService.registerSeller({ ...body, ip });
-      const sellerObj = {
-        id: result.sellerId,
-        atelierName: result.atelierName,
-        email: result.email,
-        twoFactorSecret: result.twoFactorSecret,
-        status: result.status
-      };
-      sendJson(res, 200, { success: true, ...result, seller: sellerObj });
-    } catch (err) {
-      const code = err.message.includes('declined') || err.message.includes('sanctioned') ? 403 : 400;
-      sendJson(res, code, { success: false, error: err.message });
-    }
-    return true;
-  }
-
-  if (pathname === '/api/sellers/verify-2fa' && method === 'POST') {
-    try {
-      const body = await parseJsonBody(req);
-      const result = SellerService.verify2FA(body.sellerId, body.code);
-      sendJson(res, 200, result);
-    } catch (err) {
-      sendJson(res, 400, { success: false, error: err.message });
-    }
-    return true;
-  }
-
-  if ((pathname === '/api/sellers/pay-slot' || pathname === '/api/seller/payment' || pathname === '/api/seller/card-payment') && method === 'POST') {
-    try {
-      const body = await parseJsonBody(req);
-      const sellerId = body.sellerId || (body.seller && body.seller.id);
-      const result = SellerService.recordSlotPayment(sellerId, body);
-      sendJson(res, 200, result);
-    } catch (err) {
-      sendJson(res, 400, { success: false, error: err.message });
-    }
-    return true;
-  }
-
-  // 20. Seller Authentication: POST /api/seller/login & POST /api/sellers/login
-  if ((pathname === '/api/seller/login' || pathname === '/api/sellers/login') && method === 'POST') {
-    try {
-      const { email, password } = await parseJsonBody(req);
-      if (!email) {
-        sendJson(res, 400, { success: false, error: 'Atelier email is required.' });
-        return true;
-      }
-      const cleanEmail = email.toLowerCase().trim();
-      const db = getDb();
-      let sellerRow = db.prepare('SELECT * FROM seller_profiles WHERE LOWER(email) = ? OR LOWER(id) = ?').get(cleanEmail, cleanEmail);
-      if (!sellerRow) {
-        const sellersFile = path.join(__dirname, '..', '..', 'data', 'sellers.json');
-        if (fs.existsSync(sellersFile)) {
-          const sellers = JSON.parse(fs.readFileSync(sellersFile, 'utf8'));
-          const s = sellers.find(x => (x.email && x.email.toLowerCase() === cleanEmail) || (x.id && x.id.toLowerCase() === cleanEmail));
-          if (s) {
-            sellerRow = {
-              id: s.id,
-              email: s.email,
-              atelier_name: s.atelierName || s.name,
-              status: s.status,
-              two_factor_verified: s.twoFactorVerified ? 1 : 0
-            };
-          }
-        }
-      }
-      if (!sellerRow) {
-        sendJson(res, 401, { success: false, error: 'Atelier account not registered.' });
-        return true;
-      }
-
-      const token = 'tok_seller_' + crypto.randomBytes(32).toString('hex');
-      const sessionData = {
-        sellerId: sellerRow.id,
-        id: sellerRow.id,
-        email: sellerRow.email,
-        atelierName: sellerRow.atelier_name,
-        role: 'seller',
-        status: sellerRow.status,
-        twoFactorVerified: Boolean(sellerRow.two_factor_verified)
-      };
-
-      registerSellerSession(token, sessionData);
-
-      AuditService.log({
-        actorId: sellerRow.id,
-        actorRole: 'seller',
-        eventType: 'SELLER_LOGIN_SUCCESS',
-        entityType: 'seller_profile',
-        entityId: sellerRow.id
-      });
-
-      const fullSeller = SellerService.getSellerById(sellerRow.id) || sessionData;
-
-      sendJson(res, 200, {
-        success: true,
-        token,
-        seller: fullSeller
-      });
-    } catch (err) {
-      sendJson(res, 400, { success: false, error: err.message });
-    }
-    return true;
-  }
-
-  // 21. Sellers Directory: GET /api/sellers
-  if (pathname === '/api/sellers' && method === 'GET') {
-    try {
-      const sellers = SellerService.getSellers({ includeInactive: true });
-      sendJson(res, 200, sellers);
-    } catch (err) {
-      sendJson(res, 500, { success: false, error: err.message });
-    }
-    return true;
-  }
-
+  if (pathname.startsWith('/api/')) { sendJson(res,404,{success:false,error:'API endpoint not found.'}); return true; }
   return false;
 }
 

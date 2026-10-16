@@ -12,25 +12,33 @@ const AuditService = require('./AuditService');
 class InquiryService {
   static generateInquiryId() {
     const year = new Date().getFullYear();
-    const randomDigits = Math.floor(100000 + Math.random() * 900000);
+    const randomDigits = crypto.randomBytes(6).toString('hex').toUpperCase();
     return `DWR-INQ-${year}-${randomDigits}`;
   }
 
   static createInquiry({ listingId, variationId = null, colorVariation = null, customerName, customerEmail, customerPhone = '', preferredContact = 'whatsapp', message = '' }) {
     const db = getDb();
-    let listing = db.prepare('SELECT * FROM gemstone_listings WHERE id = ?').get(listingId);
-    if (!listing) {
-      listing = db.prepare('SELECT * FROM gemstone_listings WHERE name = ? COLLATE NOCASE').get(listingId);
+    if (typeof customerName !== 'string' || !customerName.trim() || customerName.length > 120 ||
+        typeof customerEmail !== 'string' || customerEmail.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail) ||
+        typeof customerPhone !== 'string' || customerPhone.length > 40 ||
+        typeof message !== 'string' || !message.trim() || message.length > 4000 ||
+        !['email', 'whatsapp'].includes(preferredContact) || (preferredContact === 'whatsapp' && !customerPhone.trim())) {
+      throw new Error('Please provide a valid name, email, message, and contact preference.');
     }
-    if (!listing && typeof listingId === 'string') {
-      listing = db.prepare('SELECT * FROM gemstone_listings WHERE ? LIKE ("%" || name || "%") OR name LIKE ("%" || ? || "%") LIMIT 1').get(listingId, listingId);
+    if (!listingId) {
+      db.exec(`CREATE TABLE IF NOT EXISTS general_inquiries (
+        id TEXT PRIMARY KEY, customer_name TEXT NOT NULL, customer_email TEXT NOT NULL,
+        customer_phone TEXT, preferred_contact TEXT, message TEXT, status TEXT DEFAULT 'new',
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP, updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+      )`);
+      const inquiryId = this.generateInquiryId();
+      db.prepare('INSERT INTO general_inquiries (id, customer_name, customer_email, customer_phone, preferred_contact, message) VALUES (?, ?, ?, ?, ?, ?)')
+        .run(inquiryId, customerName.trim(), customerEmail.trim(), customerPhone.trim(), preferredContact, message.trim());
+      return { inquiryId, listingId: null, listingName: 'General enquiry', status: 'new', whatsappUrl:require('./ContactService').whatsapp({inquiryId,customerName,customerEmail,customerPhone,message}) };
     }
-    if (!listing) {
-      listing = db.prepare('SELECT * FROM gemstone_listings ORDER BY id ASC LIMIT 1').get();
-    }
-    if (!listing) {
-      throw new Error('Gemstone listing not found.');
-    }
+    if (typeof listingId !== 'string') throw new Error('Invalid gemstone reference.');
+    const listing = db.prepare("SELECT * FROM gemstone_listings WHERE id = ? AND is_dewera = 1 AND status = 'available'").get(listingId);
+    if (!listing) throw new Error('This gemstone is unavailable. Please contact Dewera for alternatives.');
 
     const effectiveListingId = listing.id;
 
@@ -67,44 +75,8 @@ class InquiryService {
       message.trim()
     );
 
-    // Determine destination phone
-    let targetPhone = '+94771234567';
-    if (listing.is_dewera === 1) {
-      targetPhone = ConfigService.getSetting('deweraWhatsApp', '+94771234567');
-    } else {
-      const seller = db.prepare('SELECT phone, whatsapp FROM seller_profiles WHERE id = ?').get(sellerId);
-      if (seller) {
-        targetPhone = seller.whatsapp || seller.phone || '+94771234567';
-      }
-    }
-    const cleanPhone = targetPhone.replace(/[^0-9]/g, '');
-
-    // Build structured inquiry text for WhatsApp
-    let priceDisplay = `$${listing.price.toLocaleString()} USD`;
-    if (variation) {
-      if (variation.price_max && variation.price_max > variation.price) {
-        priceDisplay = `$${variation.price.toLocaleString()} - $${variation.price_max.toLocaleString()} USD`;
-      } else {
-        priceDisplay = `$${variation.price.toLocaleString()} USD`;
-      }
-    } else if (listing.price_type === 'range' && listing.price_max) {
-      priceDisplay = `$${listing.price.toLocaleString()} - $${listing.price_max.toLocaleString()} USD`;
-    } else if (listing.price_type === 'consultation') {
-      priceDisplay = 'Price on Application';
-    }
-
-    const waText = [
-      `DEWERA INQUIRY REFERENCE: ${inquiryId}`,
-      `Item: ${listing.name} (Ref: ${listing.id})`,
-      `Variation: ${variation ? variation.color_name : (colorVariation || 'Primary / Standard Specimen')}`,
-      `Indicated Valuation: ${priceDisplay}`,
-      `Origin: ${listing.origin}`,
-      `Client Name: ${customerName}`,
-      `Client Contact: ${customerEmail}${customerPhone ? ' / ' + customerPhone : ''}`,
-      message ? `Client Message: "${message}"` : ''
-    ].filter(Boolean).join('\n');
-
-    const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(waText)}`;
+    const targetPhone = require('./ContactService').details().whatsappNumber;
+    const whatsappUrl = require('./ContactService').whatsapp({inquiryId,listingName:listing.name,customerName,customerEmail,customerPhone,message});
 
     AuditService.log({
       actorId: customerEmail,
@@ -165,11 +137,24 @@ class InquiryService {
     query += ' ORDER BY i.created_at DESC LIMIT ?';
     params.push(limit);
 
-    return db.prepare(query).all(...params);
+    const inquiries = db.prepare(query).all(...params);
+    const hasGeneral = db.prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'general_inquiries'").get();
+    if (user.role === 'super_admin' && !listingId && !sellerId && hasGeneral) {
+      const general = db.prepare("SELECT *, 'General enquiry' as listing_name, 1 as is_dewera FROM general_inquiries ORDER BY created_at DESC LIMIT ?").all(limit);
+      return [...inquiries, ...general].sort((a, b) => b.created_at.localeCompare(a.created_at)).slice(0, limit);
+    }
+    return inquiries;
   }
 
   static updateInquiryStatus(inquiryId, status, actor) {
     const db = getDb();
+    const generalTable = db.prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'general_inquiries'").get();
+    const general = generalTable && db.prepare('SELECT id FROM general_inquiries WHERE id = ?').get(inquiryId);
+    if (general) {
+      if (actor.role !== 'super_admin') throw new Error('Access denied.');
+      db.prepare('UPDATE general_inquiries SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(status, inquiryId);
+      return true;
+    }
     const existing = db.prepare('SELECT * FROM inquiries WHERE id = ?').get(inquiryId);
     if (!existing) {
       throw new Error('Inquiry not found.');

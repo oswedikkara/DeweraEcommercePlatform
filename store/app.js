@@ -1,498 +1,106 @@
-/**
- * Dewera Natural Heated - Shared Data & Client Store
- * Certified Ceylon Natural Heated Gemstones
- */
-
-const SEED_GEMS = [];
-
-let _storeGemsCache = null;
-
-function getGems() {
-  if (_storeGemsCache && _storeGemsCache.length > 0) {
-    return _storeGemsCache;
-  }
-  try {
-    const d = localStorage.getItem('dewera_gems');
-    if (d) {
-      _storeGemsCache = JSON.parse(d);
-      return _storeGemsCache;
-    }
-  } catch (e) {}
-  _storeGemsCache = SEED_GEMS;
-  return _storeGemsCache;
+'use strict';
+const $ = (s) => document.querySelector(s);
+const params = new URLSearchParams(location.search);
+const page = document.body.dataset.page;
+const escapeHTML = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const icons = {heart:'<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/>',search:'<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/>',arrow:'<path d="M4 12h16m-6-6 6 6-6 6"/>',gem:'<path d="m3 8 4-5h10l4 5-9 13L3 8Zm0 0h18M7 3l5 18 5-18"/>',shield:'<path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6l8-3Z"/><path d="m8 12 3 3 5-6"/>',chat:'<path d="M21 11a9 9 0 0 1-9 9H4l-2 2v-11a9 9 0 0 1 19 0Z"/><path d="M7 10h10M7 14h6"/>',menu:'<path d="M4 8h16M4 16h16"/>',plus:'<circle cx="10" cy="10" r="6"/><path d="m15 15 6 6M7 10h6M10 7v6"/>'};
+const icon = (name) => `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">${icons[name] || icons.gem}</svg>`;
+let saved = []; try { saved = JSON.parse(localStorage.getItem('dewera_favourites') || '[]'); if (!Array.isArray(saved)) saved=[]; } catch {}
+let gems = [];
+let toastTimer;
+function toast(message) { $('#toast').textContent=message; $('#toast').classList.add('visible'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>$('#toast').classList.remove('visible'),2400); }
+const ownGem = g => g.isDewera === true || g.isDewera === 1 || !g.sellerId || g.sellerId === 'dewera';
+const publicGem = g => ownGem(g) && ['available','reserved','sold'].includes(g.status);
+function imageURL(value) { if (!value) return ''; if(/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/]+=*$/.test(value))return value; try { const u=new URL(value, location.href); return ['http:','https:'].includes(u.protocol) ? escapeHTML(u.href) : ''; } catch {return '';} }
+const price = g => g.priceType==='consultation' || !Number(g.price) ? 'Price on request' : new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(g.salePrice > 0 ? g.salePrice : g.price);
+const gemLink = g => `gem.html?id=${encodeURIComponent(g.id)}`;
+function header() {
+ $('#siteHeader').innerHTML=`<header class="nav"><div class="masthead-detail"><span>CEYLON &middot; SRI LANKA</span><a href="contact.html">Private appointments ${icon('arrow')}</a></div><div class="wrap nav-inner"><a class="brand" href="index.html" aria-label="Dewera home">DEWERA</a><nav class="apple-nav-links" id="navigation" aria-label="Main navigation">${[['collection','Gemstones'],['about','The house'],['contact','Private client services']].map(([p,t])=>`<a href="${p}.html" ${(page===p || (page==='gem' && p==='collection'))?'aria-current="page"':''}>${t}</a>`).join('')}</nav><div class="nav-tools"><a class="icon-btn" href="collection.html?search=1" aria-label="Search gemstones">${icon('search')}</a><a class="icon-btn" href="collection.html?saved=1" aria-label="Saved gemstones">${icon('heart')}<span id="savedCount">${saved.length || ''}</span></a><button class="icon-btn menu-toggle" aria-label="Open navigation" aria-expanded="false" aria-controls="navigation">${icon('menu')}</button></div></div></header>`;
+ $('.menu-toggle').addEventListener('click',e=>{const b=e.currentTarget;const open=b.getAttribute('aria-expanded')!=='true';b.setAttribute('aria-expanded',open);b.setAttribute('aria-label',open?'Close navigation':'Open navigation');$('#navigation').classList.toggle('open',open);});
+ document.addEventListener('keydown', e=>{if(e.key==='Escape' && $('#navigation').classList.contains('open')){$('#navigation').classList.remove('open');$('.menu-toggle').setAttribute('aria-expanded','false');$('.menu-toggle').setAttribute('aria-label','Open navigation');$('.menu-toggle').focus();}});
+ $('#siteFooter').innerHTML=`<footer class="footer"><div class="wrap"><div class="footer-top"><div><a class="brand" href="index.html">DEWERA</a><p>Rare by nature.<br>Remarkable by choice.</p></div><div class="footer-links"><div><strong>Explore</strong><a href="collection.html">The collection</a><a href="collection.html?saved=1">Saved gemstones</a><a href="about.html">Our story</a></div><div><strong>Here to help</strong><a href="contact.html">Private consultation</a><a href="about.html#buying">Buying with Dewera</a><a href="mailto:deweragems@gmail.com">Email us</a></div></div></div><div class="footer-bottom"><span>&copy; ${new Date().getFullYear()} Dewera. All rights reserved.</span><span>Prices in USD · Loose gemstones · Sri Lanka</span></div></div></footer>`;
 }
-
-// ASYNC STOREFRONT GEMS SYNC FROM DATABASE
-function fetchStoreGems(callback) {
-  fetch('/api/gems')
-    .then(r => r.json())
-    .then(gems => {
-      if (Array.isArray(gems)) {
-        _storeGemsCache = gems;
-        try {
-          localStorage.setItem('dewera_gems', JSON.stringify(gems));
-        } catch(e) {}
-        window.dispatchEvent(new CustomEvent('dewera:gems_updated', { detail: gems }));
-        if (typeof callback === 'function') callback(gems);
-      }
-    })
-    .catch(() => {});
+function saveButton(g) {return `<button class="icon-btn save" data-save="${escapeHTML(g.id)}" aria-label="Save ${escapeHTML(g.name)}" aria-pressed="${saved.includes(g.id)}">${icon('heart')}</button>`;}
+function card(g) {const img=imageURL(g.images?.[0]);return `<article class="product-card">${saveButton(g)}<span class="card-tag">${g.status==='available'?'Selected by Dewera':escapeHTML(g.status)}</span><a href="${gemLink(g)}" class="card-media" aria-label="View ${escapeHTML(g.name)}">${img?`<img src="${img}" alt="${escapeHTML(g.name)}" loading="lazy">`:icon('gem')}</a><div class="card-copy"><span class="eyebrow">${escapeHTML(g.origin || 'Sri Lanka')}</span><h3><a href="${gemLink(g)}">${escapeHTML(g.name)}</a></h3><p class="card-specs">${escapeHTML(g.weight)} ct &nbsp;·&nbsp; ${escapeHTML(g.shape || g.cut || g.type)} &nbsp;·&nbsp; ${escapeHTML(g.treatment || 'Ask for treatment details')}</p><a class="card-bottom" href="${gemLink(g)}"><div>${price(g)} <span>USD</span></div>${icon('arrow')}</a></div></article>`;}
+function curation() {return `<aside class="curation-card"><span class="eyebrow">Personal gemstone sourcing</span><h3>A vision.<br>Made precious.</h3><p>A particular colour, cut, or occasion in mind? Let us help you find a gemstone that feels like you.</p><a class="text-link" href="contact.html">Find your gemstone ${icon('arrow')}</a></aside>`;}
+function principles(){return `<section class="section white"><div class="wrap"><span class="eyebrow">The Dewera difference</span><h2 style="margin-top:16px">Considered in every detail.</h2><div class="principles"><div>${icon('gem')}<h3>From the island of gems.</h3><p>Explore Ceylon gemstones with individual origin, cut, colour, and carat details.</p></div><div>${icon('shield')}<h3>Clarity before commitment.</h3><p>Review treatment disclosures and request the available laboratory report before deciding.</p></div><div>${icon('chat')}<h3>Personal, from the first hello.</h3><p>Speak directly with Dewera about your stone, viewing arrangements, and delivery options.</p></div></div></div></section>`;}
+function consultation(){return `<section class="consult"><span class="eyebrow">Some decisions deserve a conversation.</span><h2 style="margin-top:20px">Let’s find your extraordinary.</h2><p>Whether you’re choosing your first gemstone or searching for something very specific, we’re here to help.</p><div class="actions"><a class="button" href="contact.html">Speak to an expert ${icon('arrow')}</a></div></section>`;}
+function home() {
+ const g=gems.find(g=>g.status==='available') || gems[0];
+ $('#main').innerHTML=`
+ <section class="maison-hero">
+   <div class="maison-hero-photo" role="img" aria-label="Editorial study of a blue sapphire on sculptural ivory stone"></div>
+   <div class="wrap maison-hero-inner">
+     <div class="maison-hero-copy"><span class="eyebrow hero-kicker"><span class="precious-mark" aria-hidden="true"></span> DEWERA · A CEYLON GEM HOUSE</span>
+       <h1>Ceylon gemstones.<br><em>Personally<br>considered.</em></h1>
+       <p>An individual stone deserves individual attention.<br>Discover the collection, review its details, and begin a private consultation with Dewera.</p>
+       <div class="private-hero-actions"><a class="button" href="collection.html">Explore the gemstones ${icon('arrow')}</a><a class="private-viewing-link" href="contact.html?service=viewing">Request a private viewing <span aria-hidden="true">&#8599;</span></a></div>
+     </div>
+     <div class="hero-edition"><span>CEYLON, SRI LANKA</span><a href="#selection" class="discover-below">Discover Dewera <span aria-hidden="true">&#8595;</span></a><span>A study in natural beauty &nbsp; / &nbsp; 01</span></div>
+   </div>
+ </section>
+ <div class="provenance-strip"><span>Selected in Sri Lanka</span><i></i><span>Natural loose gemstones</span><i></i><span>Direct, personal guidance</span></div>
+ <section class="section selection-section" id="selection"><div class="wrap">
+  <div class="section-heading"><div><span class="eyebrow">Individual stones. Individual character.</span><h2>A closer look.<br><em>A considered choice.</em></h2></div><div><p>Every stone has a character of its own.<br>Find the one that speaks to you.</p><a class="text-link" href="collection.html">Explore all gemstones ${icon('arrow')}</a></div></div>
+  <div class="maison-selection">${g?card(g):'<div class="empty"><h3>A new selection is taking shape.</h3><a href="contact.html" class="text-link">Enquire with Dewera</a></div>'}
+    <div class="selection-note"><span class="note-number">DEWERA / SELECTED GEMSTONE</span><span class="selection-hairline" aria-hidden="true"></span><h3>Beyond the blue.<br>The individual stone.</h3><p>Colour is the beginning. Review this stone’s proportions, disclosed treatment, origin and listed laboratory report before starting a personal conversation.</p>${g?`<dl class="selection-specs"><div><dt>Weight</dt><dd>${escapeHTML(g.weight)} carats</dd></div><div><dt>Origin</dt><dd>${escapeHTML(g.origin)}</dd></div><div><dt>Treatment</dt><dd>${escapeHTML(g.treatment)}</dd></div></dl><a class="text-link" href="${gemLink(g)}">Discover this gemstone ${icon('arrow')}</a>`:'<a class="text-link" href="contact.html">Talk to our team</a>'}</div>
+  </div>
+ </div></section>
+ ${g?`<section class="dossier-preview"><div class="wrap dossier-preview-grid"><div><span class="eyebrow">The Dewera gemstone dossier</span><h2>Beauty, with<br><em>the details in view.</em></h2><p>An individual record for an individual gemstone. Understand what is listed, request supporting documents, and discuss any questions before deciding.</p><a class="text-link" href="${gemLink(g)}">Review the gemstone dossier ${icon('arrow')}</a></div><article class="dossier-document"><div class="dossier-document-top"><span>DEWERA</span><span>GEMSTONE RECORD</span></div><div class="dossier-document-id">REFERENCE / ${escapeHTML(g.id)}</div><h3>${escapeHTML(g.name)}</h3><dl><div><dt>Weight & proportions</dt><dd>${escapeHTML(g.weight)} ct · ${escapeHTML(g.dimensions || g.shape || 'Ask for details')}</dd></div><div><dt>Listed origin</dt><dd>${escapeHTML(g.origin)}</dd></div><div><dt>Treatment disclosure</dt><dd>${escapeHTML(g.treatment)}</dd></div><div><dt>Listed laboratory report</dt><dd>${escapeHTML(g.certificate || 'Enquire for documentation')}</dd></div></dl><p>Request the report copy and additional views for your review. Listed information is subject to confirmation with Dewera.</p><a href="contact.html?gem=${encodeURIComponent(g.id)}" class="text-link">Request details ${icon('arrow')}</a></article></div></section>`:''}
+ <section class="maison-manifesto"><div class="wrap"><span class="eyebrow">A more personal kind of precious</span><span class="manifesto-symbol" aria-hidden="true">${icon('gem')}</span><p>A moment. A meaning.<br><em>Something entirely yours.</em></p><span class="manifesto-line" aria-hidden="true"></span><a class="text-link" href="about.html">The world of Dewera ${icon('arrow')}</a></div></section>
+ <section class="section maison-story"><div class="wrap story-split"><div class="story-image"><img src="images/maison-editorial.jpg" alt="Editorial sapphire still life" loading="lazy"><span>THE ISLAND OF GEMS</span><div class="image-index" aria-hidden="true">D / 01</div></div><div class="story-text"><span class="eyebrow">Our roots. Your discovery.</span><h2>From Ceylon,<br><em>with character.</em></h2><p>Our story begins in Sri Lanka. An island known for gemstones of extraordinary colour, and the place Dewera calls home.</p><p>We bring you closer to each stone, with thoughtful selection, clearly presented details, and a conversation with the people behind it.</p><a class="text-link" href="about.html">Discover our story ${icon('arrow')}</a></div></div></section>
+ ${principles()}<section class="private-salon"><div class="wrap salon-inner"><div><span class="eyebrow">At your service. At your pace.</span><h2>A private conversation.<br><em>A remarkable discovery.</em></h2><p>For a particular stone, a meaningful occasion, or a vision yet to take shape. Begin a personal consultation with Dewera.</p></div><a class="button salon-button" href="contact.html">Arrange a consultation ${icon('arrow')}</a><span class="salon-watermark" aria-hidden="true">D</span></div></section>`;
 }
-
-// Auto-sync immediately on script load
-fetchStoreGems();
-
-function isMarketplaceEnabled() {
-  try {
-    const s = localStorage.getItem('dewera_settings');
-    if (s) {
-      const parsed = JSON.parse(s);
-      if (parsed.marketplaceEnabled === false) return false;
-    }
-    const mkt = localStorage.getItem('dewera_marketplace_enabled');
-    if (mkt === 'false') return false;
-  } catch (e) {}
-  return true;
+function collection(){const types=[...new Set(gems.map(g=>g.type))];$('#main').innerHTML=`<section class="wrap"><div class="page-head"><span class="eyebrow">Find something extraordinary</span><h1>${params.has('saved')?'Your private selection.':'The gemstone collection.'}</h1><p>${params.has('saved')?'The stones that caught your eye, all in one place. Saved on this device.':'Individual Ceylon gemstones, presented with their specifications and disclosed treatments. Select a stone to explore its dossier or begin a personal consultation.'}</p></div><div class="toolbar"><div class="search-field"><label class="fine" for="search">Search the collection</label><input type="search" id="search" placeholder="Name, colour, origin…" autocomplete="off"></div><select id="type" aria-label="Gemstone variety"><option value="">All varieties</option>${types.map(t=>`<option value="${escapeHTML(t)}">${escapeHTML(t)}</option>`).join('')}</select><select id="sort" aria-label="Sort gemstones"><option value="featured">Featured</option><option value="price-low">Price: low to high</option><option value="price-high">Price: high to low</option><option value="carat">Carat: high to low</option></select><button class="chip" id="reset">Reset</button></div><div class="result-count" id="results" role="status"></div><div class="product-grid" id="collectionGrid" style="padding-bottom:80px"></div></section>${consultation()}`;
+ if(types.includes(params.get('type'))) $('#type').value=params.get('type');
+ $('#search').value=params.get('q')||'';
+ const render=()=>{let filtered=gems.filter(g=>(!params.has('saved')||saved.includes(g.id))&&(!$('#type').value||g.type===$('#type').value)&&[g.name,g.type,g.color,g.origin,g.cut,g.shape].join(' ').toLowerCase().includes($('#search').value.trim().toLowerCase()));const sort=$('#sort').value;if(sort==='price-low')filtered.sort((a,b)=>(a.price||Infinity)-(b.price||Infinity));if(sort==='price-high')filtered.sort((a,b)=>(b.price||0)-(a.price||0));if(sort==='carat')filtered.sort((a,b)=>b.weight-a.weight);$('#results').textContent=`${filtered.length} gemstone${filtered.length===1?'':'s'}${params.has('saved')?' saved':''}`;$('#collectionGrid').innerHTML=filtered.length?filtered.map(card).join(''):`<div class="empty"><h3>${params.has('saved')?'Your next discovery is waiting.':'No gemstones found.'}</h3><p>${params.has('saved')?'Tap the heart on a gemstone to save it here.':'Try another search or ask us to source a stone for you.'}</p><a class="text-link" href="${params.has('saved')?'collection.html':'contact.html'}">${params.has('saved')?'Explore the collection':'Ask about sourcing'} ${icon('arrow')}</a></div>`;};
+ $('#search').addEventListener('input',render);$('#type').addEventListener('change',render);$('#sort').addEventListener('change',render);$('#reset').addEventListener('click',()=>{$('#search').value='';$('#type').value='';$('#sort').value='featured';document.querySelectorAll('select').forEach(select=>select.dispatchEvent(new Event('dewera:select-sync')));render();});window.renderCollection=render;render();if(params.has('search')) $('#search').focus();}
+function detail(){const g=gems.find(g=>g.id===params.get('id'));if(!g){$('#main').innerHTML=`<section class="wrap section empty"><h1 style="font-size:40px">This stone isn’t in the collection.</h1><p>It may no longer be listed. Explore the collection or contact us for help.</p><a class="button" href="collection.html">Explore gemstones</a></section>`;return;}document.title=`${g.name} — Dewera`;const specs=[['Variety',g.type],['Carat weight',`${g.weight} ct`],['Origin',g.origin],['Colour',g.color],['Clarity',g.clarity],['Cut',g.cut],['Shape',g.shape],['Dimensions',g.dimensions],['Treatment',g.treatment]];$('#main').innerHTML=`<div class="wrap"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="index.html">Home</a> &nbsp;/&nbsp; <a href="collection.html">Collection</a> &nbsp;/&nbsp; ${escapeHTML(g.type)}</nav><section class="detail-grid"><div><div class="detail-image" id="detailImage"><img src="${imageURL(g.images?.[0]) || 'images/sapphire.png'}" alt="${escapeHTML(g.name)}">${saveButton(g)}<button class="icon-btn zoom-button" aria-label="Zoom gemstone image" aria-pressed="false">${icon('plus')}</button></div><p class="fine" style="text-align:center;margin-top:16px">Colours may vary with lighting and screen settings. Ask for additional views.</p></div><div class="detail-copy"><span class="eyebrow">DEWERA / GEMSTONE DOSSIER / ${escapeHTML(g.id)}</span><h1>${escapeHTML(g.name)}</h1><span class="availability">${g.status==='available'?'Enquiries welcomed':escapeHTML(g.status)}</span>${g.description?`<p class="gem-description">${escapeHTML(g.description)}</p>`:''}<p class="detail-price">${price(g)} <small class="fine">USD</small></p><p class="fine">Loose gemstone. Delivery and any applicable duties confirmed before purchase.</p><dl class="specs">${specs.filter(s=>s[1]).map(([k,v])=>`<div><dt>${k}</dt><dd>${escapeHTML(v)}</dd></div>`).join('')}</dl><a class="button" href="contact.html?gem=${encodeURIComponent(g.id)}">${g.status==='sold'?'Find a similar gemstone':'Discuss this gemstone'} ${icon('arrow')}</a><p class="fine" style="text-align:center">No payment required to enquire.</p><details open><summary>Laboratory report & treatment</summary><p>${g.certificate?`Report listed: ${escapeHTML(g.certificate)}. Request a copy for review before purchase.`:'Ask our team for the available laboratory documentation.'} Treatment: ${escapeHTML(g.treatment || 'Please enquire for details')}.</p></details><details><summary>Viewing & delivery</summary><p>Ask about a private viewing in Sri Lanka or delivery to your destination. Availability, shipping costs, insurance, and timing are confirmed directly with you.</p></details><details><summary>How to purchase</summary><p>Send an enquiry to confirm availability and review the stone’s details. Dewera will discuss payment, delivery, and applicable return terms with you before you commit.</p></details></div></section></div>${consultation()}`;$('.zoom-button').addEventListener('click',e=>{const on=$('#detailImage').classList.toggle('zoom');e.currentTarget.setAttribute('aria-pressed',on);e.currentTarget.setAttribute('aria-label',on?'Restore gemstone image':'Zoom gemstone image');});}
+function about(){$('#main').innerHTML=`<div class="wrap"><div class="page-head"><span class="eyebrow">Our story</span><h1>Extraordinary by nature.<br>Personal by choice.</h1><p>A direct connection to Ceylon gemstones, and the people who help you choose them.</p></div><div class="editorial"><div class="editorial-art"><img src="images/sapphire.png" alt="Blue Ceylon sapphire" loading="lazy"></div><div class="editorial-copy"><span class="eyebrow">Dewera · Sri Lanka</span><h2>A world of colour.<br>A closer connection.</h2><p>Dewera is a Sri Lankan gemstone business focused on loose natural gemstones. Our collection brings individual stones into focus, with the details you need to make a considered choice.</p><a class="text-link" href="collection.html">Explore our collection ${icon('arrow')}</a></div></div><section class="story" id="buying"><h2>Know the stone you choose.</h2><p>Every gemstone is individual. Start with its colour, cut, and carat weight, then review the listed origin, treatment, dimensions, and available laboratory documentation with our team.</p><h2>A clear path to your gemstone.</h2><details open><summary>1. Discover & enquire</summary><p>Browse the collection, save your favourites, and send us an enquiry about a specific stone or sourcing request. Sending an enquiry does not reserve a stone or charge you.</p></details><details><summary>2. Review the details</summary><p>Confirm current availability, request additional images and report copies, and discuss any questions about treatment or origin.</p></details><details><summary>3. Agree before you purchase</summary><p>Confirm the final price, payment arrangements, delivery costs, applicable duties, insurance, and return terms directly with Dewera before making payment.</p></details><details><summary>How do you handle my enquiry details?</summary><p>We ask for your name and email so Dewera can respond to your request. Your phone number is optional. Favourites are stored locally in this browser. Do not include payment card details in your enquiry.</p></details></section></div>${principles()}${consultation()}`;}
+function contact() {
+ const selected=gems.find(g=>g.id===params.get('gem'));
+ $('#main').innerHTML=`
+ <section class="client-salon-intro"><div class="wrap salon-intro-grid"><div><div class="salon-overline"><span class="precious-mark" aria-hidden="true"></span> DEWERA / PRIVATE CLIENT SERVICES</div><h1>A considered choice.<br><em>A personal introduction.</em></h1><p>One stone at a time. One conversation at a time.<br>Discover what makes a gemstone right for you, with Dewera.</p><div class="salon-intro-caption">GEMSTONE CONSULTATIONS &nbsp; / &nbsp; SRI LANKA</div></div><div class="salon-still"><img src="images/maison-editorial.jpg" alt="Editorial sapphire study on natural stone"><span>COLOUR. CHARACTER. CONNECTION.</span></div></div></section>
+ <section class="wrap client-journey"><span class="eyebrow">Your introduction to Dewera</span><div class="client-journey-steps"><div><span>01</span><p>Share your interest</p></div><i></i><div><span>02</span><p>Review the stone & documents</p></div><i></i><div><span>03</span><p>Discuss viewing & acquisition</p></div></div></section>
+ <div class="wrap contact-layout client-service-layout"><aside class="contact-aside"><span class="eyebrow">The details matter.</span><h2>Before you choose,<br><em>know your stone.</em></h2><p>Explore the colour, treatment, origin and available laboratory documentation with our team. Request additional views and discuss the details at your pace.</p>
+ <div class="client-service-list"><div><span>01</span><p><strong>Individual gemstone guidance</strong>Questions about a particular stone, its proportions, colour or treatment.</p></div><div><span>02</span><p><strong>Viewing by arrangement</strong>Discuss an in-person viewing in Sri Lanka and confirm suitable arrangements with our team.</p></div><div><span>03</span><p><strong>A search shaped around you</strong>Tell us the variety, colour, cut or carat weight you have in mind.</p></div></div>
+ <div class="direct-client-contact"><span class="eyebrow">Direct correspondence</span><a href="mailto:deweragems@gmail.com">deweragems@gmail.com ${icon('arrow')}</a><p>Dewera · Sri Lanka</p></div>
+ <details><summary>What happens after my request?</summary><p>Your request is saved with a reference number. WhatsApp then opens with a prepared message for Dewera; tap Send to share it. The team will discuss your request using your preferred contact method. Viewings and availability are confirmed directly.</p></details><details><summary>Does a request reserve a gemstone?</summary><p>A request does not reserve a stone or require payment. Final pricing, documentation, delivery arrangements and return terms are discussed before purchase.</p></details>
+ </aside><form class="form-card private-request-form" id="enquiry"><div class="request-heading"><span class="eyebrow">A personal introduction</span><h2>Begin your consultation.</h2><p>Tell us where you would like to begin.</p></div><div id="formFeedback" role="status" aria-live="polite"></div>
+ <fieldset class="request-purpose"><legend>How may we assist you?</legend><div class="purpose-options"><label><input type="radio" name="requestPurpose" value="Gemstone consultation" checked><span>${icon('gem')}<strong>A gemstone</strong><small>Details & documentation</small></span></label><label><input type="radio" name="requestPurpose" value="Private viewing request"><span>${icon('search')}<strong>A private viewing</strong><small>By arrangement in Sri Lanka</small></span></label><label><input type="radio" name="requestPurpose" value="Personal sourcing request"><span>${icon('chat')}<strong>A personal search</strong><small>A stone you have in mind</small></span></label></div><p class="purpose-guidance" id="purposeGuidance">Review a particular gemstone and request its available documentation.</p></fieldset>
+ ${selected?`<div class="request-stone"><img src="${imageURL(selected.images?.[0])}" alt="${escapeHTML(selected.name)}"><div><span class="eyebrow">Your selected gemstone</span><h3>${escapeHTML(selected.name)}</h3><p>${escapeHTML(selected.weight)} ct &nbsp; / &nbsp; ${escapeHTML(selected.id)}</p></div></div>`:''}
+ <div class="field"><label for="interest">Gemstone of interest</label><select id="interest" name="listingId"><option value="">A general consultation or personal search</option>${gems.map(g=>`<option value="${escapeHTML(g.id)}" ${g===selected?'selected':''}>${escapeHTML(g.name)} · ${escapeHTML(g.weight)} ct</option>`).join('')}</select></div>
+ <div id="viewingDetails" class="viewing-preferences" hidden><div class="field-row"><div class="field"><label for="viewingDate">Preferred date (optional)</label><input type="date" id="viewingDate" name="viewingDate"></div><div class="field"><label for="viewingFormat">Preferred arrangement</label><select id="viewingFormat" name="viewingFormat"><option value="In-person viewing in Sri Lanka">In-person in Sri Lanka</option><option value="Remote discussion">A remote discussion</option></select></div></div><p>Requested dates are subject to confirmation by Dewera.</p></div><div class="form-section-label"><span>01</span> Your details</div><div class="field-row"><div class="field"><label for="name">Full name *</label><input id="name" name="customerName" autocomplete="name" maxlength="120" required></div><div class="field"><label for="email">Email address *</label><input id="email" type="email" name="customerEmail" autocomplete="email" maxlength="254" required></div></div><div class="field-row"><div class="field"><label for="phone">Phone (optional)</label><input id="phone" name="customerPhone" type="tel" autocomplete="tel" maxlength="40"></div><div class="field"><label for="preferred">Preferred correspondence</label><select id="preferred" name="preferredContact"><option value="email">Email</option><option value="whatsapp">WhatsApp</option></select></div></div>
+ <div class="form-section-label"><span>02</span> Your interest</div><div class="field"><label for="message">What would you like to explore? *</label><textarea id="message" name="message" required maxlength="3700" placeholder="A particular gemstone, questions you would like to discuss, or a preferred time for a viewing…"></textarea></div>
+ <p class="fine">Dewera will use these details to respond to your request. Please do not include payment details.</p><button class="button" type="submit">Save request & continue on WhatsApp ${icon('arrow')}</button><p class="request-reassurance">Your request is saved first. WhatsApp opens with a prepared message; tap Send to share it with Dewera. No payment is required.</p></form></div>`;
+ const purposeNotes={
+  'Gemstone consultation':['Review a particular gemstone and request its available documentation.','Tell us which details you would like to explore about the gemstone.'],
+  'Private viewing request':['Share your preferred dates. Our team will discuss and confirm viewing arrangements with you.','Tell us your preferred dates, the stone you would like to see, and any questions.'],
+  'Personal sourcing request':['Describe your preferences so our team can understand the gemstone you are looking for.','Tell us your preferred colour, variety, carat weight, cut or budget, if you have one in mind.']
+ };
+ document.querySelectorAll('input[name="requestPurpose"]').forEach(input=>input.addEventListener('change',()=>{
+  const note=purposeNotes[input.value];$('#purposeGuidance').textContent=note[0];$('#message').placeholder=note[1];$('#viewingDetails').hidden=input.value!=='Private viewing request';
+ }));
+ if(params.get('service')==='viewing'){const viewing=document.querySelector('input[value="Private viewing request"]');viewing.checked=true;$('#viewingDetails').hidden=false;$('#purposeGuidance').textContent=purposeNotes[viewing.value][0];$('#message').placeholder=purposeNotes[viewing.value][1];}
+ if(params.get('interest')) $('#message').value=`I’m interested in sourcing a ${params.get('interest')}.`;
+ $('#enquiry').addEventListener('submit',async e=>{e.preventDefault();const form=e.currentTarget;if(!form.reportValidity())return;const data=Object.fromEntries(new FormData(form));data.message='Request: '+data.requestPurpose+(data.requestPurpose==='Private viewing request'?'\nPreferred date: '+(data.viewingDate||'To be discussed')+'\nArrangement: '+data.viewingFormat:'')+'\n\n'+data.message;delete data.requestPurpose;delete data.viewingDate;delete data.viewingFormat;if(data.preferredContact==='whatsapp'&&!data.customerPhone.trim()){ $('#phone').setCustomValidity('Add a phone number for a WhatsApp reply.');$('#phone').reportValidity();return;}const btn=form.querySelector('button[type=submit]');btn.disabled=true;btn.textContent='Sending…';$('#formFeedback').innerHTML='';try{const res=await fetch('/api/enquire',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});const result=await res.json();if(!res.ok||!result.success)throw Error(result.error||'Your enquiry could not be sent.');$('#formFeedback').innerHTML=`<div class="form-message"><strong>Thank you. Your consultation request has been received.</strong><br>Reference: ${escapeHTML(result.refCode || result.inquiryId)}. Dewera will reply using your contact details.</div>`;form.reset();btn.textContent='Request received';if(result.whatsappUrl){const destination=new URL(result.whatsappUrl);if(destination.protocol==='https:'&&destination.hostname==='wa.me'){const link=document.createElement('a');link.href=destination.href;link.textContent='Continue on WhatsApp';link.className='text-link';$('#formFeedback').append(link);location.assign(destination.href);}}$('#formFeedback').scrollIntoView({behavior:'smooth',block:'center'});}catch(error){$('#formFeedback').innerHTML=`<div class="form-message error">${escapeHTML(error.message)} Please try again or email <a href="mailto:deweragems@gmail.com">deweragems@gmail.com</a>.</div>`;btn.disabled=false;btn.textContent='Request a personal consultation';}});$('#phone').addEventListener('input',()=>$('#phone').setCustomValidity(''));$('#preferred').addEventListener('change',()=>$('#phone').setCustomValidity(''));}
+function refinePresentation() {
+ const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ if (!reduced && 'IntersectionObserver' in window) {
+   const observer = new IntersectionObserver(entries => {
+     entries.forEach(entry => {
+       if (entry.isIntersecting) {
+         entry.target.classList.add('in-view');
+         observer.unobserve(entry.target);
+       }
+     });
+   }, {threshold: 0.12});
+   document.querySelectorAll('.section-heading, .selection-note, .story-text, .principles > div, .salon-inner > div').forEach(el => observer.observe(el));
+ }
 }
-
-function isMaintenanceMode() {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('admin') === 'preview') return false;
-  try {
-    const s = localStorage.getItem('dewera_settings');
-    if (s) {
-      const parsed = JSON.parse(s);
-      if (parsed.maintenanceMode === true) return true;
-    }
-    const maint = localStorage.getItem('dewera_maintenance_mode');
-    if (maint === 'true') return true;
-  } catch (e) {}
-  return false;
-}
-
-function getPublicGems() {
-  const mkt = isMarketplaceEnabled();
-  return getGems().filter(g => {
-    if (g.status === 'hidden') return false;
-    if (!mkt) {
-      return g.isDewera === true || g.sellerId === 'dewera' || !g.sellerId;
-    }
-    return true;
-  });
-}
-
-function getGemById(id) {
-  const gem = getGems().find(g => g.id === id);
-  if (!gem) return null;
-  if (!isMarketplaceEnabled() && !gem.isDewera && gem.sellerId && gem.sellerId !== 'dewera') {
-    return null;
-  }
-  return gem;
-}
-
-function formatGemPrice(gem) {
-  if (!gem) return '';
-  if (gem.priceType === 'consultation' || (!gem.price && !gem.salePrice)) {
-    return 'Valuation Upon Consultation';
-  }
-  if (gem.priceType === 'starting_from') {
-    return 'From $' + Number(gem.price).toLocaleString() + ' USD';
-  }
-  if (gem.priceType === 'range' && gem.priceMax && gem.priceMax > gem.price) {
-    return '$' + Number(gem.price).toLocaleString() + ' – $' + Number(gem.priceMax).toLocaleString() + ' USD';
-  }
-  if (gem.salePrice) {
-    return '$' + Number(gem.salePrice).toLocaleString() + ' USD';
-  }
-  return '$' + Number(gem.price).toLocaleString() + ' USD';
-}
-
-function getGemHighlights(gem) {
-  if (gem.highlights && Array.isArray(gem.highlights) && gem.highlights.length > 0) {
-    return gem.highlights;
-  }
-  return [
-    {
-      category: 'Geological Provenance',
-      title: 'Artisanal Alluvial Origin',
-      description: 'Mined ethically from the legendary secondary gravel deposits of Sri Lanka (Ceylon), untouched by mechanical explosives.'
-    },
-    {
-      category: 'Thermal Integrity',
-      title: 'Permanent Heat Enhancement Only',
-      description: 'Traditional atomic-level heating stabilizes true color depth with zero chemical additives, glass-filling, or dye.'
-    },
-    {
-      category: 'Independent Certification',
-      title: 'Gemological Lab Passport',
-      description: 'Accompanied by an independent laboratory report verifying natural corundum identity and Ceylon provenance.'
-    },
-    {
-      category: 'Direct Sourcing',
-      title: '100% Pure Loose Gemstone',
-      description: 'Preserved unmounted in our sealed security cassette for custody, investment, or bespoke jewelry mounting.'
-    }
-  ];
-}
-
-function gemCardHTML(gem) {
-  const hasImg = gem.images && gem.images.length > 0;
-  let imgSrc = hasImg ? gem.images[0] : '';
-  if (imgSrc.endsWith('.jpg')) {
-    imgSrc = imgSrc.replace(/\.jpg$/, '.png');
-  }
-  const imgContent = hasImg 
-    ? '<img src="' + imgSrc + '" alt="' + gem.name + '" loading="lazy">' 
-    : '';
-
-  const discountPill = gem.discount 
-    ? '<div class="apple-discount-pill">-' + gem.discount + '%</div>' 
-    : '';
-
-  const isSold = gem.status === 'sold';
-  const isOutOfStock = gem.status === 'out-of-stock' || gem.status === 'out_of_stock';
-
-  let statusBadge = '';
-  if (isSold) {
-    statusBadge = '<div class="apple-sold-badge">Acquired</div>';
-  } else if (isOutOfStock) {
-    statusBadge = '<div class="apple-outofstock-badge" style="background: rgba(180, 83, 9, 0.9); color: #FFFFFF; font-size: 0.65rem; letter-spacing: 0.08em;">Out of Stock &bull; Pit Sourcing</div>';
-  }
-
-  const tagline = gem.tagline || (gem.type + ' &bull; ' + gem.weight + ' Carats');
-  const specLine = gem.weight + ' Carats &bull; ' + (gem.clarity || 'Eye Clean') + ' &bull; ' + gem.treatment;
-
-  let priceHTML = '';
-  if (gem.priceType === 'range' && gem.priceMax && gem.priceMax > gem.price) {
-    priceHTML = '<div class="gem-card-price"><span style="font-size:0.62rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold-dark); display:block; margin-bottom:2px; font-weight:600;">Market Range Guide</span>$' + Number(gem.price).toLocaleString() + ' &ndash; $' + Number(gem.priceMax).toLocaleString() + ' USD</div>';
-  } else if (gem.priceType === 'starting_from') {
-    priceHTML = '<div class="gem-card-price"><span style="font-size:0.62rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); display:block; margin-bottom:2px; font-weight:600;">Starting Valuation</span>From $' + Number(gem.price).toLocaleString() + ' USD</div>';
-  } else if (gem.priceType === 'consultation') {
-    priceHTML = '<div class="gem-card-price" style="font-size:0.8rem; color:var(--gold-dark); letter-spacing:0.06em; text-transform:uppercase; font-weight:600;">Valuation on Consultation</div>';
-  } else if (gem.price) {
-    if (gem.salePrice) {
-      priceHTML = '<div class="gem-card-price"><span class="gem-card-price-old">$' + Number(gem.price).toLocaleString() + ' USD</span>$' + Number(gem.salePrice).toLocaleString() + ' USD</div>';
-    } else {
-      priceHTML = '<div class="gem-card-price">$' + Number(gem.price).toLocaleString() + ' USD</div>';
-    }
-  }
-
-  let orderAction = '';
-  if (isSold) {
-    orderAction = '<span class="vault-link-acquired">Acquired</span>';
-  } else if (isOutOfStock) {
-    orderAction = '<a href="contact.html?gem=' + encodeURIComponent(gem.name) + '&sourcing=out_of_stock" class="vault-link-order" style="color: var(--gold-dark); font-weight: 600;">Request Sourcing &rsaquo;</a>';
-  } else {
-    orderAction = '<a href="contact.html?gem=' + encodeURIComponent(gem.name) + '" class="vault-link-order">Contact to Order &rsaquo;</a>';
-  }
-
-  let sellerBadgeHTML = '';
-  const isDeweraSovereign = !gem.sellerId || gem.sellerId === 'dewera' || gem.isDewera;
-
-  const SELLER_DIRECTORY = {
-    'dewera': {
-      name: 'House of Dewera',
-      shortName: 'House of Dewera',
-      logo: 'images/dewera-logo.png',
-      rating: 5.0,
-      reviewsCount: 280,
-      positiveFeedbackPercent: 100
-    },
-    'seller-001': {
-      name: 'Ratnapura Imperial Gemmological Atelier',
-      shortName: 'Ratnapura Imperial Atelier',
-      logo: 'images/seller-ratnapura.svg',
-      rating: 4.98,
-      reviewsCount: 142,
-      positiveFeedbackPercent: 100
-    },
-    'seller-002': {
-      name: 'Ceylon Sapphire Crown Curators',
-      shortName: 'Ceylon Sapphire Crown',
-      logo: 'images/seller-crown.svg',
-      rating: 4.94,
-      reviewsCount: 98,
-      positiveFeedbackPercent: 99.2
-    },
-    'seller-003': {
-      name: 'Sovereign Colombo Gem Vault',
-      shortName: 'Sovereign Colombo Vault',
-      logo: 'images/seller-colombo.svg',
-      rating: 4.95,
-      reviewsCount: 89,
-      positiveFeedbackPercent: 99
-    }
-  };
-
-  if (isDeweraSovereign) {
-    sellerBadgeHTML = 
-      '<div class="card-sovereign-seal" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; margin: 6px 0 8px;">' +
-        '<span style="height: 1px; flex: 1; background: linear-gradient(to right, transparent, rgba(201,169,110,0.35));"></span>' +
-        '<span style="display: inline-flex; align-items: center; gap: 5px; font-family: \'Cinzel\', serif; font-size: 0.62rem; font-weight: 700; color: var(--gold-dark); letter-spacing: 0.12em; text-transform: uppercase;">' +
-          '<img src="images/dewera-logo.png" alt="Dewera" style="height: 10px; width: auto; opacity: 0.85;">' +
-          'House of Dewera &bull; Sovereign Vault' +
-        '</span>' +
-        '<span style="height: 1px; flex: 1; background: linear-gradient(to left, transparent, rgba(201,169,110,0.35));"></span>' +
-      '</div>';
-  } else {
-    const sId = gem.sellerId || 'seller-001';
-    const sFallback = SELLER_DIRECTORY[sId] || SELLER_DIRECTORY['seller-001'];
-    const sName = gem.sellerName || sFallback.name;
-    const sLogo = gem.sellerLogo || sFallback.logo;
-    const ratingVal = gem.sellerRating ? Number(gem.sellerRating).toFixed(2) : String(sFallback.rating);
-    const reviewsVal = gem.sellerReviewsCount || sFallback.reviewsCount;
-    const posPct = gem.positiveFeedbackPercent ? (gem.positiveFeedbackPercent + '%') : (sFallback.positiveFeedbackPercent + '%');
-
-    sellerBadgeHTML = 
-      '<div class="card-seller-trust-bar" style="display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 4px 8px; margin: 6px 0 8px; background: rgba(250, 248, 245, 0.85); border: 1px solid rgba(201, 169, 110, 0.22); box-sizing: border-box;">' +
-        '<div style="display: flex; align-items: center; gap: 6px; min-width: 0;">' +
-          '<img src="' + sLogo + '" alt="' + sName + '" style="width: 15px; height: 15px; object-fit: contain; border-radius: 0px; flex-shrink: 0;">' +
-          '<span style="font-size: 0.64rem; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">' + sName + '</span>' +
-        '</div>' +
-        '<div style="display: flex; align-items: center; gap: 4px; font-size: 0.6rem; flex-shrink: 0; color: var(--muted); margin-left: 6px;">' +
-          '<strong style="color: var(--gold-dark); font-weight: 700;">' + ratingVal + '</strong>' +
-          '<span>(' + reviewsVal + ')</span>' +
-          '<span style="color: #107C41; font-weight: 600;">&bull; ' + posPct + '</span>' +
-        '</div>' +
-      '</div>';
-  }
-
-  return '<div class="apple-gem-card">' +
-    '<div class="apple-gem-visual-wrap">' +
-      imgContent +
-      discountPill +
-      statusBadge +
-    '</div>' +
-    '<div class="apple-gem-card-body">' +
-      '<div class="apple-gem-badge-top">' + gem.treatment + ' &bull; ' + gem.origin + '</div>' +
-      '<h3 class="apple-gem-card-title">' + gem.name + '</h3>' +
-      '<p class="apple-gem-card-tagline">' + tagline + '</p>' +
-      '<div class="apple-gem-card-specs">' + specLine + '</div>' +
-      '<div class="card-badge-slot">' + sellerBadgeHTML + '</div>' +
-      priceHTML +
-      '<div class="apple-gem-card-actions">' +
-        '<a href="gem.html?id=' + gem.id + '" class="vault-btn-examine" style="padding: 6px 14px; font-size: 0.68rem;">Examine</a>' +
-        orderAction +
-      '</div>' +
-    '</div>' +
-  '</div>';
-}
-
-function checkMaintenanceMode() {
-  const active = isMaintenanceMode();
-  let settings = {};
-  try {
-    const s = localStorage.getItem('dewera_settings');
-    if (s) settings = JSON.parse(s);
-  } catch (e) {}
-  applyMaintenanceOverlay(active, settings);
-}
-
-function applyMaintenanceOverlay(active, settings = {}) {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('admin') === 'preview') return;
-
-  let overlay = document.getElementById('deweraMaintenanceOverlay');
-  if (active) {
-    if (!overlay) {
-      overlay = document.createElement('div');
-      overlay.id = 'deweraMaintenanceOverlay';
-      overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#FAF8F5;z-index:999999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center;box-sizing:border-box;';
-      const email = (settings && settings.deweraEmail) || localStorage.getItem('dewera_business_email') || 'deweragems@gmail.com';
-      overlay.innerHTML = 
-        '<div style="max-width:580px;margin:0 auto;">' +
-          '<img src="images/dewera-logo.png" alt="DEWERA" style="height:26px;width:auto;margin-bottom:2.2rem;display:inline-block;">' +
-          '<div style="font-size:0.72rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--gold-dark,#8B7355);font-weight:600;margin-bottom:0.8rem;">Private Atelier Maintenance</div>' +
-          '<h1 style="font-family:Cinzel,serif;font-size:clamp(1.8rem,4vw,2.4rem);font-weight:700;letter-spacing:0.04em;color:#1A1A1A;margin-bottom:1.2rem;line-height:1.2;">Vault Audit in Progress</h1>' +
-          '<p style="font-family:\'Cormorant Garamond\',serif;font-style:italic;font-size:1.35rem;color:#6E6E73;line-height:1.6;margin-bottom:2.2rem;">' +
-            'Our loose gemstone catalog is undergoing private curation and inventory synchronization. Private salon viewings and confidential acquisitions proceed uninterrupted.' +
-          '</p>' +
-          '<div style="background:#FFFFFF;border:1px solid #E5E0D8;padding:1.4rem 2rem;margin-bottom:2rem;">' +
-            '<div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.12em;color:#86868B;margin-bottom:0.4rem;">Direct Atelier Concierge</div>' +
-            '<a href="mailto:' + email + '" style="font-family:Cinzel,serif;font-size:1.1rem;font-weight:700;color:#1A1A1A;text-decoration:none;">' + email + '</a>' +
-          '</div>' +
-          '<div style="font-size:0.75rem;color:#86868B;">' +
-            '<a href="?admin=preview" style="color:#86868B;text-decoration:underline;">Admin Bypass Preview</a>' +
-          '</div>' +
-        '</div>';
-      document.body.appendChild(overlay);
-    }
-  } else {
-    if (overlay) {
-      overlay.remove();
-    }
-  }
-}
-
-// DYNAMIC BUSINESS EMAIL & WHATSAPP SYNCHRONIZATION
-function syncStorefrontContact() {
-  let email = localStorage.getItem('dewera_business_email') || 'deweragems@gmail.com';
-  let wa = localStorage.getItem('dewera_whatsapp') || '+94770000000';
-
-  function applyContact(curEmail, curWa) {
-    // 1. Update all mailto: links
-    document.querySelectorAll('a[href^="mailto:"]').forEach(a => {
-      const href = a.getAttribute('href');
-      const parts = href.split('?');
-      const query = parts[1] ? '?' + parts[1] : '';
-      a.setAttribute('href', 'mailto:' + curEmail + query);
-      if (a.textContent.includes('@')) {
-        a.textContent = curEmail;
-      }
-    });
-
-    // 2. Update all elements explicitly marked or containing the email
-    document.querySelectorAll('.dynamic-email, [data-dynamic-email]').forEach(el => {
-      el.textContent = curEmail;
-    });
-
-    // Update select option for email if present
-    document.querySelectorAll('option[value="email"]').forEach(opt => {
-      opt.textContent = 'Direct Email (' + curEmail + ')';
-    });
-
-    // 3. Update all WhatsApp links
-    const cleanWa = curWa.replace(/[^0-9]/g, '');
-    document.querySelectorAll('a[href*="wa.me/"]').forEach(a => {
-      const href = a.getAttribute('href');
-      const textMatch = href.match(/text=([^&]*)/);
-      const textParam = textMatch ? '?text=' + textMatch[1] : '';
-      a.setAttribute('href', 'https://wa.me/' + cleanWa + textParam);
-    });
-    document.querySelectorAll('.dynamic-whatsapp, [data-dynamic-whatsapp]').forEach(el => {
-      el.textContent = curWa;
-    });
-  }
-
-  // Immediate apply from local cache
-  applyContact(email, wa);
-
-  // Fetch from server /api/config to ensure fresh sync across devices/browsers
-  fetch('/api/config')
-    .then(r => r.json())
-    .then(cfg => {
-      if (cfg && cfg.businessEmail) {
-        localStorage.setItem('dewera_business_email', cfg.businessEmail);
-        email = cfg.businessEmail;
-      }
-      if (cfg && cfg.whatsappNumber) {
-        localStorage.setItem('dewera_whatsapp', cfg.whatsappNumber);
-        wa = cfg.whatsappNumber;
-      }
-      applyContact(email, wa);
-    })
-    .catch(() => {});
-}
-
-// APPLE-GRADE FULL-PAGE BACKDROP BLUR SCRIM (media_1789989440762.png)
-function initAppleBackdropBlur() {
-  let scrim = document.getElementById('navBackdropScrim');
-  if (!scrim) {
-    scrim = document.createElement('div');
-    scrim.className = 'nav-backdrop-scrim';
-    scrim.id = 'navBackdropScrim';
-    document.body.appendChild(scrim);
-  }
-
-  const navVaultItem = document.querySelector('.nav-vault-item');
-  const navVaultFlyout = document.querySelector('.nav-vault-flyout');
-
-  function openFlyout() {
-    document.body.classList.add('nav-flyout-active');
-  }
-
-  function closeFlyout() {
-    document.body.classList.remove('nav-flyout-active');
-  }
-
-  if (navVaultItem) {
-    navVaultItem.addEventListener('mouseenter', openFlyout);
-    navVaultItem.addEventListener('mouseleave', closeFlyout);
-  }
-
-  if (navVaultFlyout) {
-    navVaultFlyout.addEventListener('mouseenter', openFlyout);
-    navVaultFlyout.addEventListener('mouseleave', closeFlyout);
-  }
-
-  scrim.addEventListener('click', closeFlyout);
-  scrim.addEventListener('mouseenter', closeFlyout);
-}
-function updateMarketplaceNavLinks(enabled) {
-  document.querySelectorAll('a[href*="vault=marketplace"]').forEach(el => {
-    if (enabled) {
-      el.style.display = '';
-    } else {
-      el.style.display = 'none';
-    }
-  });
-}
-
-function updateSellerLinks(enabled) {
-  document.querySelectorAll('.seller-hub-link').forEach(el => {
-    if (enabled) {
-      if (el.tagName === 'A' && el.classList.contains('apple-nav-link')) {
-        el.style.display = 'inline-flex';
-      } else {
-        el.style.display = 'inline-block';
-      }
-    } else {
-      el.style.display = 'none';
-    }
-  });
-}
-
-// REAL-TIME PLATFORM SETTINGS SYNCHRONIZER (Direct Admin Bridge)
-async function syncPlatformSettings() {
-  try {
-    const res = await fetch('/api/settings?_t=' + Date.now());
-    if (!res.ok) return;
-    const settings = await res.json();
-    if (!settings) return;
-
-    const prevMkt = localStorage.getItem('dewera_marketplace_enabled');
-    const newMkt = String(settings.marketplaceEnabled !== false);
-    const prevMaint = localStorage.getItem('dewera_maintenance_mode');
-    const newMaint = String(settings.maintenanceMode === true);
-
-    localStorage.setItem('dewera_settings', JSON.stringify(settings));
-    localStorage.setItem('dewera_marketplace_enabled', newMkt);
-    localStorage.setItem('dewera_maintenance_mode', newMaint);
-    localStorage.setItem('dewera_seller_registration_enabled', String(settings.sellerRegistrationEnabled !== false));
-
-    if (settings.deweraEmail) localStorage.setItem('dewera_business_email', settings.deweraEmail);
-    if (settings.deweraWhatsApp) localStorage.setItem('dewera_whatsapp', settings.deweraWhatsApp);
-
-    applyMaintenanceOverlay(settings.maintenanceMode === true, settings);
-    updateSellerLinks(settings.sellerRegistrationEnabled !== false && settings.marketplaceEnabled !== false);
-    updateMarketplaceNavLinks(settings.marketplaceEnabled !== false);
-
-    if (prevMkt !== newMkt || prevMaint !== newMaint) {
-      fetchStoreGems();
-      window.dispatchEvent(new CustomEvent('dewera:settings_updated', { detail: settings }));
-    }
-  } catch (e) {}
-}
-
-function initSellerLinkVisibility() {
-  const cached = localStorage.getItem('dewera_seller_registration_enabled');
-  const mktCached = localStorage.getItem('dewera_marketplace_enabled');
-  if (cached !== null) {
-    updateSellerLinks(cached === 'true' && mktCached !== 'false');
-  }
-  updateMarketplaceNavLinks(mktCached !== 'false');
-  syncPlatformSettings();
-}
-
-// Initial sync and real-time polling every 3.5 seconds
-syncPlatformSettings();
-setInterval(syncPlatformSettings, 3500);
-
-document.addEventListener('DOMContentLoaded', () => {
-  checkMaintenanceMode();
-  syncStorefrontContact();
-  initAppleBackdropBlur();
-  initSellerLinkVisibility();
-  syncPlatformSettings();
-  fetchStoreGems();
-});
+let contactDetails={businessEmail:'deweragems@gmail.com'};
+function applyContact(){document.querySelectorAll('a[href="mailto:deweragems@gmail.com"]').forEach(a=>{a.href='mailto:'+contactDetails.businessEmail;a.childNodes.forEach(n=>{if(n.nodeType===3)n.textContent=n.textContent.replace('deweragems@gmail.com',contactDetails.businessEmail);});});}
+window.addEventListener('scroll', () => document.querySelector('.nav')?.classList.toggle('is-scrolled', window.scrollY > 40), {passive:true});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-save]');if(!b)return;const id=b.dataset.save;const adding=!saved.includes(id);saved=adding?[...saved,id]:saved.filter(x=>x!==id);try{localStorage.setItem('dewera_favourites',JSON.stringify(saved));}catch{toast('Your browser could not save favourites.');}document.querySelectorAll('[data-save]').forEach(btn=>btn.setAttribute('aria-pressed',saved.includes(btn.dataset.save)));$('#savedCount').textContent=saved.length||'';toast(adding?'Added to your saved gemstones':'Removed from saved gemstones');if(page==='collection'&&params.has('saved')) window.renderCollection?.();});
+(async()=>{try{contactDetails=await fetch('/api/contact').then(r=>r.ok?r.json():contactDetails).catch(()=>contactDetails);header();const res=await fetch('/api/gems'+(params.get('preview')?'?preview='+encodeURIComponent(params.get('preview')):''));if(!res.ok)throw Error('The collection is temporarily unavailable.');const data=await res.json();if(!Array.isArray(data))throw Error('The collection is temporarily unavailable.');gems=data.filter(publicGem);({index:home,collection,gem:detail,about,contact}[page] || home)();applyContact();refinePresentation();}catch(error){if(page==='about'){about();applyContact();return;}if(page==='contact'){contact();applyContact();return;}$('#main').innerHTML=`<section class="wrap section empty"><h1 style="font-size:40px">We’ll be with you shortly.</h1><p>${escapeHTML(error.message)}</p><button class="button" onclick="location.reload()">Try again</button> <a class="text-link" href="contact.html">Contact Dewera</a></section>`;}})();

@@ -350,6 +350,17 @@ class InventoryService {
       WHERE id = ?
     `).run(name, variety, species, treatment, origin, weightCarats, clarity, color, price, priceMax, priceType, status, description, certificateSummary, imagesJson, id);
 
+    // Preserve every editable specification and presentation field, including zero discounts.
+    const extraColumns={cut:'cut',shape:'shape',dimensions:'dimensions',discount:'discount_pct',salePrice:'sale_price',gradientFrom:'gradient_from',gradientTo:'gradient_to',highlights:'highlights_json'};
+    for(const [key,column] of Object.entries(extraColumns)){
+      if(updates[key]===undefined)continue;
+      let value=updates[key];
+      if(key==='highlights')value=JSON.stringify(value);
+      if(key==='discount')value=Number(value)||0;
+      if(key==='salePrice')value=value?Number(value):null;
+      db.prepare('UPDATE gemstone_listings SET '+column+'=? WHERE id=?').run(value,id);
+    }
+
     // Update color variations if supplied
     if (Array.isArray(updates.colorVariations)) {
       db.prepare('DELETE FROM gemstone_variations WHERE listing_id = ?').run(id);

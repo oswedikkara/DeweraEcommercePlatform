@@ -1,17 +1,6 @@
 {
   "businessEmail": "deweragems@gmail.com",
-  "whatsappNumber": "+94770000000",
+  "whatsappNumber": "+94771210101",
   "atelierName": "Dewera Ceylon Natural Heated",
-  "conciergeHours": "24/7 Global Private Client Desk",
-  "emailService": {
-    "provider": "resend",
-    "apiKey": "",
-    "from": "Dewera Ceylon Atelier <deweragems@gmail.com>"
-  },
-  "whatsappCloudApi": {
-    "provider": "meta",
-    "phoneNumberId": "",
-    "accessToken": "",
-    "templateName": "dewera_acquisition_confirmed"
-  }
+  "conciergeHours": "24/7 Global Private Client Desk"
 }
