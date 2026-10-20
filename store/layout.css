@@ -76,3 +76,7 @@ main { min-width: 0; }
   .private-salon { padding-inline: var(--page-gutter); }
   .salon-inner { padding: 28px 20px; }
 }
+
+.request-stone[hidden] { display: none; }
+.form-message.delivery-pending { background: #f4efdf; color: #665a3b; }
+.form-message p { margin: 12px 0 0; }
