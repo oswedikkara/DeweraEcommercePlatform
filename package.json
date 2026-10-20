@@ -8,7 +8,7 @@
     "start:store": "node store/server.js",
     "start:admin": "node admin/server.js",
     "seed": "node backend/database/db.js",
-    "test": "node test/device_audit.js && node test/direct_store.js && node test/admin_inventory.js && node test/admin_management.js && node test/site_content.js && node test/email_auth.js && node test/http_server.js"
+    "test": "node test/device_audit.js && node test/direct_store.js && node test/admin_inventory.js && node test/admin_management.js && node test/site_content.js && node test/email_auth.js && node test/http_server.js && node test/email_delivery.js"
   },
   "keywords": [
     "dewera",
@@ -26,5 +26,8 @@
   },
   "devDependencies": {
     "sharp": "^0.35.4"
+  },
+  "dependencies": {
+    "nodemailer": "^10.1.7"
   }
 }

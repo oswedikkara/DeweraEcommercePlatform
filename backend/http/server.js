@@ -4,6 +4,9 @@ const escape=text=>String(text??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt
 const MIME={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.svg':'image/svg+xml','.ico':'image/x-icon'};
 function createServer({root,port,store=false}){
  initDb();
+ let notificationTimer;
+ if(store){const notifications=require('../services/InquiryNotificationService');let sending=false;const retry=async()=>{if(sending)return;sending=true;try{await notifications.retryPending();}catch{console.error('[Dewera] Notification retry unavailable.');}finally{sending=false;}};retry();notificationTimer=setInterval(retry,60000);notificationTimer.unref();}
+
  const server=http.createServer(async(req,res)=>{
   res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','no-referrer');res.setHeader('Cache-Control','no-store');
   const origin=req.headers.origin;if(['http://localhost:3000','http://localhost:3001','http://127.0.0.1:3000','http://127.0.0.1:3001'].includes(origin)){res.setHeader('Access-Control-Allow-Origin',origin);res.setHeader('Vary','Origin');}
@@ -23,6 +26,7 @@ function createServer({root,port,store=false}){
    fs.readFile(file,(error,data)=>{if(error){res.writeHead(error.code==='ENOENT'?404:500);res.end('Page unavailable');return;}res.writeHead(200,{'Content-Type':MIME[ext],'Cache-Control':ext==='.html'?'no-store':'no-cache'});res.end(req.method==='HEAD'?undefined:data);});
   }catch(error){if(!res.headersSent){res.writeHead(500,{'Content-Type':'application/json'});res.end(JSON.stringify({success:false,error:'The request could not be completed.'}));}else res.end();console.error('[Dewera request error]',error.message);}
  });
+ server.on('close',()=>clearInterval(notificationTimer));
  server.on('error',error=>console.error('[Dewera server]',error.message));server.listen(port,()=>console.log('Dewera '+(store?'store':'management')+' running at http://localhost:'+port));return server;
 }
 module.exports={createServer};

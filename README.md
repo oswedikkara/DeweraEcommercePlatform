@@ -13,11 +13,15 @@ npm start
 npm run start:admin
 ```
 
-Store: http://localhost:3000. Management: http://localhost:3001. Both use the same API services and SQLite database. Customer enquiries are saved before the browser opens WhatsApp with a prepared message. The customer must tap Send in WhatsApp; the application does not send messages automatically.
+Store: http://localhost:3000. Management: http://localhost:3001. Both use the same API services and SQLite database. Customer enquiries are saved in the private management inbox and sent to the business email through the connected Dewera Gmail account. Customers stay on the website. The sender is Dewera; Reply-To is the customer’s email, so the team can reply directly. WhatsApp remains a preferred reply method for the team, not an automatic customer-account sender.
 
 ## Email sign-in setup (required)
 
-Copy `.env.example` to `.env`. Set `RESEND_API_KEY` from your own Resend account and `DEWERA_EMAIL_FROM` to a sender on a domain verified in that account. Restart both servers. A Gmail inbox can receive codes but cannot be used as an arbitrary verified Resend sending domain. There is no fallback password, console code or authentication bypass. Until the service is configured, requesting a code returns a clear HTTP 503 and admin sign-in is unavailable.
+Copy `.env.example` to `.env`. Set `DEWERA_GMAIL_USER` to your existing Dewera Gmail address and `DEWERA_GMAIL_APP_PASSWORD` to a Google App Password for that account. Enable Google 2-Step Verification first, then create the App Password yourself at https://myaccount.google.com/apppasswords. Some account policies do not allow App Passwords. Enter the credential only in the private server environment, never in chat or Git. Restart both servers.
+
+This uses Gmail SMTP via Nodemailer; there is no paid email-service subscription or per-message billing integration. Gmail’s sending limits and account policies apply; a third-party service’s perpetual availability cannot be guaranteed. The deployment must permit outbound SMTP. Setup guidance: https://nodemailer.com/guides/using-gmail and limits: https://support.google.com/mail/answer/22839.
+
+The same connection sends admin verification codes and enquiry notifications. Until configured, admin code requests return HTTP 503. Enquiries still save in the management inbox, with pending email notifications retained in SQLite. The store retries up to five queued notifications each minute, with three delivery attempts and a five-minute delay after failures. SMTP acceptance is not a guarantee of inbox delivery; check Gmail’s Sent folder and delivery failures. A process interruption during SMTP delivery can cause a duplicate notification on retry; its stable enquiry reference identifies the same request.
 
 Only approved emails can receive sign-in codes. Codes expire after ten minutes, are stored as hashes, allow at most five attempts, and can be used once. Requests and verification are rate-limited. Sessions expire after eight hours and are stored as token hashes.
 
@@ -54,4 +58,8 @@ The editorial sapphire still-life is an illustrative brand asset; listing photog
 npm test
 ```
 
-Tests use isolated in-memory databases and mocked delivery. They cover direct-store restrictions, enquiry persistence, inventory error handling, inbox rendering, content validation, owner protection, code expiry/reuse/attempt limits, session revocation, WhatsApp destinations, static-file privacy, maintenance blocking and preview scope. Tests do not send real email or WhatsApp messages. Live email delivery requires configuring and verifying your sending account separately.
+Tests use isolated in-memory databases and mocked delivery. They cover direct-store restrictions, enquiry persistence, inventory error handling, inbox rendering, content validation, owner protection, code expiry/reuse/attempt limits, session revocation, WhatsApp destinations, static-file privacy, maintenance blocking and preview scope. Tests do not send real email or WhatsApp messages. Live email delivery requires connecting the existing Gmail account separately.
+
+## Responsive layout
+
+`store/layout.css` owns shared gutters, grid transitions and collection filter alignment after the presentation styles. Story and editorial sections stack below 800px; the contact form stacks below 1000px. A single collection item uses a full-width editorial layout and stacks on phones. Browser QA covers 320–1920 CSS pixels, including the narrow 440px viewport reported with docked DevTools.

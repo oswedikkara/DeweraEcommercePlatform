@@ -187,6 +187,7 @@ async function handleApiRequest(req, res) {
   // 11. Customer Inquiries: POST /api/inquiries & POST /api/enquire
   if ((pathname === '/api/inquiries' || pathname === '/api/enquire') && method === 'POST') {
     try {
+      require('../services/AdminAccessService').rate('enquiry-ip:'+(req.socket?.remoteAddress||'local'),10,3600000);
       const body = await parseJsonBody(req);
       const customerName = body.customerName || body.name || '';
       const customerEmail = body.customerEmail || body.email || '';
@@ -207,15 +208,18 @@ async function handleApiRequest(req, res) {
         message
       });
 
+      const notifications=require('../services/InquiryNotificationService');
+      notifications.enqueue({inquiryId:result.inquiryId,listingName:result.listingName||'Personal consultation',customerName,customerEmail,customerPhone,preferredContact:body.preferredContact||'email',message});
+      const notificationStatus=await notifications.deliver(result.inquiryId);
       sendJson(res, 200, {
         success: true,
         refCode: result.inquiryId,
         inquiryId: result.inquiryId,
-        whatsappUrl: result.whatsappUrl,
-        message: 'Inquiry logged and concierge link generated.'
+        notificationStatus,
+        message: 'Your request has been saved for Dewera.'
       });
     } catch (err) {
-      sendJson(res, 400, { success: false, error: err.message });
+      sendJson(res, err.status || 400, { success: false, error: err.message });
     }
     return true;
   }
